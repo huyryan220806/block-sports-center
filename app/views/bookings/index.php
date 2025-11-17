@@ -1,6 +1,16 @@
 <?php 
-$pageTitle = 'Quản lý đặt phòng';
+$pageTitle   = 'Quản lý đặt phòng';
 $currentPage = 'bookings';
+
+$bookings = $bookings ?? [];          // từ controller
+$rooms    = $rooms    ?? [];          // từ controller
+
+$selectedDate = $filterDateValue ?? '';   // controller set
+$selectedRoom = $filterRoomValue ?? '';   // controller set
+
+if ($selectedDate === '') {
+    $selectedDate = date('Y-m-d');
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -14,34 +24,48 @@ $currentPage = 'bookings';
 <body>
     <div class="admin-layout">
         <?php include(__DIR__ . '/../layouts/sidebar.php'); ?>
+
         <main class="main-content">
             <?php include(__DIR__ . '/../layouts/header.php'); ?>
+
             <div class="content">
                 <div class="page-header">
                     <h2>Quản lý đặt phòng</h2>
-                    <p>Lịch đặt phòng/sân cho hội viên</p>
+                    <p>Theo dõi và quản lý các lịch đặt phòng/sân trong trung tâm.</p>
                 </div>
-                
+
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Danh sách đặt phòng</h3>
-                        <button class="btn btn-primary">
+                        <a href="?c=bookings&a=create" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Đặt phòng mới
-                        </button>
+                        </a>
                     </div>
                     
-                    <div class="search-bar">
-                        <input type="date" class="form-control" style="max-width: 180px;" value="<?php echo date('Y-m-d'); ?>">
-                        <select class="form-control" style="max-width: 200px;">
+                    <!-- FORM LỌC THEO NGÀY + PHÒNG -->
+                    <form method="get" class="search-bar">
+                        <input type="hidden" name="c" value="bookings">
+                        <input type="hidden" name="a" value="index">
+
+                        <input type="date"
+                               name="date"
+                               class="form-control"
+                               style="max-width: 180px;"
+                               value="<?php echo htmlspecialchars($selectedDate); ?>">
+
+                        <select name="room_id" class="form-control" style="max-width: 200px;">
                             <option value="">Tất cả phòng</option>
-                            <option value="A1">Phòng A1</option>
-                            <option value="B2">Phòng B2</option>
-                            <option value="Tennis1">Sân Tennis 1</option>
+                            <?php foreach ($rooms as $room): ?>
+                                <option value="<?= $room->MAPHONG ?>" <?= ($selectedRoom == $room->MAPHONG ? 'selected' : '') ?>>
+                                    <?= htmlspecialchars($room->TENPHONG) ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
+
                         <button class="btn btn-ghost">
                             <i class="fas fa-search"></i> Lọc
                         </button>
-                    </div>
+                    </form>
                     
                     <div class="table-container">
                         <table>
@@ -58,58 +82,97 @@ $currentPage = 'bookings';
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><strong>#BK001</strong></td>
-                                    <td>15/11/2024</td>
-                                    <td>14:00 - 16:00</td>
-                                    <td>Sân Tennis 1</td>
-                                    <td>Lê Hoàng Cường</td>
-                                    <td>Chơi tennis</td>
-                                    <td><span class="badge scheduled">Confirmed</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete"><i class="fas fa-times"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>#BK002</strong></td>
-                                    <td>16/11/2024</td>
-                                    <td>10:00 - 12:00</td>
-                                    <td>Phòng Dance B2</td>
-                                    <td>Nhóm Dance Club</td>
-                                    <td>Tập nhóm</td>
-                                    <td><span class="badge scheduled">Confirmed</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete"><i class="fas fa-times"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>#BK003</strong></td>
-                                    <td>17/11/2024</td>
-                                    <td>18:00 - 20:00</td>
-                                    <td>Phòng Boxing C1</td>
-                                    <td>Phạm Thị Dung</td>
-                                    <td>PT riêng</td>
-                                    <td><span class="badge full">Pending</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit" title="Xác nhận"><i class="fas fa-check"></i></button>
-                                            <button class="action-btn delete"><i class="fas fa-times"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                <?php if (!empty($bookings)): ?>
+                                    <?php foreach ($bookings as $bk): ?>
+                                        <?php
+                                            $date  = date('d/m/Y', strtotime($bk->BATDAU));
+                                            $time  = date('H:i', strtotime($bk->BATDAU)) . ' - ' . date('H:i', strtotime($bk->KETTHUC));
+                                            $memberName = $bk->HOVATEN ? $bk->HOVATEN : 'Khách lẻ';
+
+                                            // Mục đích
+                                            $purpose = 'Tập tự do';
+                                            if ($bk->MUCTIEU === 'CLB') {
+                                                $purpose = 'Câu lạc bộ';
+                                            } elseif ($bk->MUCTIEU === 'GIU_CHO_SU_KIEN') {
+                                                $purpose = 'Giữ chỗ sự kiện';
+                                            }
+
+                                            // TRANGTHAI: PENDING / CONFIRMED / CANCELLED / DONE
+                                            $status = $bk->TRANGTHAI;
+                                            $statusClass = 'badge full';
+                                            $statusLabel = 'Pending';
+
+                                            if ($status === 'CONFIRMED') {
+                                                $statusClass = 'badge scheduled';
+                                                $statusLabel = 'Confirmed';
+                                            } elseif ($status === 'CANCELLED') {
+                                                $statusClass = 'badge inactive';
+                                                $statusLabel = 'Cancelled';
+                                            } elseif ($status === 'DONE') {
+                                                $statusClass = 'badge active';
+                                                $statusLabel = 'Done';
+                                            }
+                                        ?>
+                                        <tr>
+                                            <td><strong>#BK<?= str_pad($bk->MADP, 3, '0', STR_PAD_LEFT); ?></strong></td>
+                                            <td><?= $date ?></td>
+                                            <td><?= $time ?></td>
+                                            <td><?= htmlspecialchars($bk->TENPHONG) ?></td>
+                                            <td><?= htmlspecialchars($memberName) ?></td>
+                                            <td><?= htmlspecialchars($purpose) ?></td>
+                                            <td><span class="<?= $statusClass ?>"><?= $statusLabel ?></span></td>
+                                            <td>
+                                                <div class="action-btns">
+                                                    <!-- Edit (nếu có màn hình chỉnh sửa) -->
+                                                    <button type="button"
+                                                            class="action-btn edit"
+                                                            onclick="location.href='?c=bookings&a=edit&id=<?= $bk->MADP ?>'">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+
+                                                    <?php if ($status === 'PENDING'): ?>
+                                                        <!-- Confirm -->
+                                                        <button type="button"
+                                                                class="action-btn edit"
+                                                                title="Xác nhận"
+                                                                onclick="if(confirm('Xác nhận đặt phòng này?')) location.href='?c=bookings&a=confirm&id=<?= $bk->MADP ?>';">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+
+                                                        <!-- Cancel -->
+                                                        <button type="button"
+                                                                class="action-btn delete"
+                                                                title="Hủy đặt phòng"
+                                                                onclick="if(confirm('Hủy đặt phòng này?')) location.href='?c=bookings&a=cancel&id=<?= $bk->MADP ?>';">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    <?php endif; ?>
+
+                                                    <!-- Delete -->
+                                                    <button type="button"
+                                                            class="action-btn delete"
+                                                            title="Xóa"
+                                                            onclick="if(confirm('Xóa đặt phòng này?')) location.href='?c=bookings&a=delete&id=<?= $bk->MADP ?>';">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="8" style="text-align:center; padding: 16px 0;">
+                                                Không có đặt phòng nào phù hợp.
+                                            </td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </main>
-    </div>
-    <?php include(__DIR__ . '/../layouts/footer.php'); ?>
-</body>
+            </main>
+        </div>
+        <?php include(__DIR__ . '/../layouts/footer.php'); ?>
+    </body>
 </html>

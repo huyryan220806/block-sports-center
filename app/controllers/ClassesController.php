@@ -1,92 +1,205 @@
 <?php
-require_once __DIR__ . '/../models/ClassModel.php';
-require_once __DIR__ . '/../../config/database.php';
+// app/controllers/ClassesController.php
 
-class ClassesController {
+require_once __DIR__ . '/../core/Database.php';
+
+class ClassesController extends Controller
+{
+    /**
+     * @var PDO
+     */
     private $db;
-    private $class;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->db = Database::getInstance()->getConnection();
-        $this->class = new ClassModel($this->db);
     }
 
-    public function index() {
-        $classes = $this->class->getAll();
-        include __DIR__ . '/../views/classes/index.php';
+    // ======================= DANH SÁCH LỚP =======================
+    public function index()
+    {
+        $stmt = $this->db->query("
+            SELECT MALOP, TENLOP, THOILUONG, SISO_MACDINH, MOTA
+            FROM lop
+            ORDER BY MALOP DESC
+        ");
+        $classes = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        $this->view('classes/index', [
+            'classes' => $classes,
+        ]);
     }
 
-    public function create() {
-        include __DIR__ . '/../views/classes/create.php';
+    // ======================= FORM TẠO LỚP =======================
+    public function create()
+    {
+        $this->view('classes/create');
     }
 
-    public function store() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $data = [
-                'tenlop' => $_POST['tenlop'],
-                'thoiluong' => $_POST['thoiluong'],
-                'siso' => $_POST['siso'],
-                'mota' => $_POST['mota']
-            ];
-
-            if ($this->class->create($data)) {
-                $_SESSION['success'] = 'Thêm lớp học thành công!';
-                header('Location: ?c=classes&a=index');
-                exit();
-            } else {
-                $error = 'Thêm lớp học thất bại!';
-                include __DIR__ . '/../views/classes/create.php';
-            }
+    // ======================= LƯU LỚP MỚI ========================
+    public function store()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('?c=classes&a=index');
+            return;
         }
+
+        $name        = trim($_POST['name']        ?? '');
+        $duration    = (int)($_POST['duration']   ?? 0);
+        $capacity    = (int)($_POST['capacity']   ?? 0);
+        $description = trim($_POST['description'] ?? '');
+
+        // Validate đơn giản
+        if ($name === '') {
+            $this->setFlash('error', 'Vui lòng nhập tên lớp.');
+            $this->redirect('?c=classes&a=create');
+            return;
+        }
+
+        if ($duration <= 0) {
+            $this->setFlash('error', 'Thời lượng phải > 0 phút.');
+            $this->redirect('?c=classes&a=create');
+            return;
+        }
+
+        if ($capacity <= 0) {
+            $this->setFlash('error', 'Sĩ số mặc định phải > 0.');
+            $this->redirect('?c=classes&a=create');
+            return;
+        }
+
+        try {
+            $sql = "INSERT INTO lop (TENLOP, THOILUONG, SISO_MACDINH, MOTA)
+                    VALUES (:tenlop, :thoiluong, :siso, :mota)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                ':tenlop'    => $name,
+                ':thoiluong' => $duration,
+                ':siso'      => $capacity,
+                ':mota'      => $description !== '' ? $description : null,
+            ]);
+
+            $this->setFlash('success', 'Thêm lớp học mới thành công.');
+        } catch (PDOException $e) {
+            $this->setFlash('error', 'Lỗi khi thêm lớp: ' . $e->getMessage());
+        }
+
+        $this->redirect('?c=classes&a=index');
     }
 
-    public function edit() {
-        $id = $_GET['id'] ?? 0;
-        $class = $this->class->find($id);
-        
+    // ======================= FORM SỬA LỚP =======================
+    public function edit()
+    {
+        $id = (int)($_GET['id'] ?? 0);
+        if ($id <= 0) {
+            $this->setFlash('error', 'Không tìm thấy mã lớp.');
+            $this->redirect('?c=classes&a=index');
+            return;
+        }
+
+        $stmt = $this->db->prepare("
+            SELECT MALOP, TENLOP, THOILUONG, SISO_MACDINH, MOTA
+            FROM lop
+            WHERE MALOP = :id
+        ");
+        $stmt->execute([':id' => $id]);
+        $class = $stmt->fetch(PDO::FETCH_OBJ);
+
         if (!$class) {
-            $_SESSION['error'] = 'Không tìm thấy lớp học!';
-            header('Location: ?c=classes&a=index');
-            exit();
+            $this->setFlash('error', 'Lớp học không tồn tại.');
+            $this->redirect('?c=classes&a=index');
+            return;
         }
 
-        include __DIR__ . '/../views/classes/edit.php';
+        $this->view('classes/edit', [
+            'class' => $class,
+        ]);
     }
 
-    public function update() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $id = $_POST['id'];
-            
-            $data = [
-                'tenlop' => $_POST['tenlop'],
-                'thoiluong' => $_POST['thoiluong'],
-                'siso' => $_POST['siso'],
-                'mota' => $_POST['mota']
-            ];
+    // ======================= CẬP NHẬT LỚP =======================
+    public function update()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('?c=classes&a=index');
+            return;
+        }
 
-            if ($this->class->update($id, $data)) {
-                $_SESSION['success'] = 'Cập nhật lớp học thành công!';
-                header('Location: ?c=classes&a=index');
-                exit();
+        $id          = (int)($_POST['id']        ?? 0);
+        $name        = trim($_POST['name']       ?? '');
+        $duration    = (int)($_POST['duration']  ?? 0);
+        $capacity    = (int)($_POST['capacity']  ?? 0);
+        $description = trim($_POST['description'] ?? '');
+
+        if ($id <= 0) {
+            $this->setFlash('error', 'Mã lớp không hợp lệ.');
+            $this->redirect('?c=classes&a=index');
+            return;
+        }
+
+        if ($name === '') {
+            $this->setFlash('error', 'Vui lòng nhập tên lớp.');
+            $this->redirect('?c=classes&a=edit&id=' . $id);
+            return;
+        }
+
+        if ($duration <= 0) {
+            $this->setFlash('error', 'Thời lượng phải > 0 phút.');
+            $this->redirect('?c=classes&a=edit&id=' . $id);
+            return;
+        }
+
+        if ($capacity <= 0) {
+            $this->setFlash('error', 'Sĩ số mặc định phải > 0.');
+            $this->redirect('?c=classes&a=edit&id=' . $id);
+            return;
+        }
+
+        try {
+            $sql = "UPDATE lop
+                    SET TENLOP = :tenlop,
+                        THOILUONG = :thoiluong,
+                        SISO_MACDINH = :siso,
+                        MOTA = :mota
+                    WHERE MALOP = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([
+                ':tenlop'    => $name,
+                ':thoiluong' => $duration,
+                ':siso'      => $capacity,
+                ':mota'      => $description !== '' ? $description : null,
+                ':id'        => $id,
+            ]);
+
+            $this->setFlash('success', 'Cập nhật lớp học thành công.');
+        } catch (PDOException $e) {
+            $this->setFlash('error', 'Lỗi khi cập nhật lớp: ' . $e->getMessage());
+        }
+
+        $this->redirect('?c=classes&a=index');
+    }
+
+    // ======================= XOÁ LỚP =======================
+    public function delete()
+    {
+        $id = (int)($_GET['id'] ?? 0);
+        if ($id <= 0) {
+            $this->redirect('?c=classes&a=index');
+            return;
+        }
+
+        try {
+            $stmt = $this->db->prepare("DELETE FROM lop WHERE MALOP = :id");
+            $stmt->execute([':id' => $id]);
+
+            if ($stmt->rowCount() > 0) {
+                $this->setFlash('success', 'Xóa lớp học thành công.');
             } else {
-                $error = 'Cập nhật lớp học thất bại!';
-                $class = $this->class->find($id);
-                include __DIR__ . '/../views/classes/edit.php';
+                $this->setFlash('error', 'Không thể xóa lớp (có thể lớp không tồn tại hoặc đang được sử dụng trong buổi lớp / đăng ký).');
             }
+        } catch (PDOException $e) {
+            $this->setFlash('error', 'Lỗi khi xóa lớp: ' . $e->getMessage());
         }
-    }
 
-    public function delete() {
-        $id = $_GET['id'] ?? 0;
-        
-        if ($this->class->delete($id)) {
-            $_SESSION['success'] = 'Xóa lớp học thành công!';
-        } else {
-            $_SESSION['error'] = 'Xóa lớp học thất bại!';
-        }
-        
-        header('Location: ?c=classes&a=index');
-        exit();
+        $this->redirect('?c=classes&a=index');
     }
 }
-?>

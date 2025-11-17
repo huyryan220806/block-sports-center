@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 17, 2025 at 02:58 PM
+-- Generation Time: Nov 16, 2025 at 03:33 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -28,14 +28,14 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `buoilop` (
-  `MABUOI` int(10) UNSIGNED NOT NULL,
-  `MALOP` int(10) UNSIGNED NOT NULL,
-  `MAPHONG` int(10) UNSIGNED NOT NULL,
-  `MAHLV` int(10) UNSIGNED NOT NULL,
+  `MABUOI` int(11) NOT NULL,
+  `MALOP` int(11) NOT NULL,
+  `MAPHONG` int(11) NOT NULL,
+  `MAHLV` int(11) NOT NULL,
   `BATDAU` datetime NOT NULL,
   `KETTHUC` datetime NOT NULL,
-  `SISO` int(10) UNSIGNED NOT NULL,
-  `TRANGTHAI` enum('SCHEDULED','ONGOING','DONE','CANCELLED') NOT NULL DEFAULT 'SCHEDULED'
+  `SISO` int(11) NOT NULL,
+  `TRANGTHAI` enum('SCHEDULED','ONGOING','DONE','CANCELLED') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -43,9 +43,12 @@ CREATE TABLE `buoilop` (
 --
 
 INSERT INTO `buoilop` (`MABUOI`, `MALOP`, `MAPHONG`, `MAHLV`, `BATDAU`, `KETTHUC`, `SISO`, `TRANGTHAI`) VALUES
-(1, 1, 4, 4, '2025-01-05 18:00:00', '2025-01-05 19:00:00', 20, 'SCHEDULED'),
-(2, 2, 1, 3, '2025-01-06 19:00:00', '2025-01-06 19:45:00', 18, 'SCHEDULED'),
-(3, 3, 3, 3, '2025-01-07 07:00:00', '2025-01-07 08:00:00', 15, 'SCHEDULED');
+(1, 1, 4, 4, '2025-11-20 08:00:00', '2025-11-20 09:00:00', 20, 'SCHEDULED'),
+(2, 1, 4, 4, '2025-11-21 18:00:00', '2025-11-21 19:00:00', 18, 'SCHEDULED'),
+(3, 2, 1, 3, '2025-11-20 19:00:00', '2025-11-20 19:45:00', 18, 'SCHEDULED'),
+(4, 3, 3, 5, '2025-11-22 07:00:00', '2025-11-22 08:00:00', 12, 'SCHEDULED'),
+(5, 2, 2, 3, '2025-11-15 19:00:00', '2025-11-15 19:45:00', 16, 'DONE'),
+(6, 1, 5, 4, '2025-11-10 06:00:00', '2025-11-10 07:00:00', 15, 'DONE');
 
 -- --------------------------------------------------------
 
@@ -54,9 +57,9 @@ INSERT INTO `buoilop` (`MABUOI`, `MALOP`, `MAPHONG`, `MAHLV`, `BATDAU`, `KETTHUC
 --
 
 CREATE TABLE `checkin` (
-  `MACI` int(10) UNSIGNED NOT NULL,
-  `MAHV` int(10) UNSIGNED NOT NULL,
-  `THOIGIAN` datetime NOT NULL DEFAULT current_timestamp()
+  `MACI` int(11) NOT NULL,
+  `MAHV` int(11) NOT NULL,
+  `THOIGIAN` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -64,9 +67,13 @@ CREATE TABLE `checkin` (
 --
 
 INSERT INTO `checkin` (`MACI`, `MAHV`, `THOIGIAN`) VALUES
-(1, 1, '2025-01-03 17:05:00'),
-(2, 2, '2025-01-03 18:10:00'),
-(3, 1, '2025-01-04 07:55:00');
+(1, 1, '2025-11-01 09:50:00'),
+(2, 1, '2025-11-03 17:55:00'),
+(3, 2, '2025-11-05 09:10:00'),
+(4, 3, '2024-09-10 18:10:00'),
+(5, 6, '2025-03-25 07:05:00'),
+(6, 9, '2025-10-21 18:10:00'),
+(7, 10, '2025-04-15 19:00:00');
 
 -- --------------------------------------------------------
 
@@ -75,11 +82,11 @@ INSERT INTO `checkin` (`MACI`, `MAHV`, `THOIGIAN`) VALUES
 --
 
 CREATE TABLE `dangky_lop` (
-  `MADK` int(10) UNSIGNED NOT NULL,
-  `MABUOI` int(10) UNSIGNED NOT NULL,
-  `MAHV` int(10) UNSIGNED NOT NULL,
-  `NGAYDK` datetime NOT NULL DEFAULT current_timestamp(),
-  `TRANGTHAI` enum('BOOKED','ATTENDED','NO_SHOW','CANCELLED') NOT NULL DEFAULT 'BOOKED'
+  `MADK` int(11) NOT NULL,
+  `MABUOI` int(11) NOT NULL,
+  `MAHV` int(11) NOT NULL,
+  `NGAYDK` datetime NOT NULL,
+  `TRANGTHAI` enum('BOOKED','ATTENDED','NO_SHOW','CANCELLED') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -87,9 +94,14 @@ CREATE TABLE `dangky_lop` (
 --
 
 INSERT INTO `dangky_lop` (`MADK`, `MABUOI`, `MAHV`, `NGAYDK`, `TRANGTHAI`) VALUES
-(1, 1, 1, '2024-12-25 10:00:00', 'BOOKED'),
-(2, 1, 2, '2024-12-26 11:00:00', 'BOOKED'),
-(3, 2, 1, '2024-12-28 09:00:00', 'BOOKED');
+(1, 1, 1, '2025-11-18 09:00:00', 'BOOKED'),
+(2, 1, 2, '2025-11-18 10:00:00', 'BOOKED'),
+(3, 1, 6, '2025-11-19 08:30:00', 'BOOKED'),
+(4, 3, 1, '2025-11-19 20:00:00', 'BOOKED'),
+(5, 3, 3, '2025-11-19 20:05:00', 'BOOKED'),
+(6, 4, 2, '2025-11-19 07:30:00', 'BOOKED'),
+(7, 5, 5, '2025-11-13 18:00:00', 'ATTENDED'),
+(8, 6, 4, '2025-11-08 06:30:00', 'ATTENDED');
 
 -- --------------------------------------------------------
 
@@ -98,13 +110,13 @@ INSERT INTO `dangky_lop` (`MADK`, `MABUOI`, `MAHV`, `NGAYDK`, `TRANGTHAI`) VALUE
 --
 
 CREATE TABLE `datphong` (
-  `MADP` int(10) UNSIGNED NOT NULL,
-  `MAPHONG` int(10) UNSIGNED NOT NULL,
-  `MAHV` int(10) UNSIGNED DEFAULT NULL,
+  `MADP` int(11) NOT NULL,
+  `MAPHONG` int(11) NOT NULL,
+  `MAHV` int(11) DEFAULT NULL,
   `BATDAU` datetime NOT NULL,
   `KETTHUC` datetime NOT NULL,
-  `MUCTIEU` enum('TAP_TU_DO','CLB','GIU_CHO_SU_KIEN','KHAC') NOT NULL DEFAULT 'TAP_TU_DO',
-  `TRANGTHAI` enum('PENDING','CONFIRMED','CANCELLED','DONE') NOT NULL DEFAULT 'PENDING'
+  `MUCTIEU` enum('TAP_TU_DO','CLB','GIU_CHO_SU_KIEN') NOT NULL,
+  `TRANGTHAI` enum('PENDING','CONFIRMED','CANCELLED','DONE') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -112,8 +124,10 @@ CREATE TABLE `datphong` (
 --
 
 INSERT INTO `datphong` (`MADP`, `MAPHONG`, `MAHV`, `BATDAU`, `KETTHUC`, `MUCTIEU`, `TRANGTHAI`) VALUES
-(1, 1, 1, '2025-01-03 17:00:00', '2025-01-03 18:30:00', 'TAP_TU_DO', 'CONFIRMED'),
-(2, 3, 2, '2025-01-04 08:00:00', '2025-01-04 09:30:00', 'GIU_CHO_SU_KIEN', 'PENDING');
+(1, 1, 1, '2025-11-22 07:00:00', '2025-11-22 08:30:00', 'TAP_TU_DO', 'CONFIRMED'),
+(2, 3, 2, '2025-11-22 17:00:00', '2025-11-22 18:00:00', 'CLB', 'PENDING'),
+(3, 6, 9, '2025-11-23 19:00:00', '2025-11-23 20:30:00', 'GIU_CHO_SU_KIEN', 'CONFIRMED'),
+(4, 2, 6, '2025-11-20 06:00:00', '2025-11-20 07:00:00', 'TAP_TU_DO', 'DONE');
 
 -- --------------------------------------------------------
 
@@ -122,12 +136,12 @@ INSERT INTO `datphong` (`MADP`, `MAPHONG`, `MAHV`, `BATDAU`, `KETTHUC`, `MUCTIEU
 --
 
 CREATE TABLE `donghoadon` (
-  `MADONG` int(10) UNSIGNED NOT NULL,
-  `MAHDON` int(10) UNSIGNED NOT NULL,
+  `MADONG` int(11) NOT NULL,
+  `MAHDON` int(11) NOT NULL,
   `LOAIHANG` enum('MEMBERSHIP','CLASS','PT','BOOKING','LOCKER','OTHER') NOT NULL,
-  `REF_ID` int(10) UNSIGNED DEFAULT NULL,
-  `MOTA` varchar(255) DEFAULT NULL,
-  `SOLUONG` int(10) UNSIGNED NOT NULL DEFAULT 1,
+  `REF_ID` bigint(20) NOT NULL,
+  `MOTA` varchar(255) NOT NULL,
+  `SOLUONG` int(11) NOT NULL,
   `DONGIA` decimal(12,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -136,9 +150,12 @@ CREATE TABLE `donghoadon` (
 --
 
 INSERT INTO `donghoadon` (`MADONG`, `MAHDON`, `LOAIHANG`, `REF_ID`, `MOTA`, `SOLUONG`, `DONGIA`) VALUES
-(1, 1, 'MEMBERSHIP', 1, 'Hợp đồng 3 tháng cho Nguyễn Văn A', 1, 1300000.00),
-(2, 1, 'LOCKER', 1, 'Thuê tủ G1-01 trong 1 tháng', 1, 100000.00),
-(3, 2, 'MEMBERSHIP', 2, 'Hợp đồng 1 tháng cho Trần Thị B', 1, 500000.00);
+(1, 1, 'MEMBERSHIP', 1, 'Gia hạn gói VIP 12 tháng cho Nguyễn Anh Tuấn', 1, 4800000.00),
+(2, 1, 'PT', 1, 'Gói 5 buổi PT cho Nguyễn Anh Tuấn', 5, 250000.00),
+(3, 2, 'MEMBERSHIP', 2, 'Mua gói STANDARD 3 tháng cho Trần Thị Mai', 1, 1300000.00),
+(4, 3, 'MEMBERSHIP', 6, 'Gói STANDARD 3 tháng cho Võ Thanh Thảo', 1, 1300000.00),
+(5, 3, 'CLASS', 5, 'Tham gia lớp HIIT Đốt Mỡ (5 buổi)', 5, 80000.00),
+(6, 4, 'MEMBERSHIP', 8, 'Gia hạn gói VIP 12 tháng cho Bùi Đức Long', 1, 4800000.00);
 
 -- --------------------------------------------------------
 
@@ -147,7 +164,7 @@ INSERT INTO `donghoadon` (`MADONG`, `MAHDON`, `LOAIHANG`, `REF_ID`, `MOTA`, `SOL
 --
 
 CREATE TABLE `hlv` (
-  `MAHLV` int(10) UNSIGNED NOT NULL,
+  `MAHLV` int(11) NOT NULL,
   `MOTA` text DEFAULT NULL,
   `PHI_GIO` decimal(12,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -157,8 +174,9 @@ CREATE TABLE `hlv` (
 --
 
 INSERT INTO `hlv` (`MAHLV`, `MOTA`, `PHI_GIO`) VALUES
-(3, 'HLV Gym chuyên tăng cơ, giảm mỡ', 200000.00),
-(4, 'HLV Yoga, thiền, giãn cơ', 250000.00);
+(3, 'HLV Gym, chuyên tăng cơ, giảm mỡ', 250000.00),
+(4, 'HLV Yoga, chuyên Hatha & Gentle Yoga', 220000.00),
+(5, 'HLV Bơi, kèm người lớn & trẻ em', 200000.00);
 
 -- --------------------------------------------------------
 
@@ -167,11 +185,11 @@ INSERT INTO `hlv` (`MAHLV`, `MOTA`, `PHI_GIO`) VALUES
 --
 
 CREATE TABLE `hoadon` (
-  `MAHDON` int(10) UNSIGNED NOT NULL,
-  `MAHV` int(10) UNSIGNED NOT NULL,
-  `MAKM` int(10) UNSIGNED DEFAULT NULL,
-  `NGAYLAP` datetime NOT NULL DEFAULT current_timestamp(),
-  `TRANGTHAI` enum('DRAFT','ISSUED','PAID','PARTIAL','VOID') NOT NULL DEFAULT 'DRAFT'
+  `MAHDON` int(11) NOT NULL,
+  `MAHV` int(11) NOT NULL,
+  `MAKM` int(11) DEFAULT NULL,
+  `NGAYLAP` datetime NOT NULL,
+  `TRANGTHAI` enum('DRAFT','ISSUED','PAID','PARTIAL','VOID') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -179,8 +197,10 @@ CREATE TABLE `hoadon` (
 --
 
 INSERT INTO `hoadon` (`MAHDON`, `MAHV`, `MAKM`, `NGAYLAP`, `TRANGTHAI`) VALUES
-(1, 1, 1, '2024-12-30 09:00:00', 'PAID'),
-(2, 2, NULL, '2025-01-02 14:30:00', 'ISSUED');
+(1, 1, 1, '2025-11-01 10:00:00', 'PAID'),
+(2, 2, NULL, '2025-11-05 09:30:00', 'ISSUED'),
+(3, 6, 2, '2025-11-10 19:15:00', 'PARTIAL'),
+(4, 9, NULL, '2025-10-20 18:00:00', 'PAID');
 
 -- --------------------------------------------------------
 
@@ -189,9 +209,9 @@ INSERT INTO `hoadon` (`MAHDON`, `MAHV`, `MAKM`, `NGAYLAP`, `TRANGTHAI`) VALUES
 --
 
 CREATE TABLE `hoivien` (
-  `MAHV` int(10) UNSIGNED NOT NULL,
+  `MAHV` int(11) NOT NULL,
   `HOVATEN` varchar(100) NOT NULL,
-  `GIOITINH` enum('Nam','Nữ','Khác') NOT NULL DEFAULT 'Nam',
+  `GIOITINH` enum('NAM','NU','KHAC') NOT NULL,
   `NGAYSINH` date NOT NULL,
   `SDT` varchar(20) NOT NULL,
   `EMAIL` varchar(100) DEFAULT NULL,
@@ -205,9 +225,16 @@ CREATE TABLE `hoivien` (
 --
 
 INSERT INTO `hoivien` (`MAHV`, `HOVATEN`, `GIOITINH`, `NGAYSINH`, `SDT`, `EMAIL`, `DIACHI`, `TRANGTHAI`, `NGAYTAO`) VALUES
-(1, 'Nguyễn Văn A', 'Nam', '2000-01-15', '0901111111', 'a@example.com', 'Biên Hòa, Đồng Nai', 'ACTIVE', '2025-11-17 20:56:39'),
-(2, 'Trần Thị B', 'Nữ', '1999-05-20', '0902222222', 'b@example.com', 'Thủ Đức, TP.HCM', 'ACTIVE', '2025-11-17 20:56:39'),
-(3, 'Lê Minh C', 'Nam', '2001-09-10', '0903333333', NULL, 'Long Thành, Đồng Nai', 'SUSPENDED', '2025-11-17 20:56:39');
+(1, 'Nguyễn Anh Tuấn', 'NAM', '1998-05-12', '0912000001', 'tuan.nguyen@example.com', 'Biên Hòa, Đồng Nai', 'ACTIVE', '2025-01-05 09:15:00'),
+(2, 'Trần Thị Mai', 'NU', '2000-08-22', '0912000002', 'mai.tran@example.com', 'Biên Hòa, Đồng Nai', 'ACTIVE', '2025-02-10 10:00:00'),
+(3, 'Lê Quốc Huy', 'NAM', '1995-11-03', '0912000003', 'huy.le@example.com', 'TP. HCM', 'ACTIVE', '2024-09-01 18:30:00'),
+(4, 'Phạm Ngọc Bích', 'NU', '1999-02-14', '0912000004', 'bich.pham@example.com', 'Long Thành, Đồng Nai', 'ACTIVE', '2025-03-01 08:45:00'),
+(5, 'Đỗ Minh Khoa', 'NAM', '1997-07-19', '0912000005', 'khoa.do@example.com', 'Biên Hòa, Đồng Nai', 'SUSPENDED', '2024-10-10 19:00:00'),
+(6, 'Võ Thanh Thảo', 'NU', '2001-01-30', '0912000006', 'thao.vo@example.com', 'Vũng Tàu', 'ACTIVE', '2025-03-20 07:20:00'),
+(7, 'Huỳnh Gia Bảo', 'NAM', '2003-09-09', '0912000007', 'bao.huynh@example.com', 'Biên Hòa, Đồng Nai', 'ACTIVE', '2025-04-02 12:10:00'),
+(8, 'Ngô Hồng Nhung', 'NU', '1996-06-05', '0912000008', 'nhung.ngo@example.com', 'TP. HCM', 'INACTIVE', '2024-07-15 11:00:00'),
+(9, 'Bùi Đức Long', 'NAM', '1994-03-27', '0912000009', 'long.bui@example.com', 'Biên Hòa, Đồng Nai', 'ACTIVE', '2025-02-18 17:05:00'),
+(10, 'Phan Mỹ Linh', 'NU', '2002-12-11', '0912000010', 'linh.phan@example.com', 'Trảng Bom, Đồng Nai', 'ACTIVE', '2025-04-10 09:40:00');
 
 -- --------------------------------------------------------
 
@@ -216,12 +243,12 @@ INSERT INTO `hoivien` (`MAHV`, `HOVATEN`, `GIOITINH`, `NGAYSINH`, `SDT`, `EMAIL`
 --
 
 CREATE TABLE `hopdong` (
-  `MAHD` int(10) UNSIGNED NOT NULL,
-  `MAHV` int(10) UNSIGNED NOT NULL,
-  `MALG` int(10) UNSIGNED NOT NULL,
+  `MAHD` int(11) NOT NULL,
+  `MAHV` int(11) NOT NULL,
+  `MALG` int(11) NOT NULL,
   `NGAYBD` date NOT NULL,
   `NGAYKT` date NOT NULL,
-  `TRANGTHAI` enum('ACTIVE','PAUSED','EXPIRED','CANCELLED') NOT NULL DEFAULT 'ACTIVE'
+  `TRANGTHAI` enum('ACTIVE','PAUSED','EXPIRED','CANCELLED') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -229,9 +256,15 @@ CREATE TABLE `hopdong` (
 --
 
 INSERT INTO `hopdong` (`MAHD`, `MAHV`, `MALG`, `NGAYBD`, `NGAYKT`, `TRANGTHAI`) VALUES
-(1, 1, 2, '2025-01-01', '2025-03-31', 'ACTIVE'),
-(2, 2, 1, '2025-01-10', '2025-02-09', 'ACTIVE'),
-(3, 3, 3, '2024-01-01', '2024-12-31', 'EXPIRED');
+(1, 1, 3, '2025-01-05', '2025-12-31', 'ACTIVE'),
+(2, 2, 2, '2025-03-01', '2025-05-30', 'ACTIVE'),
+(3, 3, 1, '2024-09-01', '2024-09-30', 'EXPIRED'),
+(4, 4, 2, '2025-02-15', '2025-05-15', 'PAUSED'),
+(5, 5, 1, '2024-10-10', '2024-11-09', 'EXPIRED'),
+(6, 6, 2, '2025-03-20', '2025-06-18', 'ACTIVE'),
+(7, 7, 1, '2025-04-02', '2025-05-01', 'ACTIVE'),
+(8, 9, 3, '2025-02-18', '2026-02-17', 'ACTIVE'),
+(9, 10, 1, '2025-04-10', '2025-05-09', 'ACTIVE');
 
 -- --------------------------------------------------------
 
@@ -240,9 +273,9 @@ INSERT INTO `hopdong` (`MAHD`, `MAHV`, `MALG`, `NGAYBD`, `NGAYKT`, `TRANGTHAI`) 
 --
 
 CREATE TABLE `khu` (
-  `MAKHU` int(10) UNSIGNED NOT NULL,
+  `MAKHU` int(11) NOT NULL,
   `TENKHU` varchar(100) NOT NULL,
-  `LOAIKHU` enum('GYM','POOL','STUDIO','COURT','OTHER') NOT NULL
+  `LOAIKHU` enum('GYM','POOL','STUDIO','COURT') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -251,8 +284,9 @@ CREATE TABLE `khu` (
 
 INSERT INTO `khu` (`MAKHU`, `TENKHU`, `LOAIKHU`) VALUES
 (1, 'Khu Gym Tổng Hợp', 'GYM'),
-(2, 'Khu Hồ Bơi Ngoài Trời', 'POOL'),
-(3, 'Phòng Yoga Tầng 2', 'STUDIO');
+(2, 'Khu Hồ Bơi', 'POOL'),
+(3, 'Studio Yoga & GroupX', 'STUDIO'),
+(4, 'Sân Cầu Lông', 'COURT');
 
 -- --------------------------------------------------------
 
@@ -261,7 +295,7 @@ INSERT INTO `khu` (`MAKHU`, `TENKHU`, `LOAIKHU`) VALUES
 --
 
 CREATE TABLE `khuyenmai` (
-  `MAKM` int(10) UNSIGNED NOT NULL,
+  `MAKM` int(11) NOT NULL,
   `CODE` varchar(50) NOT NULL,
   `LOAI` enum('PERCENT','AMOUNT') NOT NULL,
   `GIATRI` decimal(12,2) NOT NULL,
@@ -275,8 +309,8 @@ CREATE TABLE `khuyenmai` (
 --
 
 INSERT INTO `khuyenmai` (`MAKM`, `CODE`, `LOAI`, `GIATRI`, `NGAYBD`, `NGAYKT`, `MOTA`) VALUES
-(1, 'NEWYEAR10', 'PERCENT', 10.00, '2024-12-25', '2025-01-10', 'Giảm 10% dịp năm mới'),
-(2, 'WELCOME100', 'AMOUNT', 100000.00, '2024-11-01', '2025-03-31', 'Giảm 100k cho hợp đồng đầu tiên');
+(1, 'WELCOME10', 'PERCENT', 10.00, '2025-01-01', '2025-12-31', 'Giảm 10% cho hội viên mới'),
+(2, 'VIP200K', 'AMOUNT', 200000.00, '2025-02-01', '2025-12-31', 'Giảm 200k cho gói VIP 12 tháng');
 
 -- --------------------------------------------------------
 
@@ -285,9 +319,9 @@ INSERT INTO `khuyenmai` (`MAKM`, `CODE`, `LOAI`, `GIATRI`, `NGAYBD`, `NGAYKT`, `
 --
 
 CREATE TABLE `loaigoi` (
-  `MALG` int(10) UNSIGNED NOT NULL,
+  `MALG` int(11) NOT NULL,
   `TENLG` varchar(100) NOT NULL,
-  `THOIHAN` int(10) UNSIGNED NOT NULL,
+  `THOIHAN` int(11) NOT NULL,
   `GIA` decimal(12,2) NOT NULL,
   `CAPDO` enum('BASIC','STANDARD','VIP') NOT NULL,
   `MOTA` text DEFAULT NULL
@@ -298,9 +332,9 @@ CREATE TABLE `loaigoi` (
 --
 
 INSERT INTO `loaigoi` (`MALG`, `TENLG`, `THOIHAN`, `GIA`, `CAPDO`, `MOTA`) VALUES
-(1, 'Gói 1 tháng', 30, 500000.00, 'BASIC', 'Gói cơ bản 1 tháng'),
-(2, 'Gói 3 tháng', 90, 1300000.00, 'STANDARD', 'Tiết kiệm hơn khi tập 3 tháng'),
-(3, 'Gói 12 tháng', 365, 4500000.00, 'VIP', 'Gói VIP 12 tháng full dịch vụ');
+(1, 'Gói 1 tháng BASIC', 30, 500000.00, 'BASIC', 'Sử dụng phòng gym + khu cardio giờ hành chính'),
+(2, 'Gói 3 tháng STANDARD', 90, 1300000.00, 'STANDARD', 'Gym + lớp groupX cơ bản, sử dụng cả ngày'),
+(3, 'Gói 12 tháng VIP', 365, 4800000.00, 'VIP', 'Toàn bộ tiện ích, tặng kèm 5 buổi PT');
 
 -- --------------------------------------------------------
 
@@ -309,8 +343,8 @@ INSERT INTO `loaigoi` (`MALG`, `TENLG`, `THOIHAN`, `GIA`, `CAPDO`, `MOTA`) VALUE
 --
 
 CREATE TABLE `locker` (
-  `MATU` int(10) UNSIGNED NOT NULL,
-  `MAPHONG` int(10) UNSIGNED NOT NULL,
+  `MATU` int(11) NOT NULL,
+  `MAPHONG` int(11) NOT NULL,
   `KITU` varchar(20) NOT NULL,
   `HOATDONG` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -322,7 +356,10 @@ CREATE TABLE `locker` (
 INSERT INTO `locker` (`MATU`, `MAPHONG`, `KITU`, `HOATDONG`) VALUES
 (1, 1, 'G1-01', 1),
 (2, 1, 'G1-02', 1),
-(3, 3, 'P-01', 1);
+(3, 2, 'G2-01', 1),
+(4, 3, 'P-01', 1),
+(5, 3, 'P-02', 1),
+(6, 4, 'Y-01', 1);
 
 -- --------------------------------------------------------
 
@@ -331,10 +368,10 @@ INSERT INTO `locker` (`MATU`, `MAPHONG`, `KITU`, `HOATDONG`) VALUES
 --
 
 CREATE TABLE `lop` (
-  `MALOP` int(10) UNSIGNED NOT NULL,
+  `MALOP` int(11) NOT NULL,
   `TENLOP` varchar(100) NOT NULL,
-  `THOILUONG` int(10) UNSIGNED NOT NULL,
-  `SISO_MACDINH` int(10) UNSIGNED NOT NULL,
+  `THOILUONG` int(11) NOT NULL,
+  `SISO_MACDINH` int(11) NOT NULL,
   `MOTA` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -343,9 +380,10 @@ CREATE TABLE `lop` (
 --
 
 INSERT INTO `lop` (`MALOP`, `TENLOP`, `THOILUONG`, `SISO_MACDINH`, `MOTA`) VALUES
-(1, 'Yoga Cơ Bản', 60, 20, 'Lớp yoga cho người mới bắt đầu'),
-(2, 'HIIT Giảm Mỡ', 45, 18, 'Cardio cường độ cao'),
-(3, 'Bơi Người Lớn', 60, 15, 'Lớp bơi cho người lớn');
+(1, 'Yoga Cơ Bản', 60, 20, 'Lớp yoga dành cho người mới bắt đầu'),
+(2, 'HIIT Đốt Mỡ', 45, 18, 'Lớp cường độ cao, tiêu hao calo nhanh'),
+(3, 'Bơi Người Lớn Cơ Bản', 60, 15, 'Dạy bơi cho người lớn sợ nước'),
+(4, 'BodyPump Tạ Nhóm', 50, 22, 'Luyện tập với tạ theo nhóm');
 
 -- --------------------------------------------------------
 
@@ -354,11 +392,11 @@ INSERT INTO `lop` (`MALOP`, `TENLOP`, `THOILUONG`, `SISO_MACDINH`, `MOTA`) VALUE
 --
 
 CREATE TABLE `nhanvien` (
-  `MANV` int(10) UNSIGNED NOT NULL,
+  `MANV` int(11) NOT NULL,
   `HOTEN` varchar(100) NOT NULL,
   `SDT` varchar(20) NOT NULL,
   `EMAIL` varchar(100) NOT NULL,
-  `VAITRO` enum('ADMIN','FRONTDESK','MAINTENANCE','OTHER') NOT NULL DEFAULT 'OTHER',
+  `VAITRO` enum('ADMIN','FRONTDESK','MAINTENANCE','OTHER') NOT NULL,
   `NGAYVAOLAM` date NOT NULL,
   `TRANGTHAI` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -368,10 +406,11 @@ CREATE TABLE `nhanvien` (
 --
 
 INSERT INTO `nhanvien` (`MANV`, `HOTEN`, `SDT`, `EMAIL`, `VAITRO`, `NGAYVAOLAM`, `TRANGTHAI`) VALUES
-(1, 'Phạm Quốc D', '0904444444', 'nv.admin@example.com', 'ADMIN', '2024-01-02', 1),
-(2, 'Ngô Thị E', '0905555555', 'nv.frontdesk@example.com', 'FRONTDESK', '2024-03-15', 1),
-(3, 'Đỗ Văn F', '0906666666', 'hlv.gym@example.com', 'OTHER', '2023-11-01', 1),
-(4, 'Lý Thu G', '0907777777', 'hlv.yoga@example.com', 'OTHER', '2023-10-10', 1);
+(1, 'Nguyễn Văn Quản Lý', '0901000001', 'quanly@blocksc.vn', 'ADMIN', '2024-01-10', 1),
+(2, 'Trần Thị Lễ Tân', '0901000002', 'letan@blocksc.vn', 'FRONTDESK', '2024-02-01', 1),
+(3, 'Lê Minh Trainer Gym', '0901000003', 'trainer.gym@blocksc.vn', 'OTHER', '2024-03-05', 1),
+(4, 'Phạm Lan Yoga', '0901000004', 'trainer.yoga@blocksc.vn', 'OTHER', '2024-03-05', 1),
+(5, 'Đỗ Hải Bơi', '0901000005', 'trainer.swim@blocksc.vn', 'OTHER', '2024-04-01', 1);
 
 -- --------------------------------------------------------
 
@@ -380,10 +419,10 @@ INSERT INTO `nhanvien` (`MANV`, `HOTEN`, `SDT`, `EMAIL`, `VAITRO`, `NGAYVAOLAM`,
 --
 
 CREATE TABLE `phong` (
-  `MAPHONG` int(10) UNSIGNED NOT NULL,
-  `MAKHU` int(10) UNSIGNED NOT NULL,
+  `MAPHONG` int(11) NOT NULL,
+  `MAKHU` int(11) NOT NULL,
   `TENPHONG` varchar(100) NOT NULL,
-  `SUCCHUA` int(10) UNSIGNED NOT NULL,
+  `SUCCHUA` int(11) NOT NULL,
   `GHICHU` text DEFAULT NULL,
   `HOATDONG` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -393,10 +432,12 @@ CREATE TABLE `phong` (
 --
 
 INSERT INTO `phong` (`MAPHONG`, `MAKHU`, `TENPHONG`, `SUCCHUA`, `GHICHU`, `HOATDONG`) VALUES
-(1, 1, 'Phòng Gym 1', 40, 'Máy chạy bộ, tạ tự do', 1),
-(2, 1, 'Phòng Gym 2', 30, 'Máy kháng lực', 1),
-(3, 2, 'Hồ bơi 25m', 60, 'Có khu trẻ em', 1),
-(4, 3, 'Phòng Yoga 1', 25, NULL, 1);
+(1, 1, 'Phòng Gym 1', 40, 'Khu máy chạy & tạ tự do', 1),
+(2, 1, 'Phòng Gym 2', 30, 'Máy cardio & khu functional', 1),
+(3, 2, 'Hồ Bơi 4 làn', 60, 'Hồ bơi nước ấm', 1),
+(4, 3, 'Studio A', 25, 'Phòng Yoga, Dance', 1),
+(5, 3, 'Studio B', 20, 'Class cường độ trung bình', 1),
+(6, 4, 'Sân Cầu Lông 1', 8, 'Sân cầu lông trong nhà', 1);
 
 -- --------------------------------------------------------
 
@@ -405,13 +446,13 @@ INSERT INTO `phong` (`MAPHONG`, `MAKHU`, `TENPHONG`, `SUCCHUA`, `GHICHU`, `HOATD
 --
 
 CREATE TABLE `pt_session` (
-  `MAPT` int(10) UNSIGNED NOT NULL,
-  `MAHLV` int(10) UNSIGNED NOT NULL,
-  `MAHV` int(10) UNSIGNED NOT NULL,
-  `MAPHONG` int(10) UNSIGNED NOT NULL,
+  `MAPT` int(11) NOT NULL,
+  `MAHLV` int(11) NOT NULL,
+  `MAHV` int(11) NOT NULL,
+  `MAPHONG` int(11) NOT NULL,
   `BATDAU` datetime NOT NULL,
   `KETTHUC` datetime NOT NULL,
-  `TRANGTHAI` enum('SCHEDULED','DONE','CANCELLED','NO_SHOW') NOT NULL DEFAULT 'SCHEDULED'
+  `TRANGTHAI` enum('SCHEDULED','DONE','CANCELLED','NO_SHOW') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -419,8 +460,10 @@ CREATE TABLE `pt_session` (
 --
 
 INSERT INTO `pt_session` (`MAPT`, `MAHLV`, `MAHV`, `MAPHONG`, `BATDAU`, `KETTHUC`, `TRANGTHAI`) VALUES
-(1, 3, 1, 1, '2025-01-02 18:00:00', '2025-01-02 19:00:00', 'SCHEDULED'),
-(2, 4, 2, 4, '2025-01-08 06:30:00', '2025-01-08 07:30:00', 'SCHEDULED');
+(1, 3, 1, 1, '2025-11-03 18:00:00', '2025-11-03 19:00:00', 'DONE'),
+(2, 3, 1, 1, '2025-11-07 18:00:00', '2025-11-07 19:00:00', 'DONE'),
+(3, 3, 6, 2, '2025-11-15 17:00:00', '2025-11-15 18:00:00', 'SCHEDULED'),
+(4, 4, 4, 4, '2025-11-21 06:00:00', '2025-11-21 07:00:00', 'SCHEDULED');
 
 -- --------------------------------------------------------
 
@@ -429,10 +472,10 @@ INSERT INTO `pt_session` (`MAPT`, `MAHLV`, `MAHV`, `MAPHONG`, `BATDAU`, `KETTHUC
 --
 
 CREATE TABLE `thanhtoan` (
-  `MATTTOAN` int(10) UNSIGNED NOT NULL,
-  `MAHDON` int(10) UNSIGNED NOT NULL,
+  `MATTTOAN` int(11) NOT NULL,
+  `MAHDON` int(11) NOT NULL,
   `SOTIEN` decimal(12,2) NOT NULL,
-  `NGAYTT` datetime NOT NULL DEFAULT current_timestamp(),
+  `NGAYTT` datetime NOT NULL,
   `PHUONGTHUC` enum('CASH','CARD','BANK','EWALLET') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -441,8 +484,10 @@ CREATE TABLE `thanhtoan` (
 --
 
 INSERT INTO `thanhtoan` (`MATTTOAN`, `MAHDON`, `SOTIEN`, `NGAYTT`, `PHUONGTHUC`) VALUES
-(1, 1, 1400000.00, '2024-12-30 09:05:00', 'CASH'),
-(2, 2, 300000.00, '2025-01-02 15:00:00', 'CARD');
+(1, 1, 5445000.00, '2025-11-01 10:05:00', 'CARD'),
+(2, 3, 800000.00, '2025-11-10 19:20:00', 'CASH'),
+(3, 3, 700000.00, '2025-11-20 18:00:00', 'BANK'),
+(4, 4, 4800000.00, '2025-10-20 18:05:00', 'EWALLET');
 
 -- --------------------------------------------------------
 
@@ -451,12 +496,12 @@ INSERT INTO `thanhtoan` (`MATTTOAN`, `MAHDON`, `SOTIEN`, `NGAYTT`, `PHUONGTHUC`)
 --
 
 CREATE TABLE `thuetu` (
-  `MATT` int(10) UNSIGNED NOT NULL,
-  `MATU` int(10) UNSIGNED NOT NULL,
-  `MAHV` int(10) UNSIGNED NOT NULL,
+  `MATT` int(11) NOT NULL,
+  `MATU` int(11) NOT NULL,
+  `MAHV` int(11) NOT NULL,
   `NGAYBD` date NOT NULL,
   `NGAYKT` date NOT NULL,
-  `TRANGTHAI` enum('ACTIVE','EXPIRED','CANCELLED') NOT NULL DEFAULT 'ACTIVE'
+  `TRANGTHAI` enum('ACTIVE','EXPIRED','CANCELLED') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -464,8 +509,10 @@ CREATE TABLE `thuetu` (
 --
 
 INSERT INTO `thuetu` (`MATT`, `MATU`, `MAHV`, `NGAYBD`, `NGAYKT`, `TRANGTHAI`) VALUES
-(1, 1, 1, '2025-01-01', '2025-01-31', 'ACTIVE'),
-(2, 2, 2, '2025-01-10', '2025-02-09', 'ACTIVE');
+(1, 1, 1, '2025-01-05', '2025-02-04', 'EXPIRED'),
+(2, 2, 2, '2025-03-01', '2025-04-01', 'ACTIVE'),
+(3, 4, 6, '2025-03-20', '2025-04-20', 'CANCELLED'),
+(4, 5, 9, '2025-02-18', '2025-03-18', 'EXPIRED');
 
 --
 -- Indexes for dumped tables
@@ -476,9 +523,9 @@ INSERT INTO `thuetu` (`MATT`, `MATU`, `MAHV`, `NGAYBD`, `NGAYKT`, `TRANGTHAI`) V
 --
 ALTER TABLE `buoilop`
   ADD PRIMARY KEY (`MABUOI`),
-  ADD KEY `fk_buoi_lop` (`MALOP`),
-  ADD KEY `fk_buoi_phong` (`MAPHONG`),
-  ADD KEY `fk_buoi_hlv` (`MAHLV`);
+  ADD KEY `fk_buoilop_lop` (`MALOP`),
+  ADD KEY `fk_buoilop_phong` (`MAPHONG`),
+  ADD KEY `fk_buoilop_hlv` (`MAHLV`);
 
 --
 -- Indexes for table `checkin`
@@ -492,7 +539,7 @@ ALTER TABLE `checkin`
 --
 ALTER TABLE `dangky_lop`
   ADD PRIMARY KEY (`MADK`),
-  ADD UNIQUE KEY `uq_dangky_buoi_hv` (`MABUOI`,`MAHV`),
+  ADD UNIQUE KEY `uq_dk_buoilop_hoivien` (`MABUOI`,`MAHV`),
   ADD KEY `fk_dk_hoivien` (`MAHV`);
 
 --
@@ -508,7 +555,7 @@ ALTER TABLE `datphong`
 --
 ALTER TABLE `donghoadon`
   ADD PRIMARY KEY (`MADONG`),
-  ADD KEY `fk_dong_hd` (`MAHDON`);
+  ADD KEY `fk_donghoadon_hoadon` (`MAHDON`);
 
 --
 -- Indexes for table `hlv`
@@ -522,15 +569,15 @@ ALTER TABLE `hlv`
 ALTER TABLE `hoadon`
   ADD PRIMARY KEY (`MAHDON`),
   ADD KEY `fk_hoadon_hoivien` (`MAHV`),
-  ADD KEY `fk_hoadon_km` (`MAKM`);
+  ADD KEY `fk_hoadon_khuyenmai` (`MAKM`);
 
 --
 -- Indexes for table `hoivien`
 --
 ALTER TABLE `hoivien`
   ADD PRIMARY KEY (`MAHV`),
-  ADD UNIQUE KEY `uq_hoivien_sdt` (`SDT`),
-  ADD UNIQUE KEY `uq_hoivien_email` (`EMAIL`);
+  ADD UNIQUE KEY `SDT` (`SDT`),
+  ADD UNIQUE KEY `EMAIL` (`EMAIL`);
 
 --
 -- Indexes for table `hopdong`
@@ -551,7 +598,7 @@ ALTER TABLE `khu`
 --
 ALTER TABLE `khuyenmai`
   ADD PRIMARY KEY (`MAKM`),
-  ADD UNIQUE KEY `uq_khuyenmai_code` (`CODE`);
+  ADD UNIQUE KEY `CODE` (`CODE`);
 
 --
 -- Indexes for table `loaigoi`
@@ -564,7 +611,7 @@ ALTER TABLE `loaigoi`
 --
 ALTER TABLE `locker`
   ADD PRIMARY KEY (`MATU`),
-  ADD UNIQUE KEY `uq_locker_phong_kitu` (`MAPHONG`,`KITU`);
+  ADD KEY `fk_locker_phong` (`MAPHONG`);
 
 --
 -- Indexes for table `lop`
@@ -577,8 +624,8 @@ ALTER TABLE `lop`
 --
 ALTER TABLE `nhanvien`
   ADD PRIMARY KEY (`MANV`),
-  ADD UNIQUE KEY `uq_nhanvien_sdt` (`SDT`),
-  ADD UNIQUE KEY `uq_nhanvien_email` (`EMAIL`);
+  ADD UNIQUE KEY `SDT` (`SDT`),
+  ADD UNIQUE KEY `EMAIL` (`EMAIL`);
 
 --
 -- Indexes for table `phong`
@@ -608,7 +655,7 @@ ALTER TABLE `thanhtoan`
 --
 ALTER TABLE `thuetu`
   ADD PRIMARY KEY (`MATT`),
-  ADD KEY `fk_thuetu_tu` (`MATU`),
+  ADD KEY `fk_thuetu_locker` (`MATU`),
   ADD KEY `fk_thuetu_hoivien` (`MAHV`);
 
 --
@@ -619,109 +666,109 @@ ALTER TABLE `thuetu`
 -- AUTO_INCREMENT for table `buoilop`
 --
 ALTER TABLE `buoilop`
-  MODIFY `MABUOI` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `MABUOI` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `checkin`
 --
 ALTER TABLE `checkin`
-  MODIFY `MACI` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `MACI` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `dangky_lop`
 --
 ALTER TABLE `dangky_lop`
-  MODIFY `MADK` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `MADK` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `datphong`
 --
 ALTER TABLE `datphong`
-  MODIFY `MADP` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `MADP` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `donghoadon`
 --
 ALTER TABLE `donghoadon`
-  MODIFY `MADONG` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `MADONG` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `hoadon`
 --
 ALTER TABLE `hoadon`
-  MODIFY `MAHDON` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `MAHDON` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `hoivien`
 --
 ALTER TABLE `hoivien`
-  MODIFY `MAHV` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `MAHV` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `hopdong`
 --
 ALTER TABLE `hopdong`
-  MODIFY `MAHD` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `MAHD` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `khu`
 --
 ALTER TABLE `khu`
-  MODIFY `MAKHU` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `MAKHU` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `khuyenmai`
 --
 ALTER TABLE `khuyenmai`
-  MODIFY `MAKM` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `MAKM` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `loaigoi`
 --
 ALTER TABLE `loaigoi`
-  MODIFY `MALG` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `MALG` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `locker`
 --
 ALTER TABLE `locker`
-  MODIFY `MATU` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `MATU` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `lop`
 --
 ALTER TABLE `lop`
-  MODIFY `MALOP` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `MALOP` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `nhanvien`
 --
 ALTER TABLE `nhanvien`
-  MODIFY `MANV` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `MANV` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `phong`
 --
 ALTER TABLE `phong`
-  MODIFY `MAPHONG` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `MAPHONG` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `pt_session`
 --
 ALTER TABLE `pt_session`
-  MODIFY `MAPT` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `MAPT` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `thanhtoan`
 --
 ALTER TABLE `thanhtoan`
-  MODIFY `MATTTOAN` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `MATTTOAN` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `thuetu`
 --
 ALTER TABLE `thuetu`
-  MODIFY `MATT` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `MATT` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
@@ -731,88 +778,88 @@ ALTER TABLE `thuetu`
 -- Constraints for table `buoilop`
 --
 ALTER TABLE `buoilop`
-  ADD CONSTRAINT `fk_buoi_hlv` FOREIGN KEY (`MAHLV`) REFERENCES `hlv` (`MAHLV`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_buoi_lop` FOREIGN KEY (`MALOP`) REFERENCES `lop` (`MALOP`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_buoi_phong` FOREIGN KEY (`MAPHONG`) REFERENCES `phong` (`MAPHONG`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_buoilop_hlv` FOREIGN KEY (`MAHLV`) REFERENCES `hlv` (`MAHLV`),
+  ADD CONSTRAINT `fk_buoilop_lop` FOREIGN KEY (`MALOP`) REFERENCES `lop` (`MALOP`),
+  ADD CONSTRAINT `fk_buoilop_phong` FOREIGN KEY (`MAPHONG`) REFERENCES `phong` (`MAPHONG`);
 
 --
 -- Constraints for table `checkin`
 --
 ALTER TABLE `checkin`
-  ADD CONSTRAINT `fk_checkin_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_checkin_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`);
 
 --
 -- Constraints for table `dangky_lop`
 --
 ALTER TABLE `dangky_lop`
-  ADD CONSTRAINT `fk_dk_buoi` FOREIGN KEY (`MABUOI`) REFERENCES `buoilop` (`MABUOI`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_dk_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_dk_buoilop` FOREIGN KEY (`MABUOI`) REFERENCES `buoilop` (`MABUOI`),
+  ADD CONSTRAINT `fk_dk_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`);
 
 --
 -- Constraints for table `datphong`
 --
 ALTER TABLE `datphong`
-  ADD CONSTRAINT `fk_datphong_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`) ON DELETE SET NULL ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_datphong_phong` FOREIGN KEY (`MAPHONG`) REFERENCES `phong` (`MAPHONG`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_datphong_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`),
+  ADD CONSTRAINT `fk_datphong_phong` FOREIGN KEY (`MAPHONG`) REFERENCES `phong` (`MAPHONG`);
 
 --
 -- Constraints for table `donghoadon`
 --
 ALTER TABLE `donghoadon`
-  ADD CONSTRAINT `fk_dong_hd` FOREIGN KEY (`MAHDON`) REFERENCES `hoadon` (`MAHDON`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_donghoadon_hoadon` FOREIGN KEY (`MAHDON`) REFERENCES `hoadon` (`MAHDON`);
 
 --
 -- Constraints for table `hlv`
 --
 ALTER TABLE `hlv`
-  ADD CONSTRAINT `fk_hlv_nhanvien` FOREIGN KEY (`MAHLV`) REFERENCES `nhanvien` (`MANV`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_hlv_nhanvien` FOREIGN KEY (`MAHLV`) REFERENCES `nhanvien` (`MANV`);
 
 --
 -- Constraints for table `hoadon`
 --
 ALTER TABLE `hoadon`
-  ADD CONSTRAINT `fk_hoadon_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_hoadon_km` FOREIGN KEY (`MAKM`) REFERENCES `khuyenmai` (`MAKM`) ON DELETE SET NULL ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_hoadon_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`),
+  ADD CONSTRAINT `fk_hoadon_khuyenmai` FOREIGN KEY (`MAKM`) REFERENCES `khuyenmai` (`MAKM`);
 
 --
 -- Constraints for table `hopdong`
 --
 ALTER TABLE `hopdong`
-  ADD CONSTRAINT `fk_hopdong_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_hopdong_loaigoi` FOREIGN KEY (`MALG`) REFERENCES `loaigoi` (`MALG`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_hopdong_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`),
+  ADD CONSTRAINT `fk_hopdong_loaigoi` FOREIGN KEY (`MALG`) REFERENCES `loaigoi` (`MALG`);
 
 --
 -- Constraints for table `locker`
 --
 ALTER TABLE `locker`
-  ADD CONSTRAINT `fk_locker_phong` FOREIGN KEY (`MAPHONG`) REFERENCES `phong` (`MAPHONG`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_locker_phong` FOREIGN KEY (`MAPHONG`) REFERENCES `phong` (`MAPHONG`);
 
 --
 -- Constraints for table `phong`
 --
 ALTER TABLE `phong`
-  ADD CONSTRAINT `fk_phong_khu` FOREIGN KEY (`MAKHU`) REFERENCES `khu` (`MAKHU`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_phong_khu` FOREIGN KEY (`MAKHU`) REFERENCES `khu` (`MAKHU`);
 
 --
 -- Constraints for table `pt_session`
 --
 ALTER TABLE `pt_session`
-  ADD CONSTRAINT `fk_pt_hlv` FOREIGN KEY (`MAHLV`) REFERENCES `hlv` (`MAHLV`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_pt_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_pt_phong` FOREIGN KEY (`MAPHONG`) REFERENCES `phong` (`MAPHONG`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_pt_hlv` FOREIGN KEY (`MAHLV`) REFERENCES `hlv` (`MAHLV`),
+  ADD CONSTRAINT `fk_pt_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`),
+  ADD CONSTRAINT `fk_pt_phong` FOREIGN KEY (`MAPHONG`) REFERENCES `phong` (`MAPHONG`);
 
 --
 -- Constraints for table `thanhtoan`
 --
 ALTER TABLE `thanhtoan`
-  ADD CONSTRAINT `fk_thanhtoan_hoadon` FOREIGN KEY (`MAHDON`) REFERENCES `hoadon` (`MAHDON`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_thanhtoan_hoadon` FOREIGN KEY (`MAHDON`) REFERENCES `hoadon` (`MAHDON`);
 
 --
 -- Constraints for table `thuetu`
 --
 ALTER TABLE `thuetu`
-  ADD CONSTRAINT `fk_thuetu_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_thuetu_tu` FOREIGN KEY (`MATU`) REFERENCES `locker` (`MATU`) ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_thuetu_hoivien` FOREIGN KEY (`MAHV`) REFERENCES `hoivien` (`MAHV`),
+  ADD CONSTRAINT `fk_thuetu_locker` FOREIGN KEY (`MATU`) REFERENCES `locker` (`MATU`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

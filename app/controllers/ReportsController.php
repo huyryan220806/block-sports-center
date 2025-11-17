@@ -6,7 +6,7 @@ class ReportsController {
     private $db;
     private $report;
     public function __construct() {
-        $this->db = Database::getInstance()->getConnection();
+        $this->db = Database::getInstance()->getConn();
         $this->report = new Report($this->db);
     }
     public function index() {

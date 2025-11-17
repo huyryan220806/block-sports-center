@@ -6,17 +6,22 @@ class Database {
     private $conn;
     
     private function __construct() {
-        $config = require __DIR__ . '/../../config/database.php';
-        
+        $config  = require __DIR__ . '/../../config/database.php';
+        $charset = $config['charset'] ?? 'utf8mb4';
+
+        $dsn = "mysql:host={$config['host']};dbname={$config['db']};charset={$charset}";
+
         try {
-            $dsn = "mysql:host={$config['host']};dbname={$config['db']};charset={$config['charset']}";
-            
-            $this->conn = new PDO($dsn, $config['user'], $config['pass'], [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
-                PDO::ATTR_EMULATE_PREPARES => false
-            ]);
-            
+            $this->conn = new PDO(
+                $dsn,
+                $config['user'],
+                $config['pass'],
+                [
+                    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
+                    PDO::ATTR_EMULATE_PREPARES   => false,
+                ]
+            );
         } catch (PDOException $e) {
             die("❌ Lỗi kết nối database: " . $e->getMessage());
         }

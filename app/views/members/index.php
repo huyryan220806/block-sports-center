@@ -1,6 +1,22 @@
-<?php 
-$pageTitle = 'Quản lý hội viên';
+<?php
+$pageTitle   = 'Quản lý hội viên';
 $currentPage = 'members';
+
+// dữ liệu $members đã được MembersController truyền xuống
+// nếu Controller truyền dạng ['members' => $members]:
+if (isset($data['members'])){
+    $members = $data['members'];
+}
+
+$members    = $data['members']    ?? [];
+$sort       = $data['sort']       ?? 'id_desc';
+$page       = $data['page']       ?? 1;
+$totalPages = $data['totalPages'] ?? 1;
+$total      = $data['total']      ?? 0;
+// Lấy danh sách hội viên từ bảng hoivien
+$sql    = "SELECT MAHV, HOVATEN, GIOITINH, NGAYSINH, SDT, EMAIL, DIACHI, TRANGTHAI
+           FROM hoivien
+           ORDER BY MAHV DESC";
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -42,8 +58,31 @@ $currentPage = 'members';
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Mã HV</th>
-                                    <th>Họ tên</th>
+                                    <th>
+                                        MÃ HV
+                                        <!-- sort theo mã: bé -> lớn / lớn -> bé -->
+                                        <a href="?c=members&a=index&sort=id_asc&page=1"
+                                        style="font-size:12px; margin-left:4px; text-decoration:none;<?= $sort === 'id_asc' ? 'font-weight:bold;' : '' ?>">
+                                            ↑
+                                        </a>
+                                        <a href="?c=members&a=index&sort=id_desc&page=1"
+                                        style="font-size:12px; margin-left:2px; text-decoration:none;<?= $sort === 'id_desc' ? 'font-weight:bold;' : '' ?>">
+                                            ↓
+                                        </a>
+                                    </th>
+
+                                    <th>
+                                        HỌ TÊN
+                                        <!-- sort A-Z / Z-A -->
+                                        <a href="?c=members&a=index&sort=name_asc&page=1"
+                                        style="font-size:12px; margin-left:4px; text-decoration:none;<?= $sort === 'name_asc' ? 'font-weight:bold;' : '' ?>">
+                                            A-Z
+                                        </a>
+                                        <a href="?c=members&a=index&sort=name_desc&page=1"
+                                        style="font-size:12px; margin-left:2px; text-decoration:none;<?= $sort === 'name_desc' ? 'font-weight:bold;' : '' ?>">
+                                            Z-A
+                                        </a>
+                                    </th>
                                     <th>Số điện thoại</th>
                                     <th>Email</th>
                                     <th>Giới tính</th>
@@ -52,116 +91,82 @@ $currentPage = 'members';
                                 </tr>
                             </thead>
                             <tbody id="memberTableBody">
-                                <tr>
-                                    <td>#MB001</td>
-                                    <td>Nguyễn Văn An</td>
-                                    <td>0901234567</td>
-                                    <td>nguyenvanan@email.com</td>
-                                    <td>Nam</td>
-                                    <td><span class="badge active">Active</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=1'">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="action-btn delete" onclick="confirmDelete(1)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#MB002</td>
-                                    <td>Trần Thị Bình</td>
-                                    <td>0912345678</td>
-                                    <td>tranthibinh@email.com</td>
-                                    <td>Nữ</td>
-                                    <td><span class="badge active">Active</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=2'">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="action-btn delete" onclick="confirmDelete(2)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#MB003</td>
-                                    <td>Lê Hoàng Cường</td>
-                                    <td>0923456789</td>
-                                    <td>lehoangcuong@email.com</td>
-                                    <td>Nam</td>
-                                    <td><span class="badge suspended">Suspended</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=3'">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="action-btn delete" onclick="confirmDelete(3)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#MB004</td>
-                                    <td>Phạm Thị Dung</td>
-                                    <td>0934567890</td>
-                                    <td>phamthidung@email.com</td>
-                                    <td>Nữ</td>
-                                    <td><span class="badge active">Active</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=4'">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="action-btn delete" onclick="confirmDelete(4)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#MB005</td>
-                                    <td>Vũ Minh Em</td>
-                                    <td>0945678901</td>
-                                    <td>vuminhem@email.com</td>
-                                    <td>Nam</td>
-                                    <td><span class="badge inactive">Inactive</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=5'">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="action-btn delete" onclick="confirmDelete(5)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>#MB006</td>
-                                    <td>Đỗ Thu Hằng</td>
-                                    <td>0956789012</td>
-                                    <td>dothuhang@email.com</td>
-                                    <td>Nữ</td>
-                                    <td><span class="badge active">Active</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=6'">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="action-btn delete" onclick="confirmDelete(6)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <?php if (!empty($members)): ?>
+                                    <?php foreach ($members as $m): ?>
+                                        <tr>
+                                            <td>#MB<?= str_pad($m->MAHV, 3, '0', STR_PAD_LEFT); ?></td>
+                                            <td><?= htmlspecialchars($m->HOVATEN); ?></td>
+                                            <td><?= htmlspecialchars($m->SDT); ?></td>
+                                            <td><?= htmlspecialchars($m->EMAIL); ?></td>
+                                            <td><?= htmlspecialchars($m->GIOITINH); ?></td>
+                                            <td>
+                                                <?php
+                                                // LẤY ĐÚNG TÊN CỘT TỪ SQL: TRANGTHAI (chữ HOA)
+                                                $status = strtoupper(trim($m->TRANGTHAI ?? ''));
+
+                                                // mặc định coi như INACTIVE
+                                                $badgeClass = 'inactive';
+                                                $label      = 'NGỪNG';
+
+                                                if ($status === 'ACTIVE') {
+                                                    $badgeClass = 'active';
+                                                    $label      = 'HOẠT ĐỘNG';
+                                                } elseif ($status === 'SUSPENDED') {
+                                                    $badgeClass = 'suspended';
+                                                    $label      = 'TẠM KHÓA';
+                                                } elseif ($status === 'INACTIVE') {
+                                                    $badgeClass = 'inactive';
+                                                    $label      = 'NGỪNG';
+                                                }
+                                                ?>
+                                                <span class="badge <?= $badgeClass ?>"><?= $label ?></span>
+                                            </td>
+                                            <td>
+                                                <div class="action-btns">
+                                                    <button class="action-btn edit"
+                                                            onclick="location.href='?c=members&a=edit&id=<?= $m->MAHV ?>'">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="action-btn delete"
+                                                            onclick="confirmDelete(<?= $m->MAHV ?>)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="7" style="text-align:center;">Chưa có hội viên nào</td>
+                                    </tr>
+                                <?php endif; ?>
                             </tbody>
                         </table>
+                        <?php if ($totalPages > 1): ?>
+                            <div class="pagination" style="margin-top:16px; display:flex; justify-content:center; gap:4px;">
+                                <?php if ($page > 1): ?>
+                                    <a class="page-link" href="?c=members&a=index&page=<?= $page-1 ?>&sort=<?= urlencode($sort) ?>">&laquo;</a>
+                                <?php endif; ?>
+
+                                <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+                                    <?php if ($p == $page): ?>
+                                        <span class="page-link" style="font-weight:bold; background:#00b894; color:#fff; padding:4px 8px; border-radius:4px;">
+                                            <?= $p ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <a class="page-link"
+                                        href="?c=members&a=index&page=<?= $p ?>&sort=<?= urlencode($sort) ?>"
+                                        style="padding:4px 8px; border-radius:4px; text-decoration:none; border:1px solid #ddd;">
+                                            <?= $p ?>
+                                        </a>
+                                    <?php endif; ?>
+                                <?php endfor; ?>
+
+                                <?php if ($page < $totalPages): ?>
+                                    <a class="page-link" href="?c=members&a=index&page=<?= $page+1 ?>&sort=<?= urlencode($sort) ?>">&raquo;</a>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
