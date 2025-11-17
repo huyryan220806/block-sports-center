@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 17, 2025 at 07:50 PM
+-- Generation Time: Nov 17, 2025 at 02:58 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -112,10 +112,8 @@ CREATE TABLE `datphong` (
 --
 
 INSERT INTO `datphong` (`MADP`, `MAPHONG`, `MAHV`, `BATDAU`, `KETTHUC`, `MUCTIEU`, `TRANGTHAI`) VALUES
-(8, 1, 1, '2025-11-22 07:00:00', '2025-11-22 08:30:00', 'TAP_TU_DO', 'CONFIRMED'),
-(9, 2, 2, '2025-11-22 17:00:00', '2025-11-22 18:15:00', 'CLB', 'PENDING'),
-(10, 3, 3, '2025-11-23 19:00:00', '2025-11-23 20:00:00', 'GIU_CHO_SU_KIEN', 'CONFIRMED'),
-(11, 4, 4, '2025-11-20 06:00:00', '2025-11-20 07:00:00', 'TAP_TU_DO', 'DONE');
+(1, 1, 1, '2025-01-03 17:00:00', '2025-01-03 18:30:00', 'TAP_TU_DO', 'CONFIRMED'),
+(2, 3, 2, '2025-01-04 08:00:00', '2025-01-04 09:30:00', 'GIU_CHO_SU_KIEN', 'PENDING');
 
 -- --------------------------------------------------------
 
@@ -209,7 +207,7 @@ CREATE TABLE `hoivien` (
 INSERT INTO `hoivien` (`MAHV`, `HOVATEN`, `GIOITINH`, `NGAYSINH`, `SDT`, `EMAIL`, `DIACHI`, `TRANGTHAI`, `NGAYTAO`) VALUES
 (1, 'Nguyễn Văn A', 'Nam', '2000-01-15', '0901111111', 'a@example.com', 'Biên Hòa, Đồng Nai', 'ACTIVE', '2025-11-17 20:56:39'),
 (2, 'Trần Thị B', 'Nữ', '1999-05-20', '0902222222', 'b@example.com', 'Thủ Đức, TP.HCM', 'ACTIVE', '2025-11-17 20:56:39'),
-(3, 'Lê Minh C', 'Nam', '2001-09-10', '0903333333', 'cc@gmail.com', 'Long Thành, Đồng Nai', 'INACTIVE', '2025-11-17 20:56:39');
+(3, 'Lê Minh C', 'Nam', '2001-09-10', '0903333333', NULL, 'Long Thành, Đồng Nai', 'SUSPENDED', '2025-11-17 20:56:39');
 
 -- --------------------------------------------------------
 
@@ -347,8 +345,7 @@ CREATE TABLE `lop` (
 INSERT INTO `lop` (`MALOP`, `TENLOP`, `THOILUONG`, `SISO_MACDINH`, `MOTA`) VALUES
 (1, 'Yoga Cơ Bản', 60, 20, 'Lớp yoga cho người mới bắt đầu'),
 (2, 'HIIT Giảm Mỡ', 45, 18, 'Cardio cường độ cao'),
-(3, 'Bơi Người Lớn', 60, 15, 'Lớp bơi cho người lớn'),
-(4, 'Boxing hihi', 100, 20, 'Đấm là chết queo');
+(3, 'Bơi Người Lớn', 60, 15, 'Lớp bơi cho người lớn');
 
 -- --------------------------------------------------------
 
@@ -374,7 +371,7 @@ INSERT INTO `nhanvien` (`MANV`, `HOTEN`, `SDT`, `EMAIL`, `VAITRO`, `NGAYVAOLAM`,
 (1, 'Phạm Quốc D', '0904444444', 'nv.admin@example.com', 'ADMIN', '2024-01-02', 1),
 (2, 'Ngô Thị E', '0905555555', 'nv.frontdesk@example.com', 'FRONTDESK', '2024-03-15', 1),
 (3, 'Đỗ Văn F', '0906666666', 'hlv.gym@example.com', 'OTHER', '2023-11-01', 1),
-(4, 'Lý Thu G', '0907777777', 'hlv.yoga@example.com', 'OTHER', '2023-10-10', 0);
+(4, 'Lý Thu G', '0907777777', 'hlv.yoga@example.com', 'OTHER', '2023-10-10', 1);
 
 -- --------------------------------------------------------
 
@@ -388,35 +385,18 @@ CREATE TABLE `phong` (
   `TENPHONG` varchar(100) NOT NULL,
   `SUCCHUA` int(10) UNSIGNED NOT NULL,
   `GHICHU` text DEFAULT NULL,
-  `HOATDONG` tinyint(1) NOT NULL DEFAULT 1,
-  `CALO_MOI_GIO` int(11) NOT NULL DEFAULT 0
+  `HOATDONG` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `phong`
 --
 
-INSERT INTO `phong` (`MAPHONG`, `MAKHU`, `TENPHONG`, `SUCCHUA`, `GHICHU`, `HOATDONG`, `CALO_MOI_GIO`) VALUES
-(1, 1, 'Phòng Gym 1', 40, 'Máy chạy bộ, tạ tự do', 1, 0),
-(2, 1, 'Phòng Gym 2', 30, 'Máy kháng lực', 1, 0),
-(3, 2, 'Hồ bơi 25m', 60, 'Có khu trẻ em', 1, 0),
-(4, 1, 'Phòng Yoga 1', 25, 'hello', 1, 0),
-(5, 3, 'Một 23', 22, '[Loại: Bóng Đá] CC', 1, 0);
-
---
--- Triggers `phong`
---
-DELIMITER $$
-CREATE TRIGGER `trg_phong_calo_before_insert` BEFORE INSERT ON `phong` FOR EACH ROW BEGIN
-    SET NEW.CALO_MOI_GIO = CASE
-        WHEN NEW.TENPHONG LIKE '%Gym%' THEN NEW.SUCCHUA * 15
-        WHEN NEW.TENPHONG LIKE '%bơi%' THEN NEW.SUCCHUA * 10
-        WHEN NEW.TENPHONG LIKE '%Yoga%' THEN NEW.SUCCHUA * 8
-        ELSE NEW.SUCCHUA * 5
-    END;
-END
-$$
-DELIMITER ;
+INSERT INTO `phong` (`MAPHONG`, `MAKHU`, `TENPHONG`, `SUCCHUA`, `GHICHU`, `HOATDONG`) VALUES
+(1, 1, 'Phòng Gym 1', 40, 'Máy chạy bộ, tạ tự do', 1),
+(2, 1, 'Phòng Gym 2', 30, 'Máy kháng lực', 1),
+(3, 2, 'Hồ bơi 25m', 60, 'Có khu trẻ em', 1),
+(4, 3, 'Phòng Yoga 1', 25, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -657,7 +637,7 @@ ALTER TABLE `dangky_lop`
 -- AUTO_INCREMENT for table `datphong`
 --
 ALTER TABLE `datphong`
-  MODIFY `MADP` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `MADP` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `donghoadon`
@@ -711,7 +691,7 @@ ALTER TABLE `locker`
 -- AUTO_INCREMENT for table `lop`
 --
 ALTER TABLE `lop`
-  MODIFY `MALOP` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `MALOP` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `nhanvien`
@@ -723,7 +703,7 @@ ALTER TABLE `nhanvien`
 -- AUTO_INCREMENT for table `phong`
 --
 ALTER TABLE `phong`
-  MODIFY `MAPHONG` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `MAPHONG` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `pt_session`
