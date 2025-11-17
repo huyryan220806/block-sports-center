@@ -8,18 +8,9 @@ if (!isset($user) || !is_array($user)) {
     ];
 }
 
-// Nếu chưa có các biến thống kê thì cho = 0 để khỏi báo lỗi
+// Nếu chưa có biến $totalCalo thì cho = 0 để khỏi báo lỗi
 if (!isset($totalCalo)) {
     $totalCalo = 0;
-}
-if (!isset($sessionsThisMonth)) {
-    $sessionsThisMonth = 0;
-}
-if (!isset($hoursThisMonth)) {
-    $hoursThisMonth = 0;
-}
-if (!isset($achievements)) {
-    $achievements = 0;
 }
 ?>
 <!DOCTYPE html>
@@ -220,26 +211,6 @@ if (!isset($achievements)) {
             color: #666;
             font-size: 14px;
         }
-
-        /* LINK CARD & USER LINK */
-        .link-card {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .link-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-
-        .user-link {
-            text-decoration: none;
-            color: inherit;
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-        }
         
         /* UPCOMING CLASSES */
         .upcoming-classes {
@@ -321,116 +292,122 @@ if (!isset($achievements)) {
                 <a href="/block-sports-center/public/user/booking.php">Đặt phòng</a>
             </nav>
             
-            <a href="/block-sports-center/public/user/profile.php" class="user-link">
-                <div class="user-menu">
-                    <span><?php echo $user['name']; ?></span>
-                    <div class="user-avatar"><?php echo $user['avatar']; ?></div>
-                </div>
-            </a>
+            <div class="user-menu">
+                <span><?php echo $user['name']; ?></span>
+                <div class="user-avatar"><?php echo $user['avatar']; ?></div>
+            </div>
         </div>
     </header>
     
     <!-- HERO -->
     <section class="hero">
-        <h1>Chào mừng trở lại, <?php echo explode(' ', $user['name'])[count(explode(' ', $user['name']))-1]; ?>! 👋</h1>
-        <p>Hãy cùng bắt đầu một ngày tập luyện tuyệt vời</p>
+        <h1>Đặt phòng / Đặt sân</h1>
+        <p>Chọn bộ môn, thời gian và sân mong muốn</p>
     </section>
-    
-    <!-- STATS -->
-    <section class="stats">
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-            <div class="stat-value">
-                <?php echo $sessionsThisMonth; ?>
-            </div>
-            <div class="stat-label">Buổi tập tháng này</div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fas fa-fire"></i></div>
-            <div class="stat-value">
-                <?php echo number_format($totalCalo ?? 0, 0, ',', '.'); ?>
-            </div>
-            <div class="stat-label">Calories đã đốt (tháng này)</div>
-        </div>
 
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fas fa-clock"></i></div>
-            <div class="stat-value">
-                <?php echo number_format($hoursThisMonth, 1, ',', '.'); ?>
-            </div>
-            <div class="stat-label">Giờ tập luyện</div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fas fa-trophy"></i></div>
-            <div class="stat-value">
-                <?php echo $achievements; ?>
-            </div>
-            <div class="stat-label">Thành tựu đạt được</div>
-        </div>
-    </section>
-    
-    <!-- QUICK ACTIONS -->
+    <!-- BOOKING FORM (GIAO DIỆN) -->
     <section class="quick-actions">
-        <h2 class="section-title">Thao tác nhanh</h2>
-        
+        <h2 class="section-title">Tạo đặt chỗ mới</h2>
+
         <div class="actions-grid">
-            <div class="action-card" onclick="location.href='/block-sports-center/public/user/classes.php'">
-                <div class="action-icon"><i class="fas fa-calendar-plus"></i></div>
-                <div class="action-title">Đăng ký lớp học</div>
-                <div class="action-desc">Tìm và đăng ký lớp học phù hợp</div>
+            <div class="action-card">
+                <h3>Thông tin đặt chỗ</h3>
+
+                <form class="booking-form">
+                    <div class="form-group">
+                        <label>Bộ môn</label>
+                        <select>
+                            <option>Bơi</option>
+                            <option>Futsal</option>
+                            <option>Bóng chuyền</option>
+                            <option>Bóng rổ</option>
+                            <option>Cầu lông</option>
+                            <option>Sân bóng đá 11</option>
+                            <option>Pickleball</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày</label>
+                        <input type="date">
+                    </div>
+
+                    <div class="form-group form-row">
+                        <div>
+                            <label>Giờ bắt đầu</label>
+                            <input type="time">
+                        </div>
+                        <div>
+                            <label>Giờ kết thúc</label>
+                            <input type="time">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea rows="3" placeholder="Ví dụ: đá giao hữu, ưu tiên sân gần bãi xe..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Gửi yêu cầu đặt chỗ</button>
+                </form>
             </div>
-            
-            <div class="action-card" onclick="location.href='/block-sports-center/public/user/schedule.php'">
-                <div class="action-icon"><i class="fas fa-calendar-alt"></i></div>
-                <div class="action-title">Xem lịch tập</div>
-                <div class="action-desc">Kiểm tra lịch tập của bạn</div>
+
+            <div class="action-card">
+                <h3>Gợi ý & lưu ý</h3>
+                <ul class="schedule-list">
+                    <li><i class="fas fa-info-circle"></i> Đặt chỗ trước ít nhất 2 giờ.</li>
+                    <li><i class="fas fa-info-circle"></i> Nếu đến trễ quá 15 phút, sân có thể được chuyển cho khách khác.</li>
+                    <li><i class="fas fa-info-circle"></i> Vui lòng mang theo thẻ thành viên khi đến nhận sân.</li>
+                    <li><i class="fas fa-info-circle"></i> Một số khung giờ cao điểm có thể tính phụ thu.</li>
+                </ul>
+
+                <h4 style="margin-top:20px;">Lịch đặt gần đây</h4>
+                <ul class="schedule-list">
+                    <li>
+                        <strong>Futsal</strong> - 19:00 hôm nay<br>
+                        <span>Sân Futsal A</span>
+                    </li>
+                    <li>
+                        <strong>Cầu lông</strong> - 20:00 ngày mai<br>
+                        <span>Sân Cầu lông 2</span>
+                    </li>
+                </ul>
             </div>
-            
-            <div class="action-card" onclick="location.href='/block-sports-center/public/user/booking.php'">
-                <div class="action-icon"><i class="fas fa-door-open"></i></div>
-                <div class="action-title">Đặt phòng</div>
-                <div class="action-desc">Đặt phòng tập riêng hoặc sân</div>
-            </div>
-            
-            <a href="/block-sports-center/public/user/profile.php" class="action-card link-card">
-                <div class="action-icon">
-                    <i class="fas fa-user"></i>
-                </div>
-                <h3>Thông tin cá nhân</h3>
-                <p>Xem và cập nhật hồ sơ</p>
-            </a>
         </div>
     </section>
-    
-    <!-- UPCOMING CLASSES -->
-    <section class="upcoming-classes">
-        <h2 class="section-title">Lớp học sắp tới</h2>
-        
-        <div class="class-card">
-            <div class="class-info">
-                <h4>Yoga Căn Bản</h4>
-                <div class="class-details">
-                    <span><i class="fas fa-clock"></i> 08:00 - 09:30</span>
-                    <span><i class="fas fa-map-marker-alt"></i> Phòng A1</span>
-                    <span><i class="fas fa-user"></i> Nguyễn Thị Lan</span>
-                </div>
-            </div>
-            <button class="btn btn-primary">Chi tiết</button>
-        </div>
-        
-        <div class="class-card">
-            <div class="class-info">
-                <h4>Gym Strength Training</h4>
-                <div class="class-details">
-                    <span><i class="fas fa-clock"></i> 18:00 - 19:00</span>
-                    <span><i class="fas fa-map-marker-alt"></i> Gym Floor</span>
-                    <span><i class="fas fa-user"></i> Trần Văn Mạnh</span>
-                </div>
-            </div>
-            <button class="btn btn-primary">Chi tiết</button>
-        </div>
-    </section>
+
+    <style>
+        .booking-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+    </style>
 </body>
 </html>

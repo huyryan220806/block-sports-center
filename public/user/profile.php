@@ -8,18 +8,9 @@ if (!isset($user) || !is_array($user)) {
     ];
 }
 
-// Nếu chưa có các biến thống kê thì cho = 0 để khỏi báo lỗi
+// Nếu chưa có biến $totalCalo thì cho = 0 để khỏi báo lỗi
 if (!isset($totalCalo)) {
     $totalCalo = 0;
-}
-if (!isset($sessionsThisMonth)) {
-    $sessionsThisMonth = 0;
-}
-if (!isset($hoursThisMonth)) {
-    $hoursThisMonth = 0;
-}
-if (!isset($achievements)) {
-    $achievements = 0;
 }
 ?>
 <!DOCTYPE html>
@@ -220,26 +211,6 @@ if (!isset($achievements)) {
             color: #666;
             font-size: 14px;
         }
-
-        /* LINK CARD & USER LINK */
-        .link-card {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .link-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-
-        .user-link {
-            text-decoration: none;
-            color: inherit;
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-        }
         
         /* UPCOMING CLASSES */
         .upcoming-classes {
@@ -321,116 +292,126 @@ if (!isset($achievements)) {
                 <a href="/block-sports-center/public/user/booking.php">Đặt phòng</a>
             </nav>
             
-            <a href="/block-sports-center/public/user/profile.php" class="user-link">
-                <div class="user-menu">
-                    <span><?php echo $user['name']; ?></span>
-                    <div class="user-avatar"><?php echo $user['avatar']; ?></div>
-                </div>
-            </a>
+            <div class="user-menu">
+                <span><?php echo $user['name']; ?></span>
+                <div class="user-avatar"><?php echo $user['avatar']; ?></div>
+            </div>
         </div>
     </header>
     
     <!-- HERO -->
     <section class="hero">
-        <h1>Chào mừng trở lại, <?php echo explode(' ', $user['name'])[count(explode(' ', $user['name']))-1]; ?>! 👋</h1>
-        <p>Hãy cùng bắt đầu một ngày tập luyện tuyệt vời</p>
+        <h1>Thông tin cá nhân</h1>
+        <p>Xem và cập nhật hồ sơ tập luyện của bạn</p>
     </section>
-    
-    <!-- STATS -->
-    <section class="stats">
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-            <div class="stat-value">
-                <?php echo $sessionsThisMonth; ?>
-            </div>
-            <div class="stat-label">Buổi tập tháng này</div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fas fa-fire"></i></div>
-            <div class="stat-value">
-                <?php echo number_format($totalCalo ?? 0, 0, ',', '.'); ?>
-            </div>
-            <div class="stat-label">Calories đã đốt (tháng này)</div>
-        </div>
 
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fas fa-clock"></i></div>
-            <div class="stat-value">
-                <?php echo number_format($hoursThisMonth, 1, ',', '.'); ?>
-            </div>
-            <div class="stat-label">Giờ tập luyện</div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fas fa-trophy"></i></div>
-            <div class="stat-value">
-                <?php echo $achievements; ?>
-            </div>
-            <div class="stat-label">Thành tựu đạt được</div>
-        </div>
-    </section>
-    
-    <!-- QUICK ACTIONS -->
-    <section class="quick-actions">
-        <h2 class="section-title">Thao tác nhanh</h2>
-        
-        <div class="actions-grid">
-            <div class="action-card" onclick="location.href='/block-sports-center/public/user/classes.php'">
-                <div class="action-icon"><i class="fas fa-calendar-plus"></i></div>
-                <div class="action-title">Đăng ký lớp học</div>
-                <div class="action-desc">Tìm và đăng ký lớp học phù hợp</div>
-            </div>
-            
-            <div class="action-card" onclick="location.href='/block-sports-center/public/user/schedule.php'">
-                <div class="action-icon"><i class="fas fa-calendar-alt"></i></div>
-                <div class="action-title">Xem lịch tập</div>
-                <div class="action-desc">Kiểm tra lịch tập của bạn</div>
-            </div>
-            
-            <div class="action-card" onclick="location.href='/block-sports-center/public/user/booking.php'">
-                <div class="action-icon"><i class="fas fa-door-open"></i></div>
-                <div class="action-title">Đặt phòng</div>
-                <div class="action-desc">Đặt phòng tập riêng hoặc sân</div>
-            </div>
-            
-            <a href="/block-sports-center/public/user/profile.php" class="action-card link-card">
-                <div class="action-icon">
-                    <i class="fas fa-user"></i>
+    <!-- PROFILE CONTENT -->
+    <section class="profile">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <?= htmlspecialchars($user['avatar'] ?? 'NA') ?>
                 </div>
-                <h3>Thông tin cá nhân</h3>
-                <p>Xem và cập nhật hồ sơ</p>
-            </a>
-        </div>
-    </section>
-    
-    <!-- UPCOMING CLASSES -->
-    <section class="upcoming-classes">
-        <h2 class="section-title">Lớp học sắp tới</h2>
-        
-        <div class="class-card">
-            <div class="class-info">
-                <h4>Yoga Căn Bản</h4>
-                <div class="class-details">
-                    <span><i class="fas fa-clock"></i> 08:00 - 09:30</span>
-                    <span><i class="fas fa-map-marker-alt"></i> Phòng A1</span>
-                    <span><i class="fas fa-user"></i> Nguyễn Thị Lan</span>
+                <div>
+                    <h2><?= htmlspecialchars($user['name'] ?? 'Nguyễn Văn An') ?></h2>
+                    <p>Mã hội viên: <strong><?= htmlspecialchars($user['member_id'] ?? 'MB001') ?></strong></p>
                 </div>
             </div>
-            <button class="btn btn-primary">Chi tiết</button>
-        </div>
-        
-        <div class="class-card">
-            <div class="class-info">
-                <h4>Gym Strength Training</h4>
-                <div class="class-details">
-                    <span><i class="fas fa-clock"></i> 18:00 - 19:00</span>
-                    <span><i class="fas fa-map-marker-alt"></i> Gym Floor</span>
-                    <span><i class="fas fa-user"></i> Trần Văn Mạnh</span>
+
+            <div class="profile-body">
+                <div class="profile-row">
+                    <label>Email</label>
+                    <input type="email" value="an.nguyen@example.com">
                 </div>
+
+                <div class="profile-row">
+                    <label>Số điện thoại</label>
+                    <input type="text" value="0901 234 567">
+                </div>
+
+                <div class="profile-row">
+                    <label>Ngày sinh</label>
+                    <input type="date" value="2000-01-01">
+                </div>
+
+                <div class="profile-row">
+                    <label>Giới tính</label>
+                    <select>
+                        <option>Nam</option>
+                        <option>Nữ</option>
+                        <option>Khác</option>
+                    </select>
+                </div>
+
+                <div class="profile-row">
+                    <label>Mục tiêu luyện tập</label>
+                    <textarea rows="3" placeholder="Ví dụ: giảm 5kg trong 3 tháng, tăng sức bền, cải thiện sức khỏe tim mạch..."></textarea>
+                </div>
+
+                <button class="btn btn-primary">Lưu thông tin</button>
             </div>
-            <button class="btn btn-primary">Chi tiết</button>
         </div>
     </section>
+
+    <style>
+        .profile {
+            max-width: 800px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .profile-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #6366F1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .profile-body {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .profile-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .profile-row label {
+            font-weight: 600;
+        }
+
+        .profile-row input,
+        .profile-row select,
+        .profile-row textarea {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+    </style>
 </body>
 </html>
