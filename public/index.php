@@ -1,68 +1,34 @@
 <?php
-// public/index.php
-// Front controller đơn giản cho BLOCK SPORTS CENTER
 
-// Lấy tham số page, mặc định là dashboard
-$page = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
 
-// Đường dẫn gốc tới thư mục views
-$baseViewPath = __DIR__ . '/../app/views/';
 
-switch ($page) {
-    case 'dashboard':
-        require $baseViewPath . 'dashboard/index.php';
-        break;
+// public/index.php - ROUTER CHÍNH (FIXED)
 
-    case 'members':
-        require $baseViewPath . 'members/index.php';
-        break;
+session_start();
 
-    case 'rooms':
-        require $baseViewPath . 'rooms/index.php';
-        break;
+// Hiển thị lỗi
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-    case 'lockers':
-        require $baseViewPath . 'lockers/index.php';
-        break;
+// DEBUG MODE - Bật để xem routing
+define('DEBUG_MODE', true);
 
-    case 'classes':
-        require $baseViewPath . 'classes/index.php';
-        break;
-
-    case 'sessions':
-        require $baseViewPath . 'sessions/index.php';
-        break;
-
-    case 'bookings':
-        require $baseViewPath . 'bookings/index.php';
-        break;
-
-    case 'invoices':
-        require $baseViewPath . 'invoices/index.php';
-        break;
-
-    case 'reports':
-        require $baseViewPath . 'reports/index.php';
-        break;
-
-    case 'trainers':
-        require $baseViewPath . 'trainers/index.php';
-        break;
-
-    case 'settings':
-        require $baseViewPath . 'settings/index.php';
-        break;
-
-    case 'login':
-        require $baseViewPath . 'auth/login.php';
-        break;
-
-    case 'register':
-        require __DIR__ . '/../app/views/auth/register.php';
-        break;
-
-    default:
-        http_response_code(404);
-        echo '404 - Page not found';
-        break;
+if (DEBUG_MODE) {
+    echo "<!-- DEBUG: index.php started -->\n";
+    echo "<!-- Controller: " . ($_GET['c'] ?? 'không có') . " -->\n";
+    echo "<!-- Action: " . ($_GET['a'] ?? 'không có') . " -->\n";
 }
+
+// Load config
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/app.php';
+
+// Load core classes
+require_once __DIR__ . '/../app/core/Database.php';
+require_once __DIR__ . '/../app/core/Model.php';
+require_once __DIR__ . '/../app/core/Controller.php';
+require_once __DIR__ . '/../app/core/Helpers.php';
+require_once __DIR__ . '/../app/core/App.php';
+
+// Khởi động ứng dụng
+$app = new App();

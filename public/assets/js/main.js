@@ -5,6 +5,36 @@
 // Wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', function() {
     
+    // ========== SIDEBAR TOGGLE - ẨN/HIỆN MENU ==========
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const adminLayout = document.querySelector('.admin-layout');
+    
+    if (sidebarToggle && adminLayout) {
+        // Lấy trạng thái từ localStorage
+        const sidebarState = localStorage.getItem('sidebarCollapsed');
+        if (sidebarState === 'true') {
+            adminLayout.classList.add('sidebar-collapsed');
+        }
+        
+        // Xử lý click nút toggle
+        sidebarToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Sidebar toggle clicked!');
+            
+            adminLayout.classList.toggle('sidebar-collapsed');
+            
+            // Lưu trạng thái vào localStorage
+            const isCollapsed = adminLayout.classList.contains('sidebar-collapsed');
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+            
+            console.log('Sidebar collapsed:', isCollapsed);
+        });
+    } else {
+        console.warn('Sidebar toggle button hoặc admin-layout không tìm thấy');
+    }
+    
     // ========== SEARCH FUNCTIONALITY ==========
     const searchInputs = document.querySelectorAll('[id^="search"]');
     searchInputs.forEach(input => {
@@ -42,8 +72,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
         setTimeout(() => {
+            alert.style.transition = 'opacity 0.5s';
             alert.style.opacity = '0';
-            setTimeout(() => alert.remove(), 300);
+            setTimeout(() => alert.remove(), 500);
         }, 5000);
     });
     

@@ -109,7 +109,7 @@ $currentPage = 'dashboard';
                     
                     <!-- SEARCH BAR TRONG CARD -->
                     <div class="search-bar">
-                        <input type="text" placeholder="Tìm kiếm buổi lớp, phòng, HLV...">
+                        <input type="text" id="sessionSearchInput" placeholder="Tìm kiếm buổi lớp, phòng, HLV...">
                         <button class="btn btn-ghost">
                             <i class="fas fa-search"></i> Tìm kiếm
                         </button>
@@ -127,7 +127,7 @@ $currentPage = 'dashboard';
                                     <th>Trạng thái</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="sessionTableBody">
                                 <tr>
                                     <td>08:00 - 09:30</td>
                                     <td>Yoga Căn Bản</td>
@@ -168,6 +168,53 @@ $currentPage = 'dashboard';
             </div>
         </main>
     </div>
+    
+    <script>
+    // ========== TÌM KIẾM BUỔI LỚP ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('sessionSearchInput');
+        const searchBtn = document.querySelector('.search-bar .btn-ghost');
+        const tableBody = document.getElementById('sessionTableBody');
+        
+        // Hàm thực hiện tìm kiếm
+        function performSearch() {
+            if (searchInput && tableBody) {
+                const filter = searchInput.value.toLowerCase().trim();
+                const rows = tableBody.getElementsByTagName('tr');
+                
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    const text = row.textContent.toLowerCase();
+                    
+                    if (filter === '' || text.includes(filter)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            }
+        }
+        
+        // Khi click nút "Tìm kiếm"
+        if (searchBtn) {
+            searchBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                performSearch();
+            });
+        }
+        
+        // Hoặc nhấn Enter trong ô input
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    performSearch();
+                }
+            });
+        }
+    });
+    </script>
+    
     <?php include(__DIR__ . '/../layouts/footer.php'); ?>
 </body>
 </html>

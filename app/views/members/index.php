@@ -25,14 +25,14 @@ $currentPage = 'members';
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Danh sách hội viên</h3>
-                        <a href="/block-sports-center/public/index.php?page=members-create" class="btn btn-primary">
+                        <a href="?c=members&a=create" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Thêm hội viên
                         </a>
                     </div>
                     
                     <!-- SEARCH TRONG CARD -->
                     <div class="search-bar">
-                        <input type="text" placeholder="Tìm kiếm theo tên, số điện thoại, email...">
+                        <input type="text" id="searchInput" placeholder="Tìm kiếm theo tên, số điện thoại, email...">
                         <button class="btn btn-ghost">
                             <i class="fas fa-search"></i> Tìm kiếm
                         </button>
@@ -51,7 +51,7 @@ $currentPage = 'members';
                                     <th>Hành động</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="memberTableBody">
                                 <tr>
                                     <td>#MB001</td>
                                     <td>Nguyễn Văn An</td>
@@ -61,7 +61,7 @@ $currentPage = 'members';
                                     <td><span class="badge active">Active</span></td>
                                     <td>
                                         <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='/block-sports-center/public/index.php?page=members-edit&id=1'">
+                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=1'">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <button class="action-btn delete" onclick="confirmDelete(1)">
@@ -79,7 +79,7 @@ $currentPage = 'members';
                                     <td><span class="badge active">Active</span></td>
                                     <td>
                                         <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='/block-sports-center/public/index.php?page=members-edit&id=2'">
+                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=2'">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <button class="action-btn delete" onclick="confirmDelete(2)">
@@ -97,7 +97,7 @@ $currentPage = 'members';
                                     <td><span class="badge suspended">Suspended</span></td>
                                     <td>
                                         <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='/block-sports-center/public/index.php?page=members-edit&id=3'">
+                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=3'">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <button class="action-btn delete" onclick="confirmDelete(3)">
@@ -115,7 +115,7 @@ $currentPage = 'members';
                                     <td><span class="badge active">Active</span></td>
                                     <td>
                                         <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='/block-sports-center/public/index.php?page=members-edit&id=4'">
+                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=4'">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <button class="action-btn delete" onclick="confirmDelete(4)">
@@ -133,7 +133,7 @@ $currentPage = 'members';
                                     <td><span class="badge inactive">Inactive</span></td>
                                     <td>
                                         <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='/block-sports-center/public/index.php?page=members-edit&id=5'">
+                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=5'">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <button class="action-btn delete" onclick="confirmDelete(5)">
@@ -151,7 +151,7 @@ $currentPage = 'members';
                                     <td><span class="badge active">Active</span></td>
                                     <td>
                                         <div class="action-btns">
-                                            <button class="action-btn edit" onclick="location.href='/block-sports-center/public/index.php?page=members-edit&id=6'">
+                                            <button class="action-btn edit" onclick="location.href='?c=members&a=edit&id=6'">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                             <button class="action-btn delete" onclick="confirmDelete(6)">
@@ -167,14 +167,58 @@ $currentPage = 'members';
             </div>
         </main>
     </div>
-    
+    <?php include(__DIR__ . '/../layouts/footer.php'); ?>
     <script src="/block-sports-center/public/assets/js/main.js"></script>
     <script>
     function confirmDelete(id) {
-        if (confirm('Bạn có chắc chắn muốn xóa hội viên này?')) {
-            alert('Đã xóa hội viên #' + id);
+        if (confirm('Bạn có chắc chắn muốn xóa hội viên #' + id + '?')) {
+            window.location.href = '?c=members&a=delete&id=' + id;
         }
     }
+    
+// ========== TÌM KIẾM KHI CLICK NÚT ==========
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.querySelector('.search-bar .btn-ghost');
+    const tableBody = document.getElementById('memberTableBody');
+    
+    // Hàm thực hiện tìm kiếm
+    function performSearch() {
+        if (searchInput && tableBody) {
+            const filter = searchInput.value.toLowerCase().trim();
+            const rows = tableBody.getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const text = row.textContent.toLowerCase();
+                
+                if (filter === '' || text.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+    }
+    
+    // Khi click nút "Tìm kiếm"
+    if (searchBtn) {
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            performSearch();
+        });
+    }
+    
+    // Hoặc nhấn Enter trong ô input
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+    }
+});
     </script>
 </body>
 </html>
