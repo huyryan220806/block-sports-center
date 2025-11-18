@@ -1,40 +1,35 @@
 <?php
-class Report {
-    private $conn;
-    public function __construct($db) {
-        $this->conn = $db;
+// app/models/Report.php
+// Model cho báo cáo (nếu cần thêm logic phức tạp)
+
+class Report extends Model
+{
+    // Model này có thể để trống hoặc thêm các phương thức xử lý báo cáo phức tạp
+    
+    /**
+     * Format tiền VNĐ
+     */
+    public function formatCurrency($amount)
+    {
+        return number_format($amount, 0, ',', '.') . ' đ';
     }
 
-    // Tổng số hóa đơn
-    public function totalInvoices() {
-        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM hoadon");
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_OBJ)->total;
+    /**
+     * Format số lượng
+     */
+    public function formatNumber($number)
+    {
+        return number_format($number, 0, ',', '.');
     }
-    // Tổng doanh thu (giả sử có cột THANHTIEN trong hoadon, nếu chưa có có thể SUM theo chi tiết)
-    public function totalRevenue() {
-        // Nếu tổng tiền nằm ở bảng chi tiết, cần JOIN/SUM cho chuẩn
-        $stmt = $this->conn->prepare("SELECT SUM(GIATRI) as revenue FROM hoadon WHERE TRANGTHAI='PAID'");
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_OBJ)->revenue ?? 0;
-    }
-    // Tổng số hội viên
-    public function totalMembers() {
-        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM hoivien");
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_OBJ)->total;
-    }
-    // Tổng số locker hiện có
-    public function totalLockers() {
-        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM locker");
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_OBJ)->total;
-    }
-    // Số hóa đơn theo trạng thái
-    public function invoiceByStatus() {
-        $stmt = $this->conn->prepare("SELECT TRANGTHAI, COUNT(*) as total FROM hoadon GROUP BY TRANGTHAI");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+
+    /**
+     * Tính phần trăm tăng trưởng
+     */
+    public function calculateGrowth($current, $previous)
+    {
+        if ($previous == 0) {
+            return $current > 0 ? 100 : 0;
+        }
+        return round((($current - $previous) / $previous) * 100, 2);
     }
 }
-?>

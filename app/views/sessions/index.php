@@ -1,6 +1,11 @@
 <?php 
-$pageTitle = 'Quản lý buổi lớp';
+$pageTitle   = 'Quản lý buổi lớp';
 $currentPage = 'sessions';
+
+$sessions   = $data['sessions']   ?? [];
+$search     = $data['search']     ?? '';
+$page       = (int)($data['page'] ?? 1);
+$totalPages = (int)($data['totalPages'] ?? 1);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -12,149 +17,169 @@ $currentPage = 'sessions';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="admin-layout">
-        <?php include(__DIR__ . '/../layouts/sidebar.php'); ?>
-        <main class="main-content">
-            <?php include(__DIR__ . '/../layouts/header.php'); ?>
-            <div class="content">
-                <div class="page-header">
-                    <h2>Quản lý buổi lớp</h2>
-                    <p>Lịch trình các buổi lớp trong tuần</p>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Danh sách buổi lớp</h3>
-                        <button class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Thêm buổi lớp
-                        </button>
-                    </div>
-                    
-                    <!-- SEARCH TRONG CARD -->
-                    <div class="search-bar">
-                        <input type="date" class="form-control" style="max-width: 200px;" value="<?php echo date('Y-m-d'); ?>">
-                        <select class="form-control" style="max-width: 200px;">
-                            <option value="">Tất cả trạng thái</option>
-                            <option value="SCHEDULED">Scheduled</option>
-                            <option value="IN_PROGRESS">Đang diễn ra</option>
-                            <option value="COMPLETED">Hoàn thành</option>
-                            <option value="CANCELLED">Đã hủy</option>
-                        </select>
-                        <button class="btn btn-ghost">
-                            <i class="fas fa-search"></i> Lọc
-                        </button>
-                    </div>
-                    
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Ngày</th>
-                                    <th>Thời gian</th>
-                                    <th>Tên lớp</th>
-                                    <th>Phòng</th>
-                                    <th>Huấn luyện viên</th>
-                                    <th>Số chỗ</th>
-                                    <th>Trạng thái</th>
-                                    <th>Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>15/11/2024</strong></td>
-                                    <td>08:00 - 09:30</td>
-                                    <td>Yoga Căn Bản</td>
-                                    <td>Phòng A1</td>
-                                    <td>Nguyễn Thị Lan</td>
-                                    <td><strong>15/20</strong></td>
-                                    <td><span class="badge scheduled">Scheduled</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn edit" title="Sửa"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete" onclick="confirmDelete(1)"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>15/11/2024</strong></td>
-                                    <td>09:00 - 10:00</td>
-                                    <td>Gym Strength</td>
-                                    <td>Gym Floor</td>
-                                    <td>Trần Văn Mạnh</td>
-                                    <td><strong>25/25</strong></td>
-                                    <td><span class="badge full">Full</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete" onclick="confirmDelete(2)"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>15/11/2024</strong></td>
-                                    <td>10:00 - 11:00</td>
-                                    <td>Zumba Dance</td>
-                                    <td>Phòng B2</td>
-                                    <td>Lê Thu Hà</td>
-                                    <td><strong>18/30</strong></td>
-                                    <td><span class="badge scheduled">Scheduled</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete" onclick="confirmDelete(3)"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>15/11/2024</strong></td>
-                                    <td>14:00 - 15:30</td>
-                                    <td>Boxing Cơ Bản</td>
-                                    <td>Phòng C1</td>
-                                    <td>Phạm Quốc Tuấn</td>
-                                    <td><strong>10/15</strong></td>
-                                    <td><span class="badge scheduled">Scheduled</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete" onclick="confirmDelete(4)"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>15/11/2024</strong></td>
-                                    <td>16:00 - 17:00</td>
-                                    <td>Pilates</td>
-                                    <td>Phòng A2</td>
-                                    <td>Đỗ Minh Châu</td>
-                                    <td><strong>12/20</strong></td>
-                                    <td><span class="badge scheduled">Scheduled</span></td>
-                                    <td>
-                                        <div class="action-btns">
-                                            <button class="action-btn edit"><i class="fas fa-eye"></i></button>
-                                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
-                                            <button class="action-btn delete" onclick="confirmDelete(5)"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+<div class="admin-layout">
+    <?php include(__DIR__ . '/../layouts/sidebar.php'); ?>
+
+    <main class="main-content">
+        <?php include(__DIR__ . '/../layouts/header.php'); ?>
+
+        <div class="content">
+            <div class="page-header">
+                <h2>Quản lý buổi lớp</h2>
+                <p>Theo dõi lịch học của các lớp trong trung tâm.</p>
             </div>
-        </main>
-    </div>
-    
-    <script src="/block-sports-center/public/assets/js/main.js"></script>
-    <script>
-    function confirmDelete(id) {
-        if (confirm('Bạn có chắc chắn muốn xóa buổi lớp này?')) {
-            alert('Đã xóa buổi lớp #' + id);
-        }
-    }
-    </script>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Danh sách buổi lớp</h3>
+                    <a href="?c=sessions&a=create" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Thêm buổi lớp
+                    </a>
+                </div>
+
+                <!-- THANH TÌM KIẾM -->
+                <form method="get" class="search-bar">
+                    <input type="hidden" name="c" value="sessions">
+                    <input type="hidden" name="a" value="index">
+
+                    <input 
+                        type="text"
+                        name="q"
+                        class="search-input"
+                        placeholder="Tìm theo tên lớp, phòng/sân, huấn luyện viên..."
+                        value="<?php echo htmlspecialchars($search); ?>"
+                    >
+
+                    <button type="submit" class="btn btn-ghost">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                </form>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Mã buổi</th>
+                            <th>Ngày</th>
+                            <th>Thời gian</th>
+                            <th>Lớp</th>
+                            <th>Phòng/Sân</th>
+                            <th>Huấn luyện viên</th>
+                            <th>Sĩ số</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php if (!empty($sessions)): ?>
+                            <?php foreach ($sessions as $s): ?>
+                                <?php
+                                $date = date('d/m/Y', strtotime($s->BATDAU));
+                                $time = date('H:i', strtotime($s->BATDAU)) . ' - ' . date('H:i', strtotime($s->KETTHUC));
+
+                                $trainerName = $s->TENHLV ?? 'Chưa gán HLV';
+
+                                // mapping trạng thái → badge
+                                $status      = $s->TRANGTHAI;
+                                $statusLabel = 'Lịch học';
+                                $statusClass = 'badge scheduled';
+
+                                if ($status === 'ONGOING') {
+                                    $statusLabel = 'Đang học';
+                                    $statusClass = 'badge active';
+                                } elseif ($status === 'DONE') {
+                                    $statusLabel = 'Hoàn thành';
+                                    $statusClass = 'badge full';
+                                } elseif ($status === 'CANCELLED') {
+                                    $statusLabel = 'Đã hủy';
+                                    $statusClass = 'badge inactive';
+                                }
+                                ?>
+                                <tr>
+                                    <td><strong>#SS<?= str_pad($s->MABUOI, 3, '0', STR_PAD_LEFT); ?></strong></td>
+                                    <td><?= $date ?></td>
+                                    <td><?= $time ?></td>
+                                    <td><?= htmlspecialchars($s->TENLOP) ?></td>
+                                    <td><?= htmlspecialchars($s->TENPHONG) ?></td>
+                                    <td><?= htmlspecialchars($trainerName) ?></td>
+                                    <td><?= (int)$s->SISO ?></td>
+                                    <td><span class="<?= $statusClass ?>"><?= $statusLabel ?></span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button type="button"
+                                                    class="action-btn edit"
+                                                    onclick="location.href='?c=sessions&a=edit&id=<?= $s->MABUOI ?>'">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button"
+                                                    class="action-btn delete"
+                                                    onclick="if(confirm('Xóa buổi lớp này?')) location.href='?c=sessions&a=delete&id=<?= $s->MABUOI ?>';">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="9" style="text-align:center; padding:16px 0;">
+                                    Không có buổi lớp nào phù hợp.
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- PHÂN TRANG STYLE GIỐNG MEMBERS / HÌNH -->
+                <?php if ($totalPages > 1): ?>
+                    <?php
+                    // base giữ query tìm kiếm
+                    $queryBase = '?c=sessions&a=index';
+                    if (!empty($search)) {
+                        $queryBase .= '&q=' . urlencode($search);
+                    }
+                    ?>
+                    <div class="pagination" style="margin-top:16px; display:flex; justify-content:center; gap:4px;">
+                        <?php if ($page > 1): ?>
+                            <a class="page-link"
+                               href="<?= $queryBase . '&page=' . ($page - 1) ?>"
+                               style="padding:4px 8px; border-radius:4px; text-decoration:none; border:1px solid #ddd;">
+                                &laquo;
+                            </a>
+                        <?php endif; ?>
+
+                        <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+                            <?php if ($p === $page): ?>
+                                <!-- trang hiện tại: nền xanh -->
+                                <span class="page-link"
+                                      style="font-weight:bold; background:#00b894; color:#fff; padding:4px 10px; border-radius:4px; display:inline-flex; align-items:center; justify-content:center;">
+                                    <?= $p ?>
+                                </span>
+                            <?php else: ?>
+                                <!-- trang khác: viền xám -->
+                                <a class="page-link"
+                                   href="<?= $queryBase . '&page=' . $p ?>"
+                                   style="padding:4px 10px; border-radius:4px; text-decoration:none; border:1px solid #ddd; color:#333; background:#fff; display:inline-flex; align-items:center; justify-content:center;">
+                                    <?= $p ?>
+                                </a>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+
+                        <?php if ($page < $totalPages): ?>
+                            <a class="page-link"
+                               href="<?= $queryBase . '&page=' . ($page + 1) ?>"
+                               style="padding:4px 8px; border-radius:4px; text-decoration:none; border:1px solid #ddd;">
+                                &raquo;
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </main>
+</div>
+
+<?php include(__DIR__ . '/../layouts/footer.php'); ?>
 </body>
 </html>

@@ -1,6 +1,4 @@
 <?php
-// app/controllers/MembersController.php
-// Dùng MySQL thật (bảng hoivien), sort A–Z, create/edit/update/delete
 
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../models/Member.php';

@@ -72,6 +72,12 @@
             <span>Hóa đơn</span>
         </a>
 
+        <!-- Nhân viên -->
+        <a href="?c=employees&a=index" class="menu-item <?= $currentPage === 'employees' ? 'active' : '' ?>">
+            <i class="fas fa-user-tie"></i>
+            <span>Nhân viên</span>
+        </a>
+
         <!-- Báo cáo -->
         <a href="?c=reports&a=index" 
            class="menu-item <?php echo ($currentPage == 'reports') ? 'active' : ''; ?>">
@@ -87,11 +93,22 @@
         </a>
 
         <!-- Đăng xuất -->
-        <a href="?c=auth&a=logout" 
-           class="menu-item">
+        <a href="#" 
+           onclick="confirmLogout(event)"
+           class="menu-item"
+           style="color: #e74c3c;">
             <i class="fas fa-sign-out-alt"></i>
             <span>Đăng xuất</span>
         </a>
-
     </nav>
 </aside>
+
+<script>
+function confirmLogout(event) {
+    event.preventDefault();
+    
+    if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+        window.location.href = '?c=auth&a=logout';
+    }
+}
+</script>

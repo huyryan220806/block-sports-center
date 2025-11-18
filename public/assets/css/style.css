@@ -818,3 +818,124 @@ span[style*="color: red"] {
     justify-content: center;
   }
 }
+/* ========================================
+   AREA BADGES - PHÂN LOẠI THEO MÔN THỂ THAO
+   ======================================== */
+.area-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.area-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.area-badge i {
+  font-size: 16px;
+}
+
+/* GYM - Màu cam */
+.area-badge.gym {
+  background: linear-gradient(135deg, #FF6B6B 0%, #EE5A5A 100%);
+  color: white;
+}
+
+/* POOL - Màu xanh dương */
+.area-badge.pool {
+  background: linear-gradient(135deg, #4ECDC4 0%, #44A39B 100%);
+  color: white;
+}
+
+/* STUDIO (Yoga) - Màu tím nhạt */
+.area-badge.studio {
+  background: linear-gradient(135deg, #A29BFE 0%, #6C5CE7 100%);
+  color: white;
+}
+
+/* BOXING - Màu đỏ đậm */
+.area-badge.boxing {
+  background: linear-gradient(135deg, #D63031 0%, #C0252A 100%);
+  color: white;
+}
+
+/* FUTSAL - Màu xanh lá cây */
+.area-badge.futsal {
+  background: linear-gradient(135deg, #00B894 0%, #00967A 100%);
+  color: white;
+}
+
+/* VOLLEYBALL - Màu vàng cam */
+.area-badge.volleyball {
+  background: linear-gradient(135deg, #FDCB6E 0%, #E17055 100%);
+  color: white;
+}
+
+/* BASKETBALL - Màu cam đậm */
+.area-badge.basketball {
+  background: linear-gradient(135deg, #FD79A8 0%, #E84393 100%);
+  color: white;
+}
+
+/* BADMINTON - Màu xanh lá nhạt */
+.area-badge.badminton {
+  background: linear-gradient(135deg, #55EFC4 0%, #00B894 100%);
+  color: white;
+}
+
+/* FOOTBALL - Màu xanh đậm */
+.area-badge.football {
+  background: linear-gradient(135deg, #74B9FF 0%, #0984E3 100%);
+  color: white;
+}
+
+/* PICKLEBALL - Màu hồng */
+.area-badge.pickleball {
+  background: linear-gradient(135deg, #FF7675 0%, #D63031 100%);
+  color: white;
+}
+
+/* OTHER - Màu xám */
+.area-badge.other {
+  background: linear-gradient(135deg, #B2BEC3 0%, #636E72 100%);
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .area-badge {
+    font-size: 11px;
+    padding: 6px 12px;
+  }
+  
+  .area-badge i {
+    font-size: 14px;
+  }
+}
+.forgot-password {
+    text-align: right;
+    margin-top: -16px;
+    margin-bottom: 20px;
+}
+
+.forgot-password a {
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.forgot-password a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}

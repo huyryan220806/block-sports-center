@@ -1,6 +1,8 @@
-<?php 
-$pageTitle = 'Cài đặt hệ thống';
+<?php
+$pageTitle   = 'Cài đặt';
 $currentPage = 'settings';
+
+$settings = $data['settings'] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -12,148 +14,203 @@ $currentPage = 'settings';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="admin-layout">
-        <?php include(__DIR__ . '/../layouts/sidebar.php'); ?>
-        <main class="main-content">
-            <?php include(__DIR__ . '/../layouts/header.php'); ?>
-            <div class="content">
-                <div class="page-header">
-                    <h2>Cài đặt hệ thống</h2>
-                    <p>Quản lý cấu hình và thiết lập hệ thống</p>
+<div class="admin-layout">
+    <?php include(__DIR__ . '/../layouts/sidebar.php'); ?>
+
+    <main class="main-content">
+        <?php include(__DIR__ . '/../layouts/header.php'); ?>
+
+        <div class="content">
+            <div class="page-header">
+                <h2><i class="fas fa-cog"></i> Cài đặt hệ thống</h2>
+                <p>Quản lý cấu hình và thông tin trung tâm</p>
+            </div>
+
+            <?php if (!empty($_SESSION['flash']['success'])): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <?php echo htmlspecialchars($_SESSION['flash']['success']); ?>
                 </div>
-                
-                <!-- General Settings -->
+                <?php unset($_SESSION['flash']['success']); ?>
+            <?php endif; ?>
+
+            <?php if (!empty($_SESSION['flash']['error'])): ?>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <?php echo htmlspecialchars($_SESSION['flash']['error']); ?>
+                </div>
+                <?php unset($_SESSION['flash']['error']); ?>
+            <?php endif; ?>
+
+            <form method="post" action="?c=settings&a=update">
+                <!-- THÔNG TIN TRUNG TÂM -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Thông tin chung</h3>
+                        <h3 class="card-title"><i class="fas fa-building"></i> Thông tin trung tâm</h3>
                     </div>
-                    <form>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div>
-                                <div class="form-group">
-                                    <label class="form-label">Tên trung tâm</label>
-                                    <input type="text" class="form-control" value="BLOCK SPORTS CENTER">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Số điện thoại</label>
-                                    <input type="text" class="form-control" value="113">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" value="info@blocksports.vn">
-                                </div>
+                    <div class="form-layout">
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Tên trung tâm <span style="color:red">*</span></label>
+                                <input type="text" 
+                                       name="center_name" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars($settings['center_name'] ?? 'BLOCK SPORTS CENTER') ?>"
+                                       required>
                             </div>
-                            <div>
-                                <div class="form-group">
-                                    <label class="form-label">Địa chỉ</label>
-                                    <textarea class="form-control" rows="3">Dĩ An Bình Dương</textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Giờ mở cửa</label>
-                                    <input type="text" class="form-control" value="05:00 - 23:00">
-                                </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Địa chỉ</label>
+                                <input type="text" 
+                                       name="center_address" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars($settings['center_address'] ?? '') ?>">
                             </div>
                         </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Lưu thay đổi
+
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="tel" 
+                                       name="center_phone" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars($settings['center_phone'] ?? '') ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" 
+                                       name="center_email" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars($settings['center_email'] ?? '') ?>">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GIÁ DỊCH VỤ -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-dollar-sign"></i> Giá dịch vụ mặc định</h3>
+                    </div>
+                    <div class="form-layout">
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Giá thuê locker (VNĐ/tháng)</label>
+                                <input type="number" 
+                                       name="locker_price" 
+                                       class="form-control"
+                                       min="0"
+                                       value="<?= (int)($settings['locker_price'] ?? 100000) ?>">
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Giá đặt phòng (VNĐ/giờ)</label>
+                                <input type="number" 
+                                       name="booking_price" 
+                                       class="form-control"
+                                       min="0"
+                                       value="<?= (int)($settings['booking_price'] ?? 50000) ?>">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CẤU HÌNH HỆ THỐNG -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-server"></i> Cấu hình hệ thống</h3>
+                    </div>
+                    <div class="form-layout">
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Múi giờ</label>
+                                <select name="timezone" class="form-control">
+                                    <option value="Asia/Ho_Chi_Minh" selected>GMT+7 (Việt Nam)</option>
+                                    <option value="Asia/Bangkok">GMT+7 (Bangkok)</option>
+                                    <option value="Asia/Singapore">GMT+8 (Singapore)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Ngôn ngữ</label>
+                                <select name="language" class="form-control">
+                                    <option value="vi" selected>Tiếng Việt</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THÔNG TIN ADMIN -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-user-shield"></i> Thông tin quản trị viên</h3>
+                    </div>
+                    <div class="form-layout">
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Tên đăng nhập</label>
+                                <input type="text" 
+                                       class="form-control"
+                                       value="HungHIHI1603"
+                                       disabled>
+                                <small style="color: var(--text-secondary);">Liên hệ IT để thay đổi</small>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Email quản trị</label>
+                                <input type="email" 
+                                       class="form-control"
+                                       value="admin@blocksports.vn"
+                                       disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BACKUP & BẢO TRÌ -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-database"></i> Backup & Bảo trì</h3>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button type="button" class="btn btn-ghost" onclick="alert('Tính năng đang phát triển!')">
+                                <i class="fas fa-download"></i> Backup dữ liệu
+                            </button>
+                            <button type="button" class="btn btn-ghost" onclick="alert('Tính năng đang phát triển!')">
+                                <i class="fas fa-upload"></i> Khôi phục dữ liệu
+                            </button>
+                            <button type="button" class="btn btn-ghost" onclick="alert('Tính năng đang phát triển!')">
+                                <i class="fas fa-broom"></i> Dọn dẹp cache
                             </button>
                         </div>
-                    </form>
-                </div>
-                
-                <!-- System Settings -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Cài đặt hệ thống</h3>
-                    </div>
-                    <div class="table-container">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Tự động gửi email nhắc nhở</strong><br><small style="color: #999;">Gửi email cho hội viên trước buổi lớp</small></td>
-                                    <td style="text-align: right;">
-                                        <label style="position: relative; display: inline-block; width: 60px; height: 30px;">
-                                            <input type="checkbox" checked style="opacity: 0; width: 0; height: 0;">
-                                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--primary); transition: .4s; border-radius: 30px;"></span>
-                                        </label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Bảo trì hệ thống</strong><br><small style="color: #999;">Bật chế độ bảo trì (tạm khóa hệ thống)</small></td>
-                                    <td style="text-align: right;">
-                                        <label style="position: relative; display: inline-block; width: 60px; height: 30px;">
-                                            <input type="checkbox" style="opacity: 0; width: 0; height: 0;">
-                                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 30px;"></span>
-                                        </label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Chế độ tối (Dark Mode)</strong><br><small style="color: #999;">Giao diện tối cho admin</small></td>
-                                    <td style="text-align: right;">
-                                        <label style="position: relative; display: inline-block; width: 60px; height: 30px;">
-                                            <input type="checkbox" style="opacity: 0; width: 0; height: 0;">
-                                            <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 30px;"></span>
-                                        </label>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
                 </div>
-                
-                <!-- Backup & Restore -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Sao lưu & Khôi phục</h3>
-                    </div>
-                    <div style="padding: 20px;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div style="text-align: center; padding: 30px; background: #f8f9fa; border-radius: 8px;">
-                                <i class="fas fa-download" style="font-size: 48px; color: var(--primary); margin-bottom: 15px;"></i>
-                                <h4>Sao lưu dữ liệu</h4>
-                                <p style="color: #999; font-size: 13px; margin: 10px 0;">Tạo bản backup toàn bộ database</p>
-                                <button class="btn btn-primary" style="margin-top: 10px;">
-                                    <i class="fas fa-download"></i> Backup ngay
-                                </button>
-                            </div>
-                            <div style="text-align: center; padding: 30px; background: #f8f9fa; border-radius: 8px;">
-                                <i class="fas fa-upload" style="font-size: 48px; color: var(--primary); margin-bottom: 15px;"></i>
-                                <h4>Khôi phục dữ liệu</h4>
-                                <p style="color: #999; font-size: 13px; margin: 10px 0;">Khôi phục từ file backup</p>
-                                <button class="btn btn-ghost" style="margin-top: 10px;">
-                                    <i class="fas fa-upload"></i> Chọn file
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+
+                <!-- NÚT LƯU -->
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-ghost">
+                        <i class="fas fa-redo"></i> Đặt lại
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Lưu cài đặt
+                    </button>
                 </div>
-                
-                <!-- About -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Thông tin phiên bản</h3>
-                    </div>
-                    <div style="padding: 20px;">
-                        <table style="width: 100%;">
-                            <tr>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Phiên bản hệ thống:</strong></td>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">v1.0.0</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Cập nhật lần cuối:</strong></td>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">15/11/2024</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee;"><strong>Developer:</strong></td>
-                                <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">Block Sports Team</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-    <?php include(__DIR__ . '/../layouts/footer.php'); ?>
+            </form>
+
+        </div>
+    </main>
+</div>
+
+<script src="/block-sports-center/public/assets/js/main.js"></script>
 </body>
 </html>

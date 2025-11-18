@@ -1,14 +1,27 @@
 <?php
-// Nếu controller chưa truyền $user thì dùng giá trị mặc định
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (!isset($user) || !is_array($user)) {
+    $sessionName = $_SESSION['fullname'] ?? $_SESSION['username'] ?? 'Khách';
+    $avatar = mb_strtoupper(mb_substr(trim($sessionName), 0, 2, 'UTF-8'), 'UTF-8');
+
     $user = [
-        'name'      => 'Nguyễn Văn An',
+        'name'      => $sessionName,
         'member_id' => 'MB001',
-        'avatar'    => 'NA',
+        'avatar'    => $avatar,
     ];
 }
 
-// Nếu chưa có các biến thống kê thì cho = 0 để khỏi báo lỗi
+// Xử lý tên để chào: lấy từ cuối cùng (ví dụ "An" trong "Nguyễn Văn An")
+$fullName = trim($user['name'] ?? '');
+if ($fullName === '') {
+    $fullName = 'bạn';
+}
+$nameParts  = preg_split('/\s+/', $fullName);
+$shortName  = end($nameParts);
+
 if (!isset($totalCalo)) {
     $totalCalo = 0;
 }
@@ -38,7 +51,6 @@ if (!isset($achievements)) {
             min-height: 100vh;
         }
         
-        /* HEADER */
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -80,14 +92,14 @@ if (!isset($achievements)) {
             transition: color 0.3s;
         }
         
-        .nav a:hover {
+        .nav a:hover, .nav a.active {
             color: #667eea;
         }
         
         .user-menu {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
         
         .user-avatar {
@@ -100,10 +112,30 @@ if (!isset($achievements)) {
             justify-content: center;
             color: white;
             font-weight: 600;
-            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .logout-link:hover {
+            background: #e74c3c;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
         }
         
-        /* HERO SECTION */
         .hero {
             max-width: 1200px;
             margin: 40px auto;
@@ -124,7 +156,6 @@ if (!isset($achievements)) {
             margin-bottom: 30px;
         }
         
-        /* STATS */
         .stats {
             max-width: 1200px;
             margin: 40px auto;
@@ -165,7 +196,6 @@ if (!isset($achievements)) {
             font-size: 14px;
         }
         
-        /* QUICK ACTIONS */
         .quick-actions {
             max-width: 1200px;
             margin: 40px auto;
@@ -194,6 +224,9 @@ if (!isset($achievements)) {
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
         
         .action-card:hover {
@@ -220,28 +253,7 @@ if (!isset($achievements)) {
             color: #666;
             font-size: 14px;
         }
-
-        /* LINK CARD & USER LINK */
-        .link-card {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .link-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-
-        .user-link {
-            text-decoration: none;
-            color: inherit;
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-        }
         
-        /* UPCOMING CLASSES */
         .upcoming-classes {
             max-width: 1200px;
             margin: 60px auto 40px;
@@ -315,24 +327,25 @@ if (!isset($achievements)) {
             </div>
             
             <nav class="nav">
-                <a href="/block-sports-center/public/index.php?page=user">Trang chủ</a>
+                <a href="/block-sports-center/public/index.php?page=user" class="active">Trang chủ</a>
                 <a href="/block-sports-center/public/user/classes.php">Lớp học</a>
                 <a href="/block-sports-center/public/user/schedule.php">Lịch tập</a>
                 <a href="/block-sports-center/public/user/booking.php">Đặt phòng</a>
             </nav>
             
-            <a href="/block-sports-center/public/user/profile.php" class="user-link">
-                <div class="user-menu">
-                    <span><?php echo $user['name']; ?></span>
-                    <div class="user-avatar"><?php echo $user['avatar']; ?></div>
-                </div>
-            </a>
+            <div class="user-menu">
+                <span>Xin chào, <?= htmlspecialchars($user['name']); ?></span>
+                <div class="user-avatar"><?= htmlspecialchars($user['avatar']); ?></div>
+                <a href="/block-sports-center/public/index.php?page=logout" class="logout-link">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </a>
+            </div>
         </div>
     </header>
     
     <!-- HERO -->
     <section class="hero">
-        <h1>Chào mừng trở lại, <?php echo explode(' ', $user['name'])[count(explode(' ', $user['name']))-1]; ?>! 👋</h1>
+        <h1>Chào mừng trở lại, <?= htmlspecialchars($shortName); ?>! 👋</h1>
         <p>Hãy cùng bắt đầu một ngày tập luyện tuyệt vời</p>
     </section>
     
@@ -340,33 +353,25 @@ if (!isset($achievements)) {
     <section class="stats">
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-            <div class="stat-value">
-                <?php echo $sessionsThisMonth; ?>
-            </div>
+            <div class="stat-value"><?= (int)$sessionsThisMonth; ?></div>
             <div class="stat-label">Buổi tập tháng này</div>
         </div>
         
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-fire"></i></div>
-            <div class="stat-value">
-                <?php echo number_format($totalCalo ?? 0, 0, ',', '.'); ?>
-            </div>
+            <div class="stat-value"><?= number_format($totalCalo, 0, ',', '.'); ?></div>
             <div class="stat-label">Calories đã đốt (tháng này)</div>
         </div>
 
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-clock"></i></div>
-            <div class="stat-value">
-                <?php echo number_format($hoursThisMonth, 1, ',', '.'); ?>
-            </div>
+            <div class="stat-value"><?= number_format($hoursThisMonth, 1, ',', '.'); ?></div>
             <div class="stat-label">Giờ tập luyện</div>
         </div>
         
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-trophy"></i></div>
-            <div class="stat-value">
-                <?php echo $achievements; ?>
-            </div>
+            <div class="stat-value"><?= (int)$achievements; ?></div>
             <div class="stat-label">Thành tựu đạt được</div>
         </div>
     </section>
@@ -376,30 +381,28 @@ if (!isset($achievements)) {
         <h2 class="section-title">Thao tác nhanh</h2>
         
         <div class="actions-grid">
-            <div class="action-card" onclick="location.href='/block-sports-center/public/user/classes.php'">
+            <a href="/block-sports-center/public/user/classes.php" class="action-card">
                 <div class="action-icon"><i class="fas fa-calendar-plus"></i></div>
                 <div class="action-title">Đăng ký lớp học</div>
                 <div class="action-desc">Tìm và đăng ký lớp học phù hợp</div>
-            </div>
+            </a>
             
-            <div class="action-card" onclick="location.href='/block-sports-center/public/user/schedule.php'">
+            <a href="/block-sports-center/public/user/schedule.php" class="action-card">
                 <div class="action-icon"><i class="fas fa-calendar-alt"></i></div>
                 <div class="action-title">Xem lịch tập</div>
                 <div class="action-desc">Kiểm tra lịch tập của bạn</div>
-            </div>
+            </a>
             
-            <div class="action-card" onclick="location.href='/block-sports-center/public/user/booking.php'">
+            <a href="/block-sports-center/public/user/booking.php" class="action-card">
                 <div class="action-icon"><i class="fas fa-door-open"></i></div>
                 <div class="action-title">Đặt phòng</div>
                 <div class="action-desc">Đặt phòng tập riêng hoặc sân</div>
-            </div>
+            </a>
             
-            <a href="/block-sports-center/public/user/profile.php" class="action-card link-card">
-                <div class="action-icon">
-                    <i class="fas fa-user"></i>
-                </div>
-                <h3>Thông tin cá nhân</h3>
-                <p>Xem và cập nhật hồ sơ</p>
+            <a href="/block-sports-center/public/user/profile.php" class="action-card">
+                <div class="action-icon"><i class="fas fa-user"></i></div>
+                <div class="action-title">Thông tin cá nhân</div>
+                <div class="action-desc">Xem và cập nhật hồ sơ</div>
             </a>
         </div>
     </section>

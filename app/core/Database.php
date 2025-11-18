@@ -1,5 +1,4 @@
 <?php
-// app/core/Database.php - KẾT NỐI DATABASE
 
 class Database {
     private static $instance = null;

@@ -60,7 +60,8 @@ $promotions = $data['promotions'] ?? [];
     </style>
 </head>
 <body>
-    <!-- ❌ XÓA DÒNG NÀY: <div><?= formatMoney($pkg->GIA) ?></div> -->
+    <!-- ❌❌❌ XÓA HOÀN TOÀN DÒNG NÀY ❌❌❌ -->
+    <!-- <div><?= formatMoney($pkg->GIA) ?></div> -->
     
     <div class="admin-layout">
         <?php include(__DIR__ . '/../layouts/sidebar.php'); ?>
@@ -83,7 +84,11 @@ $promotions = $data['promotions'] ?? [];
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; padding: 20px;">
                         <?php if (!empty($packages)): ?>
                             <?php foreach ($packages as $pkg): ?>
-                                <?php $levelClass = strtolower($pkg->CAPDO ?? 'basic'); ?>
+                                <?php 
+                                $levelClass = strtolower($pkg->CAPDO ?? 'basic');
+                                $gia = $pkg->GIA ?? 0;
+                                $thoihan = $pkg->THOIHAN ?? 1;
+                                ?>
                                 <div class="package-card <?= $levelClass ?>">
                                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
                                         <div>
@@ -92,7 +97,7 @@ $promotions = $data['promotions'] ?? [];
                                             </span>
                                         </div>
                                         <div style="font-size: 28px; font-weight: 700; color: #00B894;">
-                                            <?= formatMoney($pkg->GIA ?? 0) ?>
+                                            <?= formatMoney($gia) ?>
                                         </div>
                                     </div>
                                     
@@ -102,7 +107,7 @@ $promotions = $data['promotions'] ?? [];
                                     
                                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #636e72;">
                                         <i class="fas fa-clock"></i>
-                                        <span><?= $pkg->THOIHAN ?? 0 ?> ngày</span>
+                                        <span><?= $thoihan ?> ngày</span>
                                     </div>
                                     
                                     <p style="color: #636e72; font-size: 14px; line-height: 1.6;">
@@ -111,12 +116,9 @@ $promotions = $data['promotions'] ?? [];
                                     
                                     <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
                                         <div style="font-size: 13px; color: #999;">
-                                            Giá/ngày: <strong style="color: #00B894;">
-                                                <?php
-                                                $thoihan = $pkg->THOIHAN ?? 1;
-                                                $gia = $pkg->GIA ?? 0;
-                                                echo formatMoney($thoihan > 0 ? $gia / $thoihan : 0);
-                                                ?>
+                                            Giá/ngày: 
+                                            <strong style="color: #00B894;">
+                                                <?= formatMoney($thoihan > 0 ? $gia / $thoihan : 0) ?>
                                             </strong>
                                         </div>
                                     </div>
@@ -125,7 +127,7 @@ $promotions = $data['promotions'] ?? [];
                         <?php else: ?>
                             <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
                                 <i class="fas fa-box-open" style="font-size: 64px; color: #ddd; margin-bottom: 16px;"></i>
-                                <p style="color: #999; font-size: 16px;">Chưa có gói tập nào.</p>
+                                <p style="color: #999; font-size: 16px;">Chưa có gói tập nào trong hệ thống.</p>
                             </div>
                         <?php endif; ?>
                     </div>

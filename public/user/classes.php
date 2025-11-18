@@ -1,10 +1,16 @@
 <?php
-// Fallback user nếu chưa truyền từ controller
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (!isset($user) || !is_array($user)) {
+    $sessionName = $_SESSION['fullname'] ?? $_SESSION['username'] ?? 'Khách';
+    $avatar = mb_strtoupper(mb_substr(trim($sessionName), 0, 2, 'UTF-8'), 'UTF-8');
+
     $user = [
-        'name'      => 'Nguyễn Văn An',
+        'name'      => $sessionName,
         'member_id' => 'MB001',
-        'avatar'    => 'NA',
+        'avatar'    => $avatar,
     ];
 }
 ?>
@@ -24,7 +30,6 @@ if (!isset($user) || !is_array($user)) {
             min-height: 100vh;
         }
 
-        /* HEADER */
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -66,19 +71,14 @@ if (!isset($user) || !is_array($user)) {
             transition: color 0.3s;
         }
 
-        .nav a:hover {
+        .nav a:hover, .nav a.active {
             color: #667eea;
-        }
-
-        .nav a.active {
-            color: #667eea;
-            font-weight: 700;
         }
 
         .user-menu {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .user-avatar {
@@ -91,18 +91,30 @@ if (!isset($user) || !is_array($user)) {
             justify-content: center;
             color: white;
             font-weight: 600;
-            cursor: pointer;
+            font-size: 14px;
         }
 
-        .user-link {
-            text-decoration: none;
-            color: inherit;
+        .logout-link {
             display: inline-flex;
             align-items: center;
-            gap: 15px;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid rgba(231, 76, 60, 0.3);
         }
 
-        /* HERO SECTION */
+        .logout-link:hover {
+            background: #e74c3c;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        }
+
         .hero {
             max-width: 1200px;
             margin: 40px auto;
@@ -120,15 +132,8 @@ if (!isset($user) || !is_array($user)) {
         .hero p {
             font-size: 20px;
             opacity: 0.9;
-            margin-bottom: 10px;
         }
 
-        .hero-sub {
-            font-size: 18px;
-            opacity: 0.9;
-        }
-
-        /* CLASS GRID */
         .classes-section {
             max-width: 1200px;
             margin: 30px auto 40px;
@@ -190,18 +195,6 @@ if (!isset($user) || !is_array($user)) {
             margin-bottom: 18px;
         }
 
-        .class-meta span {
-            display: block;
-            margin-top: 4px;
-        }
-
-        .class-actions {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
         .btn {
             padding: 10px 18px;
             border-radius: 999px;
@@ -231,41 +224,6 @@ if (!isset($user) || !is_array($user)) {
             background: #e0e7ff;
         }
 
-        /* DETAIL SECTION */
-        .detail-section {
-            max-width: 1200px;
-            margin: 20px auto 60px;
-            padding: 0 20px 40px;
-        }
-
-        .detail-card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px 25px 30px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-        }
-
-        .detail-title {
-            font-size: 22px;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .detail-body {
-            font-size: 14px;
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .detail-body ul {
-            padding-left: 20px;
-            margin-top: 8px;
-        }
-
-        .detail-body li {
-            margin-bottom: 4px;
-        }
-
         @media (max-width: 768px) {
             .hero h1 { font-size: 32px; }
             .nav { display: none; }
@@ -273,7 +231,6 @@ if (!isset($user) || !is_array($user)) {
     </style>
 </head>
 <body>
-    <!-- HEADER -->
     <header class="header">
         <div class="header-container">
             <div class="logo">
@@ -288,44 +245,35 @@ if (!isset($user) || !is_array($user)) {
                 <a href="/block-sports-center/public/user/booking.php">Đặt phòng</a>
             </nav>
 
-            <a href="/block-sports-center/public/user/profile.php" class="user-link">
-                <div class="user-menu">
-                    <span><?php echo $user['name']; ?></span>
-                    <div class="user-avatar"><?php echo $user['avatar']; ?></div>
-                </div>
-            </a>
+            <div class="user-menu">
+                <span>Xin chào, <?php echo htmlspecialchars($user['name']); ?></span>
+                <div class="user-avatar"><?php echo htmlspecialchars($user['avatar']); ?></div>
+                <a href="/block-sports-center/public/index.php?page=logout" class="logout-link">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </a>
+            </div>
         </div>
     </header>
 
-    <!-- HERO -->
     <section class="hero">
         <h1>Các lớp học tại BLOCK SPORTS CENTER</h1>
         <p class="hero-sub">Chọn bộ môn phù hợp với mục tiêu và lịch rảnh của bạn</p>
     </section>
 
-    <!-- CLASS LIST -->
     <section class="classes-section">
         <h2 class="section-title">Danh sách bộ môn</h2>
-
         <div class="class-grid">
-
-            <!-- Bơi -->
+            <!-- Các card lớp học giữ nguyên -->
             <div class="class-card">
                 <div class="class-icon">
                     <i class="fas fa-swimmer"></i>
                 </div>
                 <h3>Bơi lội</h3>
-                <p class="class-desc">
-                    Cải thiện sức bền, tốt cho tim mạch và khớp, phù hợp mọi lứa tuổi.
-                </p>
+                <p class="class-desc">Cải thiện sức bền, tốt cho tim mạch và khớp.</p>
                 <div class="class-meta">
-                    <span><i class="fas fa-clock"></i> 06:00 - 07:00, 17:00 - 18:00</span>
-                    <span><i class="fas fa-signal"></i> Mức độ: Cơ bản &amp; Nâng cao</span>
+                    <span><i class="fas fa-clock"></i> 06:00 - 07:00</span>
                 </div>
-                <div class="class-actions">
-                    <button class="btn btn-primary">Xem lịch lớp</button>
-                    <button class="btn btn-secondary" onclick="showDetail('boi')">Chi tiết</button>
-                </div>
+                <button class="btn btn-primary">Xem lịch lớp</button>
             </div>
 
             <!-- Futsal -->

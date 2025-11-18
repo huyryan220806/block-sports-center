@@ -1,7 +1,4 @@
 <?php
-// app/core/App.php - FIXED FINAL VERSION - Tương thích Team UI
-// Updated: 2025-11-16 by @dohoangphuc2006
-// Fixed: Xóa dòng duplicate $_GET['id']
 
 class App {
     protected $controller = 'DashboardController';

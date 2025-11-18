@@ -1,16 +1,21 @@
 <?php
-// Nếu controller chưa truyền $user thì dùng giá trị mặc định
-if (!isset($user) || !is_array($user)) {
-    $user = [
-        'name'      => 'Nguyễn Văn An',
-        'member_id' => 'MB001',
-        'avatar'    => 'NA',
-    ];
+// Trang đặt phòng / đặt sân cho user
+
+// Cần session để lấy username đã login
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
-// Nếu chưa có biến $totalCalo thì cho = 0 để khỏi báo lỗi
-if (!isset($totalCalo)) {
-    $totalCalo = 0;
+// Nếu controller chưa truyền $user thì tự tạo từ session
+if (!isset($user) || !is_array($user)) {
+    $sessionName = $_SESSION['fullname'] ?? $_SESSION['username'] ?? 'Khách';
+    $avatar = mb_strtoupper(mb_substr(trim($sessionName), 0, 2, 'UTF-8'), 'UTF-8');
+
+    $user = [
+        'name'      => $sessionName,
+        'member_id' => 'MB001',
+        'avatar'    => $avatar,
+    ];
 }
 ?>
 <!DOCTYPE html>
@@ -18,7 +23,7 @@ if (!isset($totalCalo)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BLOCK SPORTS CENTER - Trang chủ</title>
+    <title>BLOCK SPORTS CENTER - Đặt phòng</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -93,6 +98,27 @@ if (!isset($totalCalo)) {
             font-weight: 600;
             cursor: pointer;
         }
+
+        .logout-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(231, 76, 60, 0.25);
+            background: rgba(231, 76, 60, 0.06);
+            color: #e74c3c;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .logout-link:hover {
+            background: #e74c3c;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
+        }
         
         /* HERO SECTION */
         .hero {
@@ -115,7 +141,7 @@ if (!isset($totalCalo)) {
             margin-bottom: 30px;
         }
         
-        /* STATS */
+        /* STATS & ACTIONS (giữ nguyên layout) */
         .stats {
             max-width: 1200px;
             margin: 40px auto;
@@ -156,7 +182,6 @@ if (!isset($totalCalo)) {
             font-size: 14px;
         }
         
-        /* QUICK ACTIONS */
         .quick-actions {
             max-width: 1200px;
             margin: 40px auto;
@@ -212,7 +237,6 @@ if (!isset($totalCalo)) {
             font-size: 14px;
         }
         
-        /* UPCOMING CLASSES */
         .upcoming-classes {
             max-width: 1200px;
             margin: 60px auto 40px;
@@ -274,6 +298,56 @@ if (!isset($totalCalo)) {
             .stats { grid-template-columns: 1fr; }
             .actions-grid { grid-template-columns: 1fr; }
         }
+
+        /* Booking form */
+        .booking-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .schedule-list {
+            list-style: none;
+            padding-left: 0;
+            text-align: left;
+        }
+
+        .schedule-list li {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .schedule-list i {
+            color: #667eea;
+            margin-right: 6px;
+        }
     </style>
 </head>
 <body>
@@ -293,8 +367,11 @@ if (!isset($totalCalo)) {
             </nav>
             
             <div class="user-menu">
-                <span><?php echo $user['name']; ?></span>
-                <div class="user-avatar"><?php echo $user['avatar']; ?></div>
+                <span>Xin chào, <?php echo htmlspecialchars($user['name']); ?></span>
+                <div class="user-avatar"><?php echo htmlspecialchars($user['avatar']); ?></div>
+                <a href="/block-sports-center/public/index.php?page=logout" class="logout-link">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </a>
             </div>
         </div>
     </header>
@@ -375,39 +452,5 @@ if (!isset($totalCalo)) {
             </div>
         </div>
     </section>
-
-    <style>
-        .booking-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            font-size: 14px;
-        }
-
-        .form-group label {
-            font-weight: 600;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 14px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-    </style>
 </body>
 </html>

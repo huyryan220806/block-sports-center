@@ -1,6 +1,4 @@
 <?php
-// app/controllers/RoomsController.php
-// CRUD + sort + phân trang cho bảng phong (Rooms)
 
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../models/Room.php';

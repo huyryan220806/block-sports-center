@@ -2,13 +2,20 @@
 $pageTitle   = 'Quản lý đặt phòng';
 $currentPage = 'bookings';
 
-$bookings = $bookings ?? [];          // từ controller
-$rooms    = $rooms    ?? [];          // từ controller
+// DỮ LIỆU TỪ CONTROLLER
+$bookings        = $data['bookings']        ?? ($bookings ?? []);   // danh sách đặt phòng
+$rooms           = $data['rooms']           ?? ($rooms ?? []);      // danh sách phòng
+$sort            = $data['sort']            ?? 'id_desc';
+$page            = $data['page']            ?? 1;
+$totalPages      = $data['totalPages']      ?? 1;
+$total           = $data['total']           ?? 0;
+$filterDateValue = $data['filterDateValue'] ?? ($filterDateValue ?? '');
+$filterRoomValue = $data['filterRoomValue'] ?? ($filterRoomValue ?? '');
 
-$selectedDate = $filterDateValue ?? '';   // controller set
-$selectedRoom = $filterRoomValue ?? '';   // controller set
+$selectedDate = $filterDateValue;
+$selectedRoom = $filterRoomValue;
 
-if ($selectedDate === '') {
+if ($selectedDate === '' || $selectedDate === null) {
     $selectedDate = date('Y-m-d');
 }
 ?>
@@ -29,6 +36,8 @@ if ($selectedDate === '') {
             <?php include(__DIR__ . '/../layouts/header.php'); ?>
 
             <div class="content">
+                <?php include(__DIR__ . '/../layouts/alerts.php'); ?>
+
                 <div class="page-header">
                     <h2>Quản lý đặt phòng</h2>
                     <p>Theo dõi và quản lý các lịch đặt phòng/sân trong trung tâm.</p>
@@ -123,7 +132,7 @@ if ($selectedDate === '') {
                                             <td><span class="<?= $statusClass ?>"><?= $statusLabel ?></span></td>
                                             <td>
                                                 <div class="action-btns">
-                                                    <!-- Edit (nếu có màn hình chỉnh sửa) -->
+                                                    <!-- Edit -->
                                                     <button type="button"
                                                             class="action-btn edit"
                                                             onclick="location.href='?c=bookings&a=edit&id=<?= $bk->MADP ?>'">
@@ -159,20 +168,70 @@ if ($selectedDate === '') {
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="8" style="text-align:center; padding: 16px 0;">
+                                            Không có đặt phòng nào phù hợp.
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+
+                       <?php if ($totalPages > 1): ?>
+                            <?php
+                            // Build base query giữ lại filter + sort
+                            $queryBase = '?c=bookings&a=index';
+                            if (!empty($selectedDate)) {
+                                $queryBase .= '&date=' . urlencode($selectedDate);
+                            }
+                            if (!empty($selectedRoom)) {
+                                $queryBase .= '&room_id=' . urlencode($selectedRoom);
+                            }
+                            if (!empty($sort)) {
+                                $queryBase .= '&sort=' . urlencode($sort);
+                            }
+                            ?>
+                            <div class="pagination" style="margin-top:16px; display:flex; justify-content:center; gap:4px;">
+                                <?php if ($page > 1): ?>
+                                    <a class="page-link"
+                                       href="<?= $queryBase . '&page=' . ($page - 1) ?>"
+                                       style="padding:4px 8px; border-radius:4px; text-decoration:none; border:1px solid #ddd;">
+                                        &laquo;
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php for ($p = 1; $p <= $totalPages; $p++): ?>
+                                    <?php if ($p == $page): ?>
+                                        <!-- trang hiện tại: nền xanh giống hình -->
+                                        <span class="page-link"
+                                              style="font-weight:bold; background:#00b894; color:#fff; padding:4px 10px; border-radius:4px; display:inline-flex; align-items:center; justify-content:center;">
+                                            <?= $p ?>
+                                        </span>
                                     <?php else: ?>
-                                        <tr>
-                                            <td colspan="8" style="text-align:center; padding: 16px 0;">
-                                                Không có đặt phòng nào phù hợp.
-                                            </td>
-                                        </tr>
+                                        <!-- trang khác: viền xám trắng giống hình -->
+                                        <a class="page-link"
+                                           href="<?= $queryBase . '&page=' . $p ?>"
+                                           style="padding:4px 10px; border-radius:4px; text-decoration:none; border:1px solid #ddd; color:#333; background:#fff; display:inline-flex; align-items:center; justify-content:center;">
+                                            <?= $p ?>
+                                        </a>
                                     <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                                <?php endfor; ?>
+
+                                <?php if ($page < $totalPages): ?>
+                                    <a class="page-link"
+                                       href="<?= $queryBase . '&page=' . ($page + 1) ?>"
+                                       style="padding:4px 8px; border-radius:4px; text-decoration:none; border:1px solid #ddd;">
+                                        &raquo;
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
-            </main>
-        </div>
-        <?php include(__DIR__ . '/../layouts/footer.php'); ?>
-    </body>
+            </div>
+        </main>
+    </div>
+    <?php include(__DIR__ . '/../layouts/footer.php'); ?>
+</body>
 </html>

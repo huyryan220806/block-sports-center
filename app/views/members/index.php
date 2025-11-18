@@ -33,6 +33,7 @@ $sql    = "SELECT MAHV, HOVATEN, GIOITINH, NGAYSINH, SDT, EMAIL, DIACHI, TRANGTH
         <main class="main-content">
             <?php include(__DIR__ . '/../layouts/header.php'); ?>
             <div class="content">
+                <?php include(__DIR__ . '/../layouts/alerts.php'); ?>
                 <div class="page-header">
                     <h2>Quản lý hội viên</h2>
                     <p>Danh sách tất cả hội viên trong hệ thống</p>

@@ -1,7 +1,4 @@
 <?php
-// app/models/Member.php - MODEL HỘI VIÊN
-
-// Version: FINAL (Không có GHICHU - theo cấu trúc DB của Team UI)
 
 class Member extends Model {
     protected $table = 'HOIVIEN';

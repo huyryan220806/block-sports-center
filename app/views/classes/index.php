@@ -21,6 +21,7 @@ $classes = $data['classes'] ?? [];
         <?php include(__DIR__ . '/../layouts/header.php'); ?>
 
         <div class="content">
+            <?php include(__DIR__ . '/../layouts/alerts.php'); ?>
             <div class="page-header">
                 <h2>Quản lý lớp học</h2>
                 <p>Danh sách các lớp tập luyện trong trung tâm.</p>

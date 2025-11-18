@@ -1,17 +1,24 @@
 <?php
-// app/views/auth/login.php
-// Trang đăng nhập
-// Updated: 2025-11-18 12:53:14 UTC
-// Fixed: Link quên mật khẩu
-// Author: @huyryan220806
+/**
+ * app/views/auth/forgot-password.php
+ * Trang quên mật khẩu
+ * Updated: 2025-11-18 13:01:34 UTC
+ * Fixed: Icon chìa khóa đơn giản (không có vòng tròn)
+ * Author: @huyryan220806
+ */
+
+// Nếu đã đăng nhập → redirect
+if (isset($_SESSION['user_id'])) {
+    header('Location: /block-sports-center/public/index.php?c=dashboard&a=index');
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - BLOCK SPORTS CENTER</title>
-
+    <title>Quên mật khẩu - BLOCK SPORTS CENTER</title>
     <link rel="stylesheet" href="/block-sports-center/public/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -34,7 +41,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .login-container {
+        .forgot-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -43,50 +50,65 @@
             padding: 20px;
         }
 
-        .login-box {
+        .forgot-box {
             background: white;
             border-radius: 16px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
             width: 100%;
-            max-width: 420px;
+            max-width: 460px;
             padding: 40px;
         }
 
-        .login-logo {
+        .forgot-header {
             text-align: center;
             margin-bottom: 32px;
         }
 
-        .login-logo i {
-            font-size: 64px;
-            color: var(--primary-dark);
-            margin-bottom: 12px;
+        /* ✅ ICON ĐƠN GIẢN - KHÔNG CÓ VÒNG TRÒN */
+        .forgot-icon {
+            margin: 0 auto 20px;
+            text-align: center;
         }
 
-        .login-logo h1 {
+        .forgot-icon i {
+            font-size: 64px;
+            color: var(--primary);
+        }
+
+        .forgot-header h1 {
             font-size: 28px;
             font-weight: 700;
             color: var(--text-primary);
-            margin-top: 16px;
+            margin-bottom: 12px;
         }
 
-        .login-logo p {
+        .forgot-header p {
             color: var(--text-secondary);
             font-size: 14px;
-            margin-top: 8px;
+            line-height: 1.6;
         }
 
+        .success-msg,
         .error-msg {
             padding: 12px 16px;
-            background: #ffe0e0;
-            color: #c0392b;
-            border: 1px solid #e74c3c;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 600;
             text-align: center;
             margin-bottom: 20px;
             animation: slideDown 0.3s ease-out;
+        }
+
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-msg {
+            background: #ffe0e0;
+            color: #c0392b;
+            border: 1px solid #e74c3c;
         }
 
         @keyframes slideDown {
@@ -98,10 +120,6 @@
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-
-        .login-form {
-            margin-top: 32px;
         }
 
         .form-group {
@@ -127,7 +145,6 @@
             transform: translateY(-50%);
             color: var(--text-secondary);
             font-size: 16px;
-            z-index: 1;
         }
 
         .form-control {
@@ -145,32 +162,7 @@
             box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.15);
         }
 
-        .forgot-password {
-            text-align: right;
-            margin-top: -16px;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .forgot-password a {
-            color: var(--primary);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
-            cursor: pointer;
-            display: inline-block;
-            position: relative;
-            z-index: 10;
-        }
-
-        .forgot-password a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        .btn-login {
+        .btn-submit {
             width: 100%;
             padding: 14px;
             background: var(--primary);
@@ -184,52 +176,66 @@
             margin-top: 8px;
         }
 
-        .btn-login:hover {
+        .btn-submit:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0, 184, 148, 0.3);
         }
 
-        .btn-login:active {
+        .btn-submit:active {
             transform: translateY(0);
         }
 
-        .register-link {
+        .back-to-login {
             text-align: center;
             margin-top: 20px;
-            font-size: 14px;
-            color: var(--text-secondary);
         }
 
-        .register-link a {
+        .back-to-login a {
             color: var(--primary);
-            font-weight: 600;
             text-decoration: none;
-            transition: color 0.3s;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .register-link a:hover {
+        .back-to-login a:hover {
             color: var(--primary-dark);
             text-decoration: underline;
         }
 
-        .login-footer {
-            text-align: center;
+        .info-box {
+            background: #f0f7f4;
+            border-left: 4px solid var(--primary);
+            padding: 14px;
+            border-radius: 8px;
             margin-top: 24px;
-            color: var(--text-secondary);
+        }
+
+        .info-box p {
             font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .info-box strong {
+            color: var(--text-primary);
         }
 
         @media (max-width: 768px) {
-            .login-box {
+            .forgot-box {
                 padding: 30px 20px;
             }
 
-            .login-logo i {
+            .forgot-icon i {
                 font-size: 48px;
             }
 
-            .login-logo h1 {
+            .forgot-header h1 {
                 font-size: 24px;
             }
         }
@@ -237,72 +243,66 @@
 </head>
 <body>
 
-<div class="login-container">
-    <div class="login-box">
-
-        <div class="login-logo">
-            <i class="fas fa-dumbbell"></i>
-            <h1>BLOCK SPORTS CENTER</h1>
-            <p>Hệ thống quản lý trung tâm thể thao</p>
+<div class="forgot-container">
+    <div class="forgot-box">
+        <div class="forgot-header">
+            <!-- ✅ ICON ĐƠN GIẢN - CHỈ CÓ HÌNH CHÌA KHÓA -->
+            <div class="forgot-icon">
+                <i class="fas fa-key"></i>
+            </div>
+            <h1>Quên mật khẩu?</h1>
+            <p>Nhập email của bạn, chúng tôi sẽ gửi hướng dẫn đặt lại mật khẩu</p>
         </div>
 
-        <?php if (!empty($loginError)): ?>
-            <div class="error-msg">
-                <i class="fas fa-exclamation-circle"></i>
-                <?= htmlspecialchars($loginError) ?>
+        <?php if (!empty($_SESSION['success'])): ?>
+            <div class="success-msg">
+                <i class="fas fa-check-circle"></i>
+                <?= htmlspecialchars($_SESSION['success']) ?>
             </div>
+            <?php unset($_SESSION['success']); ?>
         <?php endif; ?>
 
-        <form method="POST" class="login-form">
+        <?php if (!empty($_SESSION['error'])): ?>
+            <div class="error-msg">
+                <i class="fas fa-exclamation-circle"></i>
+                <?= htmlspecialchars($_SESSION['error']) ?>
+            </div>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+
+        <form method="POST" action="/block-sports-center/public/index.php?page=handle-forgot-password">
             <div class="form-group">
-                <label class="form-label">Tên đăng nhập hoặc Email</label>
+                <label class="form-label">Email của bạn</label>
                 <div class="icon-input">
-                    <i class="fas fa-user"></i>
-                    <input type="text"
-                           name="username"
+                    <i class="fas fa-envelope"></i>
+                    <input type="email"
+                           name="email"
                            class="form-control"
-                           placeholder="Nhập username hoặc email"
-                           value="<?= htmlspecialchars($_POST['username'] ?? '') ?>"
+                           placeholder="Nhập địa chỉ email"
+                           value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
                            required
                            autofocus>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Mật khẩu</label>
-                <div class="icon-input">
-                    <i class="fas fa-lock"></i>
-                    <input type="password"
-                           name="password"
-                           class="form-control"
-                           placeholder="Nhập mật khẩu"
-                           required>
-                </div>
-            </div>
-
-            <!-- ✅ FIX: Đổi từ ?c=auth&a=forgotPassword → ?page=forgot-password -->
-            <div class="forgot-password">
-                <a href="/block-sports-center/public/index.php?page=forgot-password">
-                    <i class="fas fa-question-circle"></i> Quên mật khẩu?
-                </a>
-            </div>
-
-            <button type="submit" class="btn-login">
-                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-paper-plane"></i> Gửi link đặt lại mật khẩu
             </button>
         </form>
 
-        <div class="register-link">
-            Bạn chưa có tài khoản?
-            <a href="/block-sports-center/public/index.php?page=register">
-                Đăng ký ngay
+        <div class="back-to-login">
+            <a href="/block-sports-center/public/index.php?page=login">
+                <i class="fas fa-arrow-left"></i> Quay lại đăng nhập
             </a>
         </div>
 
-        <div class="login-footer">
-            © 2025 Block Sports Center. All rights reserved.
+        <div class="info-box">
+            <p>
+                <i class="fas fa-info-circle"></i>
+                <strong>Lưu ý:</strong> Link đặt lại mật khẩu sẽ được gửi đến email của bạn. 
+                Nếu không thấy email, vui lòng kiểm tra thư mục spam.
+            </p>
         </div>
-
     </div>
 </div>
 
