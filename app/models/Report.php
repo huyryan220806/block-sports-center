@@ -33,3 +33,4 @@ class Report extends Model
         return round((($current - $previous) / $previous) * 100, 2);
     }
 }
+//

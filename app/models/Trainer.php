@@ -170,7 +170,7 @@ class Trainer {
             return false;
         }
     }
-
+//
     public function count() {
         $query = "SELECT COUNT(*) as total FROM {$this->table} WHERE VAITRO = 'TRAINER' OR VAITRO = 'ADMIN'";
         $stmt = $this->conn->prepare($query);
