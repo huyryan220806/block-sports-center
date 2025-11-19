@@ -335,3 +335,4 @@ class BookingsController extends Controller
         $this->redirect('?c=bookings&a=index');
     }
 }
+//
