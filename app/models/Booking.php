@@ -102,3 +102,4 @@ class Booking {
         return $result->total;
     }
 }
+//

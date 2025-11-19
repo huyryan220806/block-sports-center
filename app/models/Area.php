@@ -115,3 +115,4 @@ class Room
         return $stmt->execute(['id' => $id]);
     }
 }
+//

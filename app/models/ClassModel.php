@@ -64,7 +64,7 @@ class ClassModel {
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
-
+//
     public function count() {
         $query = "SELECT COUNT(*) as total FROM {$this->table}";
         $stmt = $this->conn->prepare($query);
@@ -74,3 +74,4 @@ class ClassModel {
     }
 }
 ?>
+
