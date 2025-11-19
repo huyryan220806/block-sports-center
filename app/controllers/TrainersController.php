@@ -419,3 +419,4 @@ class TrainersController extends Controller
         $this->redirect('?c=trainers&a=index');
     }
 }
+//

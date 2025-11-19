@@ -379,3 +379,4 @@ class RoomsController extends Controller
         return in_array(strtoupper($status), array_map('strtoupper', $inactiveValues)) ? 0 : 1;
     }
 }
+//

@@ -15,3 +15,4 @@ class UserController extends Controller
         $this->view('user/booking', $data);
     }
 }
+//
