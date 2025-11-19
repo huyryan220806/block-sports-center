@@ -491,3 +491,4 @@ DELIMITER ;
 --    Với hoa don 1 trong seed.sql:
 --    INSERT INTO THANHTOAN (MAHDON, SOTIEN, PHUONGTHUC)
 --    VALUES (1, 100000, 'CASH');  -- sẽ bị chặn vì tổng > tổng hóa đơn.
+/**/;
