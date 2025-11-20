@@ -11,7 +11,6 @@ if (isset($_SESSION['user_id'])) {
         header("Location: /block-sports-center/public/index.php?c=dashboard&a=index");
         exit;
     } else {
-        // ✅ USER → VIEWS/USER/INDEX.PHP
         header("Location: /block-sports-center/public/index.php?page=user");
         exit;
     }
@@ -43,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             // Kết nối DB
             $db = Database::getInstance()->getConnection();
+            $db->beginTransaction();
             
             // Kiểm tra username hoặc email đã tồn tại
             $stmt = $db->prepare("SELECT id FROM users WHERE username = :username OR email = :email");
@@ -53,17 +53,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($stmt->rowCount() > 0) {
                 $error = "❌ Tên đăng nhập hoặc email đã tồn tại!";
+                $db->rollBack();
             } else {
+                // ✅ LẤY MÃ HỘI VIÊN MỚI NHẤT TỪ BẢNG HOIVIEN
+                $stmt = $db->query("SELECT MAX(MAHV) as max_mahv FROM hoivien");
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                $nextMaHV = ($result['max_mahv'] ?? 0) + 1;
+                
+                // ✅ ĐẢM BẢO ID MỚI KHÔNG TRÙNG TRONG BẢNG USERS
+                // Kiểm tra liên tục cho đến khi tìm được ID không trùng
+                while (true) {
+                    $checkUserStmt = $db->prepare("SELECT id FROM users WHERE id = :id");
+                    $checkUserStmt->execute([':id' => $nextMaHV]);
+                    
+                    if ($checkUserStmt->rowCount() === 0) {
+                        // ID này chưa tồn tại trong users → OK
+                        break;
+                    }
+                    
+                    // ID đã tồn tại → tăng lên 1
+                    $nextMaHV++;
+                }
+                
                 // Hash mật khẩu bằng bcrypt
                 $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-                // Thêm tài khoản mới
+                // ✅ THÊM TÀI KHOẢN MỚI VỚI ID TÙY CHỈNH
                 $insertStmt = $db->prepare("
-                    INSERT INTO users (fullname, email, phone, username, password_hash, role, created_at) 
-                    VALUES (:fullname, :email, :phone, :username, :password_hash, 'USER', NOW())
+                    INSERT INTO users (id, fullname, email, phone, username, password_hash, role, created_at) 
+                    VALUES (:id, :fullname, :email, :phone, :username, :password_hash, 'USER', NOW())
                 ");
 
                 $result = $insertStmt->execute([
+                    ':id' => $nextMaHV,
                     ':fullname' => $fullname,
                     ':email' => $email,
                     ':phone' => $phone,
@@ -72,25 +94,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
 
                 if ($result) {
-                    // ✅ LẤY ID USER VỪA TẠO
-                    $newUserId = $db->lastInsertId();
+                    $db->commit();
                     
-                    // ✅ TỰ ĐỘNG ĐĂNG NHẬP (LƯU SESSION)
-                    $_SESSION['user_id'] = $newUserId;
-                    $_SESSION['username'] = $username;
-                    $_SESSION['fullname'] = $fullname;
-                    $_SESSION['email'] = $email;
-                    $_SESSION['role'] = 'USER';
+                    // ✅ LƯU THÔNG TIN TẠM VÀO SESSION
+                    $_SESSION['temp_user_id'] = $nextMaHV;
+                    $_SESSION['temp_username'] = $username;
+                    $_SESSION['temp_fullname'] = $fullname;
+                    $_SESSION['temp_email'] = $email;
+                    $_SESSION['temp_phone'] = $phone;
                     
-                    // ✅ REDIRECT ĐẾN VIEWS/USER/INDEX.PHP
-                    $success = "✅ Đăng ký thành công! Đang chuyển đến trang chủ...";
-                    header("refresh:1; url=/block-sports-center/public/index.php?page=user");
+                    // ✅ CHUYỂN SANG BƯỚC 2
+                    header("Location: /block-sports-center/public/index.php?page=register-member");
                     exit;
                 } else {
+                    $db->rollBack();
                     $error = "❌ Lỗi hệ thống, vui lòng thử lại!";
                 }
             }
         } catch (PDOException $e) {
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
             $error = "❌ Lỗi database: " . $e->getMessage();
         }
     }

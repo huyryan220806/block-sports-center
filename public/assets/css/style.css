@@ -939,3 +939,490 @@ span[style*="color: red"] {
     color: var(--primary-dark);
     text-decoration: underline;
 }
+/* ========================================
+   REGISTRATION WIZARD - ĐĂNG KÝ 2 BƯỚC
+   ======================================== */
+
+/* Container chính cho trang đăng ký */
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  padding: 20px;
+}
+
+.register-box {
+  background: var(--bg-main);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 520px;
+  padding: 40px;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Logo section */
+.register-logo {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.register-logo i {
+  font-size: 64px;
+  color: var(--primary-dark);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.register-logo h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.register-logo p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* Steps Indicator */
+.steps-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 12px;
+  position: relative;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.step-number {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.3s;
+  position: relative;
+  z-index: 2;
+}
+
+/* Active step */
+.step.active .step-number {
+  background: var(--primary);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 4px rgba(127, 255, 212, 0.2);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(127, 255, 212, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(127, 255, 212, 0.1);
+  }
+}
+
+/* Completed step */
+.step.completed .step-number {
+  background: var(--success);
+  color: white;
+  box-shadow: 0 2px 8px rgba(81, 207, 102, 0.3);
+}
+
+/* Inactive step */
+.step.inactive .step-number {
+  background: #E9ECEF;
+  color: #ADB5BD;
+  border: 2px solid #DEE2E6;
+}
+
+.step-label {
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.step.active .step-label {
+  color: var(--primary-dark);
+}
+
+.step.completed .step-label {
+  color: var(--success);
+}
+
+.step.inactive .step-label {
+  color: #ADB5BD;
+}
+
+.step-arrow {
+  color: #DEE2E6;
+  font-size: 16px;
+  transition: all 0.3s;
+}
+
+.step.completed + .step-arrow {
+  color: var(--success);
+}
+
+/* Title và Subtitle */
+.register-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.register-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+/* Info note */
+.info-note {
+  background: #E7F3FF;
+  border-left: 4px solid #2196F3;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  font-size: 13px;
+  animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.info-note i {
+  color: #2196F3;
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.info-note strong {
+  color: #0D47A1;
+}
+
+/* Form elements đặc biệt cho register */
+.register-form .form-group {
+  margin-bottom: 18px;
+}
+
+.register-form .icon-input {
+  position: relative;
+}
+
+.register-form .icon-input i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: 16px;
+  z-index: 1;
+}
+
+.register-form .form-control {
+  padding: 12px 16px 12px 44px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  font-size: 14px;
+  transition: all 0.3s;
+  width: 100%;
+}
+
+.register-form .form-control:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(127, 255, 212, 0.1);
+}
+
+.register-form .form-control:read-only {
+  background: #F8F9FA;
+  cursor: not-allowed;
+  color: var(--text-secondary);
+}
+
+.register-form select,
+.register-form textarea {
+  padding-left: 16px !important;
+}
+
+.register-form textarea {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+/* Button group cho bước 2 */
+.btn-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-group .btn {
+  flex: 1;
+}
+
+.btn-secondary {
+  background-color: #6C757D;
+  color: white;
+  transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+  background-color: #5A6268;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+/* Register link */
+.register-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.register-link a {
+  color: var(--primary-dark);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.register-link a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* Alert messages trong register */
+.register-box .error-msg,
+.register-box .success-msg {
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  animation: slideDown 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.register-box .error-msg {
+  background: rgba(255, 107, 107, 0.15);
+  color: #8B2E2E;
+  border: 1px solid var(--danger);
+}
+
+.register-box .success-msg {
+  background: rgba(81, 207, 102, 0.15);
+  color: #2F6A3F;
+  border: 1px solid var(--success);
+}
+
+/* Responsive cho register */
+@media (max-width: 768px) {
+  .register-box {
+    padding: 30px 20px;
+    max-width: 100%;
+  }
+
+  .register-logo i {
+    font-size: 48px;
+  }
+
+  .register-logo h1 {
+    font-size: 20px;
+  }
+
+  .step-label {
+    display: none;
+  }
+
+  .steps-indicator {
+    gap: 8px;
+  }
+
+  .btn-group {
+    flex-direction: column;
+  }
+
+  .btn-group .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-container {
+    padding: 10px;
+  }
+
+  .register-box {
+    padding: 24px 16px;
+  }
+
+  .register-title {
+    font-size: 18px;
+  }
+
+  .register-subtitle {
+    font-size: 12px;
+  }
+}
+
+/* ========================================
+   LOGIN PAGE STYLES - TRANG ĐĂNG NHẬP
+   ======================================== */
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  padding: 20px;
+}
+
+.login-box {
+  background: var(--bg-main);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 480px;
+  padding: 40px;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-logo i {
+  font-size: 64px;
+  color: var(--primary-dark);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.login-logo h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.login-logo p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.login-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.login-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.login-form .icon-input {
+  position: relative;
+}
+
+.login-form .icon-input i {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.login-form .form-control {
+  padding: 12px 16px 12px 44px;
+}
+
+.btn-login {
+  width: 100%;
+  border: none;
+  padding: 14px 20px;
+  border-radius: var(--radius);
+  background-color: var(--primary);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-login:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(127, 255, 212, 0.3);
+}
+
+.btn-login:active {
+  transform: translateY(0);
+}
+
+/* Responsive cho login */
+@media (max-width: 768px) {
+  .login-box {
+    padding: 30px 20px;
+  }
+
+  .login-logo i {
+    font-size: 48px;
+  }
+
+  .login-logo h1 {
+    font-size: 20px;
+  }
+}

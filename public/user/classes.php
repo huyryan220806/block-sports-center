@@ -195,6 +195,13 @@ if (!isset($user) || !is_array($user)) {
             margin-bottom: 18px;
         }
 
+        .class-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         .btn {
             padding: 10px 18px;
             border-radius: 999px;
@@ -203,6 +210,8 @@ if (!isset($user) || !is_array($user)) {
             font-weight: 600;
             cursor: pointer;
             transition: all 0.25s;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .btn-primary {
@@ -224,9 +233,75 @@ if (!isset($user) || !is_array($user)) {
             background: #e0e7ff;
         }
 
+        /* ✅ DETAIL SECTION - KHUNG TRẮNG */
+        .detail-section {
+            max-width: 1200px;
+            margin: 40px auto 60px;
+            padding: 0 20px;
+            display: none;
+        }
+
+        .detail-section.show {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .detail-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .detail-body {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .detail-body p {
+            margin-bottom: 16px;
+        }
+
+        .detail-body ul {
+            margin-left: 20px;
+            margin-top: 12px;
+        }
+
+        .detail-body li {
+            margin-bottom: 10px;
+        }
+
         @media (max-width: 768px) {
             .hero h1 { font-size: 32px; }
             .nav { display: none; }
+            .detail-card {
+                padding: 25px;
+            }
+            .detail-title {
+                font-size: 22px;
+            }
         }
     </style>
 </head>
@@ -263,7 +338,8 @@ if (!isset($user) || !is_array($user)) {
     <section class="classes-section">
         <h2 class="section-title">Danh sách bộ môn</h2>
         <div class="class-grid">
-            <!-- Các card lớp học giữ nguyên -->
+            
+            <!-- Bơi lội -->
             <div class="class-card">
                 <div class="class-icon">
                     <i class="fas fa-swimmer"></i>
@@ -271,9 +347,12 @@ if (!isset($user) || !is_array($user)) {
                 <h3>Bơi lội</h3>
                 <p class="class-desc">Cải thiện sức bền, tốt cho tim mạch và khớp.</p>
                 <div class="class-meta">
-                    <span><i class="fas fa-clock"></i> 06:00 - 07:00</span>
+                    <span><i class="fas fa-clock"></i> 06:00 - 21:00</span>
                 </div>
-                <button class="btn btn-primary">Xem lịch lớp</button>
+                <div class="class-actions">
+                    <a href="/block-sports-center/public/user/booking.php" class="btn btn-primary">Đăng ký ngay</a>
+                    <button class="btn btn-secondary" onclick="showDetail('boi')">Chi tiết</button>
+                </div>
             </div>
 
             <!-- Futsal -->
@@ -286,11 +365,10 @@ if (!isset($user) || !is_array($user)) {
                     Luyện phản xạ nhanh, khả năng phối hợp đồng đội và sức bền.
                 </p>
                 <div class="class-meta">
-                    <span><i class="fas fa-clock"></i> 18:00 - 19:00</span>
-                    <span><i class="fas fa-users"></i> 8 - 12 người / lớp</span>
+                    <span><i class="fas fa-clock"></i> 06:00 - 21:00</span>
                 </div>
                 <div class="class-actions">
-                    <button class="btn btn-primary">Đăng ký tham gia</button>
+                    <a href="/block-sports-center/public/user/booking.php" class="btn btn-primary">Đăng ký ngay</a>
                     <button class="btn btn-secondary" onclick="showDetail('futsal')">Chi tiết</button>
                 </div>
             </div>
@@ -305,11 +383,10 @@ if (!isset($user) || !is_array($user)) {
                     Tăng sức mạnh tay, chân và khả năng nhảy, phù hợp chơi theo nhóm.
                 </p>
                 <div class="class-meta">
-                    <span><i class="fas fa-clock"></i> 19:00 - 20:30</span>
-                    <span><i class="fas fa-user"></i> HL viên: Trần Minh Khoa</span>
+                    <span><i class="fas fa-clock"></i> 06:00 - 21:00</span>
                 </div>
                 <div class="class-actions">
-                    <button class="btn btn-primary">Xem chi tiết lịch</button>
+                    <a href="/block-sports-center/public/user/booking.php" class="btn btn-primary">Đăng ký ngay</a>
                     <button class="btn btn-secondary" onclick="showDetail('bongchuyen')">Chi tiết</button>
                 </div>
             </div>
@@ -324,11 +401,10 @@ if (!isset($user) || !is_array($user)) {
                     Đốt nhiều calories, cải thiện chiều cao, sức bền và phản xạ.
                 </p>
                 <div class="class-meta">
-                    <span><i class="fas fa-clock"></i> 16:00 - 17:30</span>
-                    <span><i class="fas fa-signal"></i> Mức độ: Trung bình</span>
+                    <span><i class="fas fa-clock"></i> 06:00 - 21:00</span>
                 </div>
                 <div class="class-actions">
-                    <button class="btn btn-primary">Xem lịch lớp</button>
+                    <a href="/block-sports-center/public/user/booking.php" class="btn btn-primary">Đăng ký ngay</a>
                     <button class="btn btn-secondary" onclick="showDetail('bongro')">Chi tiết</button>
                 </div>
             </div>
@@ -343,11 +419,10 @@ if (!isset($user) || !is_array($user)) {
                     Bộ môn nhẹ nhàng, linh hoạt, phù hợp khi muốn vận động nhưng không quá nặng.
                 </p>
                 <div class="class-meta">
-                    <span><i class="fas fa-clock"></i> 05:30 - 07:00, 19:00 - 21:00</span>
-                    <span><i class="fas fa-users"></i> Tối đa 4 người / sân</span>
+                    <span><i class="fas fa-clock"></i> 06:00 - 21:00</span>
                 </div>
                 <div class="class-actions">
-                    <button class="btn btn-primary">Đặt sân</button>
+                    <a href="/block-sports-center/public/user/booking.php" class="btn btn-primary">Đăng ký ngay</a>
                     <button class="btn btn-secondary" onclick="showDetail('caulong')">Chi tiết</button>
                 </div>
             </div>
@@ -362,11 +437,10 @@ if (!isset($user) || !is_array($user)) {
                     Cường độ cao, phù hợp cho đội nhóm muốn tập luyện hoặc đá giao hữu.
                 </p>
                 <div class="class-meta">
-                    <span><i class="fas fa-clock"></i> 17:00 - 19:00, 19:00 - 21:00</span>
-                    <span><i class="fas fa-users"></i> 14 - 22 người / trận</span>
+                    <span><i class="fas fa-clock"></i> 06:00 - 21:00</span>
                 </div>
                 <div class="class-actions">
-                    <button class="btn btn-primary">Xem khung giờ trống</button>
+                    <a href="/block-sports-center/public/user/booking.php" class="btn btn-primary">Đăng ký ngay</a>
                     <button class="btn btn-secondary" onclick="showDetail('bongda11')">Chi tiết</button>
                 </div>
             </div>
@@ -381,11 +455,10 @@ if (!isset($user) || !is_array($user)) {
                     Môn thể thao mới, vui, dễ chơi, phù hợp nhóm bạn 2 - 4 người.
                 </p>
                 <div class="class-meta">
-                    <span><i class="fas fa-clock"></i> 15:00 - 17:00</span>
-                    <span><i class="fas fa-heart"></i> Đốt ~400 kcal / giờ</span>
+                    <span><i class="fas fa-clock"></i> 06:00 - 21:00</span>
                 </div>
                 <div class="class-actions">
-                    <button class="btn btn-primary">Thử trải nghiệm</button>
+                    <a href="/block-sports-center/public/user/booking.php" class="btn btn-primary">Đăng ký ngay</a>
                     <button class="btn btn-secondary" onclick="showDetail('pickleball')">Chi tiết</button>
                 </div>
             </div>
@@ -400,11 +473,10 @@ if (!isset($user) || !is_array($user)) {
                     Luyện sức mạnh, tăng cơ, giảm mỡ với hệ thống máy tập hiện đại.
                 </p>
                 <div class="class-meta">
-                    <span><i class="fas fa-clock"></i> 05:00 - 22:00</span>
-                    <span><i class="fas fa-signal"></i> Tự do, có HLV hỗ trợ theo giờ</span>
+                    <span><i class="fas fa-clock"></i> 24/7 - Luôn mở cửa</span>
                 </div>
                 <div class="class-actions">
-                    <button class="btn btn-primary">Xem gói tập</button>
+                    <a href="/block-sports-center/public/user/booking.php" class="btn btn-primary">Đăng ký ngay</a>
                     <button class="btn btn-secondary" onclick="showDetail('gym')">Chi tiết</button>
                 </div>
             </div>
@@ -419,11 +491,10 @@ if (!isset($user) || !is_array($user)) {
                     Giãn cơ, thư giãn tâm trí, cải thiện tư thế và độ linh hoạt của cơ thể.
                 </p>
                 <div class="class-meta">
-                    <span><i class="fas fa-clock"></i> 06:00 - 07:00, 19:00 - 20:00</span>
-                    <span><i class="fas fa-user"></i> HLV: Nguyễn Mai Chi</span>
+                    <span><i class="fas fa-clock"></i> 06:00 - 21:00</span>
                 </div>
                 <div class="class-actions">
-                    <button class="btn btn-primary">Đăng ký buổi thử</button>
+                    <a href="/block-sports-center/public/user/booking.php" class="btn btn-primary">Đăng ký ngay</a>
                     <button class="btn btn-secondary" onclick="showDetail('yoga')">Chi tiết</button>
                 </div>
             </div>
@@ -438,11 +509,10 @@ if (!isset($user) || !is_array($user)) {
                     Môn cường độ cao giúp đốt mỡ nhanh, tăng sức bền và phản xạ.
                 </p>
                 <div class="class-meta">
-                    <span><i class="fas fa-clock"></i> 18:30 - 20:00</span>
-                    <span><i class="fas fa-users"></i> Nhóm nhỏ 6 - 10 học viên</span>
+                    <span><i class="fas fa-clock"></i> 06:00 - 21:00</span>
                 </div>
                 <div class="class-actions">
-                    <button class="btn btn-primary">Xem lịch lớp</button>
+                    <a href="/block-sports-center/public/user/booking.php" class="btn btn-primary">Đăng ký ngay</a>
                     <button class="btn btn-secondary" onclick="showDetail('boxing')">Chi tiết</button>
                 </div>
             </div>
@@ -450,19 +520,19 @@ if (!isset($user) || !is_array($user)) {
         </div>
     </section>
 
-    <!-- DETAIL SECTION -->
+    <!-- ✅ DETAIL SECTION - KHUNG TRẮNG -->
     <section class="detail-section" id="class-detail">
-        <h2 class="section-title">Chi tiết môn học</h2>
-        <div class="detail-card" id="detail-card">
-            <h3 class="detail-title" id="detail-title">Chọn một bộ môn để xem chi tiết</h3>
+        <div class="detail-card">
+            <h3 class="detail-title" id="detail-title">Chi tiết môn học</h3>
             <div class="detail-body" id="detail-body">
-                Bấm nút <strong>Chi tiết</strong> ở từng bộ môn để xem giới thiệu, lợi ích và gợi ý đối tượng phù hợp.
+                <p>Bấm nút <strong>Chi tiết</strong> ở từng bộ môn để xem giới thiệu, lợi ích và gợi ý đối tượng phù hợp.</p>
             </div>
         </div>
     </section>
 
     <script>
         function showDetail(subject) {
+            const detailSection = document.getElementById('class-detail');
             const titleEl = document.getElementById('detail-title');
             const bodyEl  = document.getElementById('detail-body');
 
@@ -475,9 +545,9 @@ if (!isset($user) || !is_array($user)) {
                     html = `
                         <p>Bơi lội giúp vận động toàn bộ cơ thể, đặc biệt tốt cho tim mạch, phổi và hệ xương khớp.</p>
                         <ul>
-                            <li>Phù hợp: mọi lứa tuổi, người cần phục hồi chức năng, người thừa cân.</li>
-                            <li>Lợi ích: tăng sức bền, giảm mỡ, giảm stress, cải thiện tư thế.</li>
-                            <li>Lưu ý: khởi động kỹ, chọn mức độ phù hợp thể lực.</li>
+                            <li><strong>Phù hợp:</strong> mọi lứa tuổi, người cần phục hồi chức năng, người thừa cân.</li>
+                            <li><strong>Lợi ích:</strong> tăng sức bền, giảm mỡ, giảm stress, cải thiện tư thế.</li>
+                            <li><strong>Lưu ý:</strong> khởi động kỹ, chọn mức độ phù hợp thể lực.</li>
                         </ul>
                     `;
                     break;
@@ -487,9 +557,9 @@ if (!isset($user) || !is_array($user)) {
                     html = `
                         <p>Futsal tập trung vào kỹ thuật cá nhân, phối hợp nhóm và phản xạ nhanh.</p>
                         <ul>
-                            <li>Phù hợp: nhóm bạn, đội lớp, người thích vận động cường độ vừa đến cao.</li>
-                            <li>Lợi ích: tăng sức bền, phản xạ, khả năng phối hợp và chiến thuật.</li>
-                            <li>Gợi ý: nên mang giày chuyên futsal và khởi động kỹ đầu gối, cổ chân.</li>
+                            <li><strong>Phù hợp:</strong> nhóm bạn, đội lớp, người thích vận động cường độ vừa đến cao.</li>
+                            <li><strong>Lợi ích:</strong> tăng sức bền, phản xạ, khả năng phối hợp và chiến thuật.</li>
+                            <li><strong>Gợi ý:</strong> nên mang giày chuyên futsal và khởi động kỹ đầu gối, cổ chân.</li>
                         </ul>
                     `;
                     break;
@@ -499,9 +569,9 @@ if (!isset($user) || !is_array($user)) {
                     html = `
                         <p>Bóng chuyền giúp tăng sức mạnh phần thân trên, chân và khả năng bật nhảy.</p>
                         <ul>
-                            <li>Phù hợp: người thích chơi theo đội, môi trường năng động.</li>
-                            <li>Lợi ích: cải thiện sức mạnh cơ tay, chân, phản xạ và giao tiếp nhóm.</li>
-                            <li>Lưu ý: chú ý kỹ thuật tiếp đất khi nhảy để tránh chấn thương gối, cổ chân.</li>
+                            <li><strong>Phù hợp:</strong> người thích chơi theo đội, môi trường năng động.</li>
+                            <li><strong>Lợi ích:</strong> cải thiện sức mạnh cơ tay, chân, phản xạ và giao tiếp nhóm.</li>
+                            <li><strong>Lưu ý:</strong> chú ý kỹ thuật tiếp đất khi nhảy để tránh chấn thương gối, cổ chân.</li>
                         </ul>
                     `;
                     break;
@@ -511,9 +581,9 @@ if (!isset($user) || !is_array($user)) {
                     html = `
                         <p>Bóng rổ là môn thể thao đòi hỏi di chuyển liên tục, bật nhảy và chuyền ném chính xác.</p>
                         <ul>
-                            <li>Phù hợp: học sinh, sinh viên, người muốn tăng sức bền và chiều cao.</li>
-                            <li>Lợi ích: phát triển chiều cao (ở lứa tuổi đang lớn), cải thiện tim mạch, phản xạ.</li>
-                            <li>Gợi ý: nên dùng giày đế cao su bám tốt, có hỗ trợ cổ chân.</li>
+                            <li><strong>Phù hợp:</strong> học sinh, sinh viên, người muốn tăng sức bền và chiều cao.</li>
+                            <li><strong>Lợi ích:</strong> phát triển chiều cao (ở lứa tuổi đang lớn), cải thiện tim mạch, phản xạ.</li>
+                            <li><strong>Gợi ý:</strong> nên dùng giày đế cao su bám tốt, có hỗ trợ cổ chân.</li>
                         </ul>
                     `;
                     break;
@@ -523,9 +593,9 @@ if (!isset($user) || !is_array($user)) {
                     html = `
                         <p>Cầu lông phù hợp khi bạn muốn vận động linh hoạt nhưng không quá nặng như bóng đá.</p>
                         <ul>
-                            <li>Phù hợp: người mới bắt đầu chơi thể thao, dân văn phòng.</li>
-                            <li>Lợi ích: tăng linh hoạt khớp vai, cổ tay, phản xạ và độ nhanh nhẹn.</li>
-                            <li>Gợi ý: rủ thêm bạn đi đôi/đánh đôi sẽ vui và đỡ mệt hơn.</li>
+                            <li><strong>Phù hợp:</strong> người mới bắt đầu chơi thể thao, dân văn phòng.</li>
+                            <li><strong>Lợi ích:</strong> tăng linh hoạt khớp vai, cổ tay, phản xạ và độ nhanh nhẹn.</li>
+                            <li><strong>Gợi ý:</strong> rủ thêm bạn đi đôi/đánh đôi sẽ vui và đỡ mệt hơn.</li>
                         </ul>
                     `;
                     break;
@@ -535,9 +605,9 @@ if (!isset($user) || !is_array($user)) {
                     html = `
                         <p>Sân 11 người phù hợp cho đội bóng muốn luyện tập bài bản hoặc đá giao hữu.</p>
                         <ul>
-                            <li>Phù hợp: đội bóng phong trào, nhóm bạn đông, công ty.</li>
-                            <li>Lợi ích: tăng sức bền tim phổi, sức mạnh chân, tinh thần đoàn kết.</li>
-                            <li>Lưu ý: nên khởi động kỹ, mang giày phù hợp mặt sân (cỏ nhân tạo/đất).</li>
+                            <li><strong>Phù hợp:</strong> đội bóng phong trào, nhóm bạn đông, công ty.</li>
+                            <li><strong>Lợi ích:</strong> tăng sức bền tim phổi, sức mạnh chân, tinh thần đoàn kết.</li>
+                            <li><strong>Lưu ý:</strong> nên khởi động kỹ, mang giày phù hợp mặt sân (cỏ nhân tạo/đất).</li>
                         </ul>
                     `;
                     break;
@@ -547,9 +617,9 @@ if (!isset($user) || !is_array($user)) {
                     html = `
                         <p>Pickleball kết hợp giữa tennis, cầu lông và bóng bàn, dễ chơi, vui và phù hợp nhiều lứa tuổi.</p>
                         <ul>
-                            <li>Phù hợp: gia đình, nhóm bạn 2–4 người.</li>
-                            <li>Lợi ích: vận động nhẹ đến trung bình, tăng linh hoạt và phản xạ.</li>
-                            <li>Gợi ý: rất phù hợp cho người mới, chỉ cần 1–2 buổi là chơi được.</li>
+                            <li><strong>Phù hợp:</strong> gia đình, nhóm bạn 2–4 người.</li>
+                            <li><strong>Lợi ích:</strong> vận động nhẹ đến trung bình, tăng linh hoạt và phản xạ.</li>
+                            <li><strong>Gợi ý:</strong> rất phù hợp cho người mới, chỉ cần 1–2 buổi là chơi được.</li>
                         </ul>
                     `;
                     break;
@@ -559,9 +629,10 @@ if (!isset($user) || !is_array($user)) {
                     html = `
                         <p>Gym tập trung vào sức mạnh cơ bắp, giúp định hình lại cơ thể và cải thiện sức khỏe tổng quát.</p>
                         <ul>
-                            <li>Phù hợp: người muốn tăng cơ, giảm mỡ, cải thiện vóc dáng.</li>
-                            <li>Lợi ích: tăng sức mạnh, cải thiện chuyển hóa, hỗ trợ xương khớp.</li>
-                            <li>Gợi ý: nên có giáo trình rõ ràng, ưu tiên kỹ thuật đúng trước khi tăng tạ.</li>
+                            <li><strong>Phù hợp:</strong> người muốn tăng cơ, giảm mỡ, cải thiện vóc dáng.</li>
+                            <li><strong>Lợi ích:</strong> tăng sức mạnh, cải thiện chuyển hóa, hỗ trợ xương khớp.</li>
+                            <li><strong>Giờ mở cửa:</strong> 24/7 - Luôn sẵn sàng phục vụ bạn bất cứ lúc nào.</li>
+                            <li><strong>Gợi ý:</strong> nên có giáo trình rõ ràng, ưu tiên kỹ thuật đúng trước khi tăng tạ.</li>
                         </ul>
                     `;
                     break;
@@ -571,9 +642,9 @@ if (!isset($user) || !is_array($user)) {
                     html = `
                         <p>Yoga kết hợp giữa vận động nhẹ nhàng, kéo giãn và hít thở, giúp thư giãn và phục hồi cơ thể.</p>
                         <ul>
-                            <li>Phù hợp: người bị căng thẳng, dân văn phòng, người mới bắt đầu vận động.</li>
-                            <li>Lợi ích: giảm stress, cải thiện giấc ngủ, tăng linh hoạt và độ dẻo.</li>
-                            <li>Gợi ý: luyện đều 2–3 buổi/tuần, ưu tiên lắng nghe cơ thể, không cố quá biên độ.</li>
+                            <li><strong>Phù hợp:</strong> người bị căng thẳng, dân văn phòng, người mới bắt đầu vận động.</li>
+                            <li><strong>Lợi ích:</strong> giảm stress, cải thiện giấc ngủ, tăng linh hoạt và độ dẻo.</li>
+                            <li><strong>Gợi ý:</strong> luyện đều 2–3 buổi/tuần, ưu tiên lắng nghe cơ thể, không cố quá biên độ.</li>
                         </ul>
                     `;
                     break;
@@ -583,23 +654,25 @@ if (!isset($user) || !is_array($user)) {
                     html = `
                         <p>Boxing là môn đối kháng cường độ cao, tập trung vào đấm bao cát, di chuyển và phản xạ.</p>
                         <ul>
-                            <li>Phù hợp: người muốn giảm mỡ nhanh, thích vận động mạnh và xả stress.</li>
-                            <li>Lợi ích: tăng sức bền tim phổi, sức mạnh tay – vai – core, giải tỏa căng thẳng.</li>
-                            <li>Lưu ý: cần quấn băng tay, mang găng đúng cỡ và khởi động kỹ vai – cổ tay.</li>
+                            <li><strong>Phù hợp:</strong> người muốn giảm mỡ nhanh, thích vận động mạnh và xả stress.</li>
+                            <li><strong>Lợi ích:</strong> tăng sức bền tim phổi, sức mạnh tay – vai – core, giải tỏa căng thẳng.</li>
+                            <li><strong>Lưu ý:</strong> cần quấn băng tay, mang găng đúng cỡ và khởi động kỹ vai – cổ tay.</li>
                         </ul>
                     `;
                     break;
 
                 default:
                     title = 'Chi tiết môn học';
-                    html  = 'Chọn một bộ môn để xem chi tiết.';
+                    html  = '<p>Chọn một bộ môn để xem chi tiết.</p>';
             }
 
             titleEl.textContent = title;
             bodyEl.innerHTML   = html;
 
-            document.getElementById('class-detail').scrollIntoView({
-                behavior: 'smooth'
+            detailSection.classList.add('show');
+            detailSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
             });
         }
     </script>

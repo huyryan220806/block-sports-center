@@ -3,6 +3,35 @@ $pageTitle   = 'Cài đặt';
 $currentPage = 'settings';
 
 $settings = $data['settings'] ?? [];
+$currentUser = $data['currentUser'] ?? null;
+$employeeInfo = $data['employeeInfo'] ?? null;
+
+// ✅ HÀM HELPER LẤY GIÁ TRỊ AN TOÀN
+function getVal($obj, $prop, $default = '') {
+    return isset($obj->$prop) ? $obj->$prop : $default;
+}
+
+// ✅ CHUYỂN ĐỔI VAI TRÒ USER SANG TIẾNG VIỆT
+function getUserRoleName($role) {
+    $roles = [
+        'ADMIN' => 'Quản trị viên',
+        'FRONTDESK' => 'Lễ tân',
+        'MAINTENANCE' => 'Bảo trì',
+        'OTHER' => 'Khác'
+    ];
+    return $roles[$role] ?? $role;
+}
+
+// ✅ CHUYỂN ĐỔI VAI TRÒ NHÂN VIÊN SANG TIẾNG VIỆT
+function getEmployeeRoleName($role) {
+    $roles = [
+        'ADMIN' => 'Quản trị viên',
+        'FRONTDESK' => 'Lễ tân',
+        'MAINTENANCE' => 'Bảo trì',
+        'OTHER' => 'Khác'
+    ];
+    return $roles[$role] ?? $role;
+}
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -23,7 +52,7 @@ $settings = $data['settings'] ?? [];
         <div class="content">
             <div class="page-header">
                 <h2><i class="fas fa-cog"></i> Cài đặt hệ thống</h2>
-                <p>Quản lý cấu hình và thông tin trung tâm</p>
+                <p>Quản lý cấu hình và thông tin cá nhân</p>
             </div>
 
             <?php if (!empty($_SESSION['flash']['success'])): ?>
@@ -41,6 +70,164 @@ $settings = $data['settings'] ?? [];
                 </div>
                 <?php unset($_SESSION['flash']['error']); ?>
             <?php endif; ?>
+
+            <!-- ✅ THÔNG TIN TÀI KHOẢN -->
+            <?php if ($currentUser): ?>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-user-circle"></i> Thông tin tài khoản</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <div class="form-layout">
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Tên đăng nhập</label>
+                                <input type="text" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars(getVal($currentUser, 'USERNAME')) ?>"
+                                       disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Vai trò hệ thống</label>
+                                <input type="text" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars(getUserRoleName(getVal($currentUser, 'VAITRO'))) ?>"
+                                       disabled>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars(getVal($currentUser, 'EMAIL')) ?>"
+                                       disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Ngày tạo tài khoản</label>
+                                <input type="text" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars(date('d/m/Y H:i', strtotime(getVal($currentUser, 'CREATED_AT')))) ?>"
+                                       disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- ✅ THÔNG TIN NHÂN VIÊN (NẾU CÓ) - SỬA LẠI DÙNG VAITRO -->
+            <?php if ($employeeInfo): ?>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-id-card"></i> Thông tin nhân viên</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <div class="form-layout">
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Mã nhân viên</label>
+                                <input type="text" 
+                                       class="form-control"
+                                       value="NV<?= str_pad(getVal($employeeInfo, 'MANV'), 4, '0', STR_PAD_LEFT) ?>"
+                                       disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Họ và tên</label>
+                                <input type="text" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars(getVal($employeeInfo, 'HOTEN')) ?>"
+                                       disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Chức vụ</label>
+                                <input type="text" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars(getEmployeeRoleName(getVal($employeeInfo, 'VAITRO'))) ?>"
+                                       disabled>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="form-group">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="text" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars(getVal($employeeInfo, 'SDT')) ?>"
+                                       disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="text" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars(getVal($employeeInfo, 'EMAIL')) ?>"
+                                       disabled>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Ngày vào làm</label>
+                                <input type="text" 
+                                       class="form-control"
+                                       value="<?= htmlspecialchars(date('d/m/Y', strtotime(getVal($employeeInfo, 'NGAYVAOLAM')))) ?>"
+                                       disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- ✅ ĐỔI MẬT KHẨU -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-key"></i> Đổi mật khẩu</h3>
+                </div>
+                <form method="POST" action="?c=settings&a=updateProfile">
+                    <div style="padding: 20px;">
+                        <div class="form-layout">
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Mật khẩu hiện tại</label>
+                                    <input type="password" 
+                                           name="current_password" 
+                                           class="form-control"
+                                           placeholder="Nhập mật khẩu hiện tại">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Mật khẩu mới</label>
+                                    <input type="password" 
+                                           name="new_password" 
+                                           class="form-control"
+                                           placeholder="Nhập mật khẩu mới">
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Xác nhận mật khẩu mới</label>
+                                    <input type="password" 
+                                           name="confirm_password" 
+                                           class="form-control"
+                                           placeholder="Nhập lại mật khẩu mới">
+                                </div>
+
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary" style="margin-top: 32px;">
+                                        <i class="fas fa-save"></i> Cập nhật mật khẩu
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
             <form method="post" action="?c=settings&a=update">
                 <!-- THÔNG TIN TRUNG TÂM -->
@@ -142,35 +329,6 @@ $settings = $data['settings'] ?? [];
                                     <option value="vi" selected>Tiếng Việt</option>
                                     <option value="en">English</option>
                                 </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- THÔNG TIN ADMIN -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title"><i class="fas fa-user-shield"></i> Thông tin quản trị viên</h3>
-                    </div>
-                    <div class="form-layout">
-                        <div>
-                            <div class="form-group">
-                                <label class="form-label">Tên đăng nhập</label>
-                                <input type="text" 
-                                       class="form-control"
-                                       value="HungHIHI1603"
-                                       disabled>
-                                <small style="color: var(--text-secondary);">Liên hệ IT để thay đổi</small>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="form-group">
-                                <label class="form-label">Email quản trị</label>
-                                <input type="email" 
-                                       class="form-control"
-                                       value="admin@blocksports.vn"
-                                       disabled>
                             </div>
                         </div>
                     </div>

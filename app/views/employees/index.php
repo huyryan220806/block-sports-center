@@ -100,9 +100,9 @@ $total       = (int)($data['total']    ?? count($employees));
                                             <td><?= date('d/m/Y', strtotime($emp->NGAYVAOLAM)) ?></td>
                                             <td>
                                                 <?php if ($emp->TRANGTHAI == 1): ?>
-                                                    <span class="badge active">✅ Đang làm</span>
+                                                    <span class="badge active">Đang làm</span>
                                                 <?php else: ?>
-                                                    <span class="badge inactive">❌ Đã nghỉ</span>
+                                                    <span class="badge inactive">Đã nghỉ</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>

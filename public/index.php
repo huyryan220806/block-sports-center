@@ -204,6 +204,21 @@ if ($page === 'handle-forgot-password') {
 }
 
 /* =====================================================
+ * ===============  ĐĂNG KÝ - BƯỚC 2  ==================
+ * ===================================================*/
+if ($page === 'register-member') {
+    // Kiểm tra đã hoàn thành bước 1 chưa
+    if (!isset($_SESSION['temp_user_id'])) {
+        header('Location: /block-sports-center/public/index.php?page=register');
+        exit;
+    }
+
+    // ✅ HIỂN THỊ TRANG ĐĂNG KÝ HỘI VIÊN (BƯỚC 2)
+    require_once __DIR__ . '/../app/views/auth/register-member.php';
+    exit;
+}
+
+/* =====================================================
  * ===============  TRANG USER  ========================
  * ===================================================*/
 if ($page === 'user') {

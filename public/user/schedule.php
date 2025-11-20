@@ -3,20 +3,184 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if (!isset($user) || !is_array($user)) {
-    $sessionName = $_SESSION['fullname'] ?? $_SESSION['username'] ?? 'User';
-    $avatar = mb_strtoupper(mb_substr(trim($sessionName), 0, 2, 'UTF-8'), 'UTF-8');
+// Kiểm tra đăng nhập
+if (!isset($_SESSION['user_id'])) {
+    header('Location: /block-sports-center/public/index.php?page=login');
+    exit;
+}
 
-    $user = [
-        'name'      => $sessionName,
-        'member_id' => 'MB001',
-        'avatar'    => $avatar,
+require_once __DIR__ . '/../../app/core/Database.php';
+
+$db = Database::getInstance()->getConnection();
+
+// Lấy thông tin user
+$sessionName = $_SESSION['fullname'] ?? $_SESSION['username'] ?? 'Khách';
+$avatar = mb_strtoupper(mb_substr(trim($sessionName), 0, 2, 'UTF-8'), 'UTF-8');
+
+$user = [
+    'name'      => $sessionName,
+    'member_id' => 'HV' . str_pad($_SESSION['user_id'], 4, '0', STR_PAD_LEFT),
+    'avatar'    => $avatar,
+];
+
+// Lấy lịch tập tuần này (từ Thứ 2 đến Chủ nhật)
+$startOfWeek = date('Y-m-d', strtotime('monday this week'));
+$endOfWeek = date('Y-m-d', strtotime('sunday this week'));
+
+// Query lấy lịch đặt phòng của user
+$bookingQuery = "
+    SELECT 
+        dp.MADP,
+        dp.BATDAU,
+        dp.KETTHUC,
+        dp.TRANGTHAI,
+        dp.MUCTIEU,
+        p.TENPHONG,
+        k.TENKHU
+    FROM datphong dp
+    JOIN phong p ON dp.MAPHONG = p.MAPHONG
+    JOIN khu k ON p.MAKHU = k.MAKHU
+    WHERE dp.MAHV = ?
+      AND DATE(dp.BATDAU) BETWEEN ? AND ?
+      AND dp.TRANGTHAI IN ('PENDING', 'CONFIRMED')
+    ORDER BY dp.BATDAU
+";
+
+$bookingStmt = $db->prepare($bookingQuery);
+$bookingStmt->execute([$_SESSION['user_id'], $startOfWeek, $endOfWeek]);
+$bookings = $bookingStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Query lấy lịch lớp học đã đăng ký
+$classQuery = "
+    SELECT 
+        dk.MADK,
+        b.BATDAU,
+        b.KETTHUC,
+        dk.TRANGTHAI,
+        l.TENLOP,
+        p.TENPHONG,
+        k.TENKHU
+    FROM dangky_lop dk
+    JOIN buoilop b ON dk.MABUOI = b.MABUOI
+    JOIN lop l ON b.MALOP = l.MALOP
+    JOIN phong p ON b.MAPHONG = p.MAPHONG
+    JOIN khu k ON p.MAKHU = k.MAKHU
+    WHERE dk.MAHV = ?
+      AND DATE(b.BATDAU) BETWEEN ? AND ?
+      AND dk.TRANGTHAI IN ('BOOKED', 'ATTENDED')
+    ORDER BY b.BATDAU
+";
+
+$classStmt = $db->prepare($classQuery);
+$classStmt->execute([$_SESSION['user_id'], $startOfWeek, $endOfWeek]);
+$classes = $classStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Query lấy lịch PT Session
+$ptQuery = "
+    SELECT 
+        pt.MAPT,
+        pt.BATDAU,
+        pt.KETTHUC,
+        pt.TRANGTHAI,
+        p.TENPHONG,
+        k.TENKHU,
+        nv.HOTEN as TEN_HLV
+    FROM pt_session pt
+    JOIN phong p ON pt.MAPHONG = p.MAPHONG
+    JOIN khu k ON p.MAKHU = k.MAKHU
+    JOIN nhanvien nv ON pt.MAHLV = nv.MANV
+    WHERE pt.MAHV = ?
+      AND DATE(pt.BATDAU) BETWEEN ? AND ?
+      AND pt.TRANGTHAI IN ('SCHEDULED', 'DONE')
+    ORDER BY pt.BATDAU
+";
+
+$ptStmt = $db->prepare($ptQuery);
+$ptStmt->execute([$_SESSION['user_id'], $startOfWeek, $endOfWeek]);
+$ptSessions = $ptStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Gộp tất cả lịch vào một mảng theo ngày
+$schedule = [
+    'Monday' => [],
+    'Tuesday' => [],
+    'Wednesday' => [],
+    'Thursday' => [],
+    'Friday' => [],
+    'Saturday' => [],
+    'Sunday' => []
+];
+
+// Thêm đặt phòng
+foreach ($bookings as $booking) {
+    $dayOfWeek = date('l', strtotime($booking['BATDAU']));
+    $schedule[$dayOfWeek][] = [
+        'type' => 'BOOKING',
+        'name' => $booking['TENKHU'],
+        'time' => date('H:i', strtotime($booking['BATDAU'])) . ' - ' . date('H:i', strtotime($booking['KETTHUC'])),
+        'location' => $booking['TENPHONG'],
+        'status' => $booking['TRANGTHAI']
     ];
 }
 
-if (!isset($totalCalo)) {
-    $totalCalo = 0;
+// Thêm lớp học
+foreach ($classes as $class) {
+    $dayOfWeek = date('l', strtotime($class['BATDAU']));
+    $schedule[$dayOfWeek][] = [
+        'type' => 'CLASS',
+        'name' => $class['TENLOP'],
+        'time' => date('H:i', strtotime($class['BATDAU'])) . ' - ' . date('H:i', strtotime($class['KETTHUC'])),
+        'location' => $class['TENPHONG'],
+        'status' => $class['TRANGTHAI']
+    ];
 }
+
+// Thêm PT Session
+foreach ($ptSessions as $pt) {
+    $dayOfWeek = date('l', strtotime($pt['BATDAU']));
+    $schedule[$dayOfWeek][] = [
+        'type' => 'PT',
+        'name' => 'PT với ' . $pt['TEN_HLV'],
+        'time' => date('H:i', strtotime($pt['BATDAU'])) . ' - ' . date('H:i', strtotime($pt['KETTHUC'])),
+        'location' => $pt['TENPHONG'],
+        'status' => $pt['TRANGTHAI']
+    ];
+}
+
+// Map trạng thái sang tiếng Việt
+function getStatusText($status) {
+    $statusMap = [
+        'PENDING' => 'Chờ xác nhận',
+        'CONFIRMED' => 'Đã xác nhận',
+        'BOOKED' => 'Đã đăng ký',
+        'ATTENDED' => 'Đã tham gia',
+        'SCHEDULED' => 'Đã lên lịch',
+        'DONE' => 'Hoàn thành'
+    ];
+    return $statusMap[$status] ?? $status;
+}
+
+// Map trạng thái sang màu
+function getStatusColor($status) {
+    $colorMap = [
+        'PENDING' => '#fbbf24',
+        'CONFIRMED' => '#10b981',
+        'BOOKED' => '#3b82f6',
+        'ATTENDED' => '#10b981',
+        'SCHEDULED' => '#8b5cf6',
+        'DONE' => '#6b7280'
+    ];
+    return $colorMap[$status] ?? '#6b7280';
+}
+
+$daysVN = [
+    'Monday' => 'Thứ 2',
+    'Tuesday' => 'Thứ 3',
+    'Wednesday' => 'Thứ 4',
+    'Thursday' => 'Thứ 5',
+    'Friday' => 'Thứ 6',
+    'Saturday' => 'Thứ 7',
+    'Sunday' => 'Chủ nhật'
+];
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -189,16 +353,18 @@ if (!isset($totalCalo)) {
         .schedule-list li {
             margin-bottom: 15px;
             font-size: 14px;
-            padding: 10px;
+            padding: 15px;
             background: #f8f9fa;
             border-radius: 8px;
+            border-left: 4px solid #667eea;
+            position: relative;
         }
 
         .schedule-list strong {
             font-size: 15px;
             color: #333;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
         .schedule-list span {
@@ -206,6 +372,49 @@ if (!isset($totalCalo)) {
             color: #666;
             font-size: 13px;
             margin-top: 4px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: white;
+            margin-top: 8px;
+        }
+
+        .type-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .type-booking {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .type-class {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .type-pt {
+            background: #fce7f3;
+            color: #be185d;
+        }
+
+        .empty-day {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-style: italic;
         }
         
         @media (max-width: 768px) {
@@ -242,88 +451,52 @@ if (!isset($totalCalo)) {
     
     <section class="hero">
         <h1>Lịch tập của bạn</h1>
-        <p>Xem nhanh các buổi đã đăng ký trong tuần</p>
+        <p>Xem nhanh các buổi đã đăng ký trong tuần (<?= date('d/m/Y', strtotime($startOfWeek)) ?> - <?= date('d/m/Y', strtotime($endOfWeek)) ?>)</p>
     </section>
 
     <section class="quick-actions">
         <h2 class="section-title">Tuần này</h2>
 
         <div class="actions-grid">
-            <div class="action-card">
-                <h3>Thứ 2</h3>
-                <ul class="schedule-list">
-                    <li>
-                        <strong>Gym Strength</strong>
-                        <span><i class="fas fa-clock"></i> 18:00 - 19:00</span>
-                        <span><i class="fas fa-map-marker-alt"></i> Phòng Gym 2</span>
-                    </li>
-                    <li>
-                        <strong>Cầu lông</strong>
-                        <span><i class="fas fa-clock"></i> 19:30 - 21:00</span>
-                        <span><i class="fas fa-map-marker-alt"></i> Sân Cầu lông 3</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="action-card">
-                <h3>Thứ 3</h3>
-                <ul class="schedule-list">
-                    <li>
-                        <strong>Bơi lội</strong>
-                        <span><i class="fas fa-clock"></i> 06:00 - 07:00</span>
-                        <span><i class="fas fa-map-marker-alt"></i> Hồ bơi ngoài trời</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="action-card">
-                <h3>Thứ 4</h3>
-                <ul class="schedule-list">
-                    <li>
-                        <strong>Bóng rổ</strong>
-                        <span><i class="fas fa-clock"></i> 16:30 - 18:00</span>
-                        <span><i class="fas fa-map-marker-alt"></i> Sân Bóng rổ A</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="action-card">
-                <h3>Thứ 5</h3>
-                <ul class="schedule-list">
-                    <li>
-                        <strong>Futsal</strong>
-                        <span><i class="fas fa-clock"></i> 18:00 - 19:30</span>
-                        <span><i class="fas fa-map-marker-alt"></i> Sân Futsal B</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="action-card">
-                <h3>Thứ 6</h3>
-                <ul class="schedule-list">
-                    <li>
-                        <strong>Pickleball</strong>
-                        <span><i class="fas fa-clock"></i> 17:00 - 18:30</span>
-                        <span><i class="fas fa-map-marker-alt"></i> Sân Pickleball 1</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="action-card">
-                <h3>Thứ 7 & Chủ nhật</h3>
-                <ul class="schedule-list">
-                    <li>
-                        <strong>Bóng đá 11 người</strong>
-                        <span><i class="fas fa-clock"></i> 19:00 - 21:00</span>
-                        <span><i class="fas fa-map-marker-alt"></i> Sân 11 người</span>
-                    </li>
-                    <li>
-                        <strong>Swimming Family</strong>
-                        <span><i class="fas fa-clock"></i> 08:00 - 09:30</span>
-                        <span><i class="fas fa-map-marker-alt"></i> Hồ bơi trong nhà</span>
-                    </li>
-                </ul>
-            </div>
+            <?php foreach ($schedule as $dayEn => $activities): ?>
+                <div class="action-card">
+                    <h3><?= $daysVN[$dayEn] ?></h3>
+                    <small style="color: #999;">
+                        <?= date('d/m/Y', strtotime($startOfWeek . ' +' . array_search($dayEn, array_keys($schedule)) . ' days')) ?>
+                    </small>
+                    
+                    <?php if (empty($activities)): ?>
+                        <div class="empty-day">
+                            <i class="fas fa-calendar-day" style="font-size: 32px; color: #ddd; margin-bottom: 10px;"></i>
+                            <p>Chưa có lịch</p>
+                        </div>
+                    <?php else: ?>
+                        <ul class="schedule-list">
+                            <?php foreach ($activities as $activity): ?>
+                                <li>
+                                    <span class="type-badge type-<?= strtolower($activity['type']) ?>">
+                                        <?= $activity['type'] === 'BOOKING' ? 'Đặt phòng' : ($activity['type'] === 'CLASS' ? 'Lớp học' : 'PT') ?>
+                                    </span>
+                                    
+                                    <strong><?= htmlspecialchars($activity['name']) ?></strong>
+                                    
+                                    <span>
+                                        <i class="fas fa-clock"></i> <?= htmlspecialchars($activity['time']) ?>
+                                    </span>
+                                    
+                                    <span>
+                                        <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($activity['location']) ?>
+                                    </span>
+                                    
+                                    <span class="status-badge" style="background: <?= getStatusColor($activity['status']) ?>">
+                                        <?= getStatusText($activity['status']) ?>
+                                    </span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
         </div>
     </section>
 </body>

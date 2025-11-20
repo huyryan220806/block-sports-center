@@ -16,6 +16,25 @@ if (!$employee) {
     header('Location: ?c=employees&a=index');
     exit;
 }
+
+// ✅ HÀM HELPER LẤY GIÁ TRỊ AN TOÀN
+function getVal($obj, $prop, $default = '') {
+    return isset($obj->$prop) ? $obj->$prop : $default;
+}
+
+// ✅ LẤY TẤT CẢ GIÁ TRỊ TRƯỚC
+$manv = getVal($employee, 'MANV');
+$hoten = getVal($employee, 'HOTEN');
+$ngaysinh = getVal($employee, 'NGAYSINH');
+$gioitinh = getVal($employee, 'GIOITINH', 'MALE');
+$sdt = getVal($employee, 'SDT');
+$email = getVal($employee, 'EMAIL');
+$diachi = getVal($employee, 'DIACHI');
+$chucvu = getVal($employee, 'CHUCVU', 'STAFF');
+$phongban = getVal($employee, 'PHONGBAN');
+$ngayvaolam = getVal($employee, 'NGAYVAOLAM');
+$luong = getVal($employee, 'LUONG', '0');
+$trangthai = getVal($employee, 'TRANGTHAI', 'ACTIVE');
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -36,13 +55,13 @@ if (!$employee) {
                 
                 <div class="page-header">
                     <h2>
-                        <i class="fas fa-edit"></i> Chỉnh sửa nhân viên #<?= $employee->MANV ?>
+                        <i class="fas fa-edit"></i> Chỉnh sửa nhân viên #<?= htmlspecialchars($manv) ?>
                     </h2>
                     <p>Cập nhật thông tin nhân viên</p>
                 </div>
 
                 <form method="POST" action="?c=employees&a=update">
-                    <input type="hidden" name="id" value="<?= $employee->MANV ?>">
+                    <input type="hidden" name="id" value="<?= htmlspecialchars($manv) ?>">
 
                     <!-- THÔNG TIN CÁ NHÂN -->
                     <div class="card">
@@ -61,7 +80,7 @@ if (!$employee) {
                                            name="hoten" 
                                            class="form-control" 
                                            placeholder="Nguyễn Văn A"
-                                           value="<?= htmlspecialchars($employee->HOTEN) ?>"
+                                           value="<?= htmlspecialchars($hoten) ?>"
                                            required>
                                 </div>
 
@@ -70,19 +89,19 @@ if (!$employee) {
                                     <input type="date" 
                                            name="ngaysinh" 
                                            class="form-control"
-                                           value="<?= htmlspecialchars($employee->NGAYSINH ?? '') ?>">
+                                           value="<?= htmlspecialchars($ngaysinh) ?>">
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-label">Giới tính</label>
                                     <select name="gioitinh" class="form-control">
-                                        <option value="MALE" <?= $employee->GIOITINH == 'MALE' ? 'selected' : '' ?>>
-                                            👨 Nam
+                                        <option value="MALE" <?= $gioitinh == 'MALE' ? 'selected' : '' ?>>
+                                            Nam
                                         </option>
-                                        <option value="FEMALE" <?= $employee->GIOITINH == 'FEMALE' ? 'selected' : '' ?>>
-                                            👩 Nữ
+                                        <option value="FEMALE" <?= $gioitinh == 'FEMALE' ? 'selected' : '' ?>>
+                                            Nữ
                                         </option>
-                                        <option value="OTHER" <?= $employee->GIOITINH == 'OTHER' ? 'selected' : '' ?>>
+                                        <option value="OTHER" <?= $gioitinh == 'OTHER' ? 'selected' : '' ?>>
                                             Khác
                                         </option>
                                     </select>
@@ -97,7 +116,7 @@ if (!$employee) {
                                            name="sdt" 
                                            class="form-control" 
                                            placeholder="0901234567"
-                                           value="<?= htmlspecialchars($employee->SDT ?? '') ?>">
+                                           value="<?= htmlspecialchars($sdt) ?>">
                                 </div>
 
                                 <div class="form-group">
@@ -106,7 +125,7 @@ if (!$employee) {
                                            name="email" 
                                            class="form-control" 
                                            placeholder="example@email.com"
-                                           value="<?= htmlspecialchars($employee->EMAIL ?? '') ?>">
+                                           value="<?= htmlspecialchars($email) ?>">
                                 </div>
 
                                 <div class="form-group">
@@ -114,7 +133,7 @@ if (!$employee) {
                                     <textarea name="diachi" 
                                               class="form-control" 
                                               rows="3" 
-                                              placeholder="Nhập địa chỉ"><?= htmlspecialchars($employee->DIACHI ?? '') ?></textarea>
+                                              placeholder="Nhập địa chỉ"><?= htmlspecialchars($diachi) ?></textarea>
                                 </div>
                             </div>
                         </div>
@@ -134,22 +153,22 @@ if (!$employee) {
                                         Chức vụ <span style="color: red;">*</span>
                                     </label>
                                     <select name="chucvu" class="form-control" required>
-                                        <option value="STAFF" <?= $employee->CHUCVU == 'STAFF' ? 'selected' : '' ?>>
+                                        <option value="STAFF" <?= $chucvu == 'STAFF' ? 'selected' : '' ?>>
                                             Nhân viên
                                         </option>
-                                        <option value="MANAGER" <?= $employee->CHUCVU == 'MANAGER' ? 'selected' : '' ?>>
+                                        <option value="MANAGER" <?= $chucvu == 'MANAGER' ? 'selected' : '' ?>>
                                             Quản lý
                                         </option>
-                                        <option value="RECEPTIONIST" <?= $employee->CHUCVU == 'RECEPTIONIST' ? 'selected' : '' ?>>
+                                        <option value="RECEPTIONIST" <?= $chucvu == 'RECEPTIONIST' ? 'selected' : '' ?>>
                                             Lễ tân
                                         </option>
-                                        <option value="CLEANER" <?= $employee->CHUCVU == 'CLEANER' ? 'selected' : '' ?>>
+                                        <option value="CLEANER" <?= $chucvu == 'CLEANER' ? 'selected' : '' ?>>
                                             Vệ sinh
                                         </option>
-                                        <option value="SECURITY" <?= $employee->CHUCVU == 'SECURITY' ? 'selected' : '' ?>>
+                                        <option value="SECURITY" <?= $chucvu == 'SECURITY' ? 'selected' : '' ?>>
                                             Bảo vệ
                                         </option>
-                                        <option value="OTHER" <?= $employee->CHUCVU == 'OTHER' ? 'selected' : '' ?>>
+                                        <option value="OTHER" <?= $chucvu == 'OTHER' ? 'selected' : '' ?>>
                                             Khác
                                         </option>
                                     </select>
@@ -161,7 +180,7 @@ if (!$employee) {
                                            name="phongban" 
                                            class="form-control" 
                                            placeholder="VD: Hành chính, Kỹ thuật..."
-                                           value="<?= htmlspecialchars($employee->PHONGBAN ?? '') ?>">
+                                           value="<?= htmlspecialchars($phongban) ?>">
                                 </div>
                             </div>
 
@@ -174,7 +193,7 @@ if (!$employee) {
                                     <input type="date" 
                                            name="ngayvaolam" 
                                            class="form-control"
-                                           value="<?= htmlspecialchars($employee->NGAYVAOLAM) ?>"
+                                           value="<?= htmlspecialchars($ngayvaolam) ?>"
                                            required>
                                 </div>
 
@@ -184,7 +203,7 @@ if (!$employee) {
                                            name="luong" 
                                            class="form-control" 
                                            placeholder="0"
-                                           value="<?= htmlspecialchars($employee->LUONG ?? '0') ?>"
+                                           value="<?= htmlspecialchars($luong) ?>"
                                            min="0"
                                            step="100000">
                                 </div>
@@ -194,11 +213,11 @@ if (!$employee) {
                         <div class="form-group" style="padding: 0 20px 20px;">
                             <label class="form-label">Trạng thái</label>
                             <select name="trangthai" class="form-control">
-                                <option value="ACTIVE" <?= $employee->TRANGTHAI == 'ACTIVE' ? 'selected' : '' ?>>
-                                    ✅ Đang làm việc
+                                <option value="ACTIVE" <?= $trangthai == 'ACTIVE' ? 'selected' : '' ?>>
+                                    Đang làm việc
                                 </option>
-                                <option value="INACTIVE" <?= $employee->TRANGTHAI == 'INACTIVE' ? 'selected' : '' ?>>
-                                    ❌ Đã nghỉ việc
+                                <option value="INACTIVE" <?= $trangthai == 'INACTIVE' ? 'selected' : '' ?>>
+                                    Đã nghỉ việc
                                 </option>
                             </select>
                         </div>

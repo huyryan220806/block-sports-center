@@ -1,8 +1,9 @@
 <?php
 /**
  * Employees Create View
- * Updated: 2025-11-18 13:57:42 UTC
- * Fixed: Chỉ sử dụng field có trong bảng thực tế
+ * Updated: 2025-11-20 15:52:11 UTC
+ * Author: @huyryan220806
+ * Fixed: Thêm đầy đủ vai trò nhân viên
  */
 
 $pageTitle = 'Thêm nhân viên mới';
@@ -31,9 +32,10 @@ $currentPage = 'employees';
                 </div>
 
                 <form method="POST" action="?c=employees&a=store">
+                    <!-- THÔNG TIN CÁ NHÂN -->
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"><i class="fas fa-user"></i> Thông tin nhân viên</h3>
+                            <h3 class="card-title"><i class="fas fa-user"></i> Thông tin cá nhân</h3>
                         </div>
 
                         <div class="form-layout">
@@ -52,6 +54,32 @@ $currentPage = 'employees';
                                 </div>
 
                                 <div class="form-group">
+                                    <label class="form-label">Ngày sinh</label>
+                                    <input type="date" 
+                                           name="ngaysinh" 
+                                           class="form-control"
+                                           value="<?= htmlspecialchars($_POST['ngaysinh'] ?? '') ?>">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Giới tính</label>
+                                    <select name="gioitinh" class="form-control">
+                                        <option value="MALE" <?= ($_POST['gioitinh'] ?? 'MALE') == 'MALE' ? 'selected' : '' ?>>
+                                            Nam
+                                        </option>
+                                        <option value="FEMALE" <?= ($_POST['gioitinh'] ?? '') == 'FEMALE' ? 'selected' : '' ?>>
+                                            Nữ
+                                        </option>
+                                        <option value="OTHER" <?= ($_POST['gioitinh'] ?? '') == 'OTHER' ? 'selected' : '' ?>>
+                                            Khác
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Cột phải -->
+                            <div>
+                                <div class="form-group">
                                     <label class="form-label">Số điện thoại</label>
                                     <input type="tel" 
                                            name="sdt" 
@@ -68,30 +96,88 @@ $currentPage = 'employees';
                                            placeholder="example@email.com"
                                            value="<?= htmlspecialchars($_POST['email'] ?? '') ?>">
                                 </div>
-                            </div>
 
-                            <!-- Cột phải -->
+                                <div class="form-group">
+                                    <label class="form-label">Địa chỉ</label>
+                                    <textarea name="diachi" 
+                                              class="form-control" 
+                                              rows="3" 
+                                              placeholder="Nhập địa chỉ"><?= htmlspecialchars($_POST['diachi'] ?? '') ?></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- THÔNG TIN CÔNG VIỆC -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-briefcase"></i> Thông tin công việc</h3>
+                        </div>
+
+                        <div class="form-layout">
+                            <!-- Cột trái -->
                             <div>
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        Chức vụ <span style="color: red;">*</span>
+                                    </label>
+                                    <select name="chucvu" class="form-control" required>
+                                        <option value="">-- Chọn chức vụ --</option>
+                                        <option value="STAFF" <?= ($_POST['chucvu'] ?? '') == 'STAFF' ? 'selected' : '' ?>>
+                                            Nhân viên
+                                        </option>
+                                        <option value="MANAGER" <?= ($_POST['chucvu'] ?? '') == 'MANAGER' ? 'selected' : '' ?>>
+                                            Quản lý
+                                        </option>
+                                        <option value="RECEPTIONIST" <?= ($_POST['chucvu'] ?? '') == 'RECEPTIONIST' ? 'selected' : '' ?>>
+                                            Lễ tân
+                                        </option>
+                                        <option value="CLEANER" <?= ($_POST['chucvu'] ?? '') == 'CLEANER' ? 'selected' : '' ?>>
+                                            Vệ sinh
+                                        </option>
+                                        <option value="SECURITY" <?= ($_POST['chucvu'] ?? '') == 'SECURITY' ? 'selected' : '' ?>>
+                                            Bảo vệ
+                                        </option>
+                                        <option value="OTHER" <?= ($_POST['chucvu'] ?? '') == 'OTHER' ? 'selected' : '' ?>>
+                                            Khác
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Phòng ban</label>
+                                    <input type="text" 
+                                           name="phongban" 
+                                           class="form-control" 
+                                           placeholder="VD: Hành chính, Kỹ thuật..."
+                                           value="<?= htmlspecialchars($_POST['phongban'] ?? '') ?>">
+                                </div>
+
                                 <div class="form-group">
                                     <label class="form-label">
                                         Vai trò <span style="color: red;">*</span>
                                     </label>
                                     <select name="vaitro" class="form-control" required>
+                                        <option value="">-- Chọn vai trò --</option>
                                         <option value="ADMIN" <?= ($_POST['vaitro'] ?? '') == 'ADMIN' ? 'selected' : '' ?>>
-                                            👑 Admin
+                                            <i class="fas fa-shield-halved"></i> Admin
                                         </option>
                                         <option value="FRONTDESK" <?= ($_POST['vaitro'] ?? '') == 'FRONTDESK' ? 'selected' : '' ?>>
-                                            🏪 Lễ tân (Front Desk)
+                                            <i class="fas fa-desk"></i> Lễ tân (Front Desk)
                                         </option>
                                         <option value="MAINTENANCE" <?= ($_POST['vaitro'] ?? '') == 'MAINTENANCE' ? 'selected' : '' ?>>
-                                            🔧 Bảo trì (Maintenance)
+                                            <i class="fas fa-tools"></i> Bảo trì (Maintenance)
                                         </option>
-                                        <option value="OTHER" <?= ($_POST['vaitro'] ?? 'OTHER') == 'OTHER' ? 'selected' : '' ?>>
-                                            👤 Khác
+                                        <option value="OTHER" <?= ($_POST['vaitro'] ?? '') == 'OTHER' ? 'selected' : '' ?>>
+                                            <i class="fas fa-user"></i> Khác
                                         </option>
                                     </select>
+                                    <small class="form-text">Vai trò quyết định quyền truy cập hệ thống</small>
                                 </div>
+                            </div>
 
+                            <!-- Cột phải -->
+                            <div>
                                 <div class="form-group">
                                     <label class="form-label">
                                         Ngày vào làm <span style="color: red;">*</span>
@@ -104,10 +190,21 @@ $currentPage = 'employees';
                                 </div>
 
                                 <div class="form-group">
+                                    <label class="form-label">Lương (VND)</label>
+                                    <input type="number" 
+                                           name="luong" 
+                                           class="form-control" 
+                                           placeholder="0"
+                                           value="<?= htmlspecialchars($_POST['luong'] ?? '0') ?>"
+                                           min="0"
+                                           step="100000">
+                                </div>
+
+                                <div class="form-group">
                                     <label class="form-label">Trạng thái</label>
                                     <select name="trangthai" class="form-control">
-                                        <option value="1" selected>✅ Đang làm việc</option>
-                                        <option value="0">❌ Đã nghỉ việc</option>
+                                        <option value="ACTIVE" selected>Đang làm việc</option>
+                                        <option value="INACTIVE">Đã nghỉ việc</option>
                                     </select>
                                 </div>
                             </div>

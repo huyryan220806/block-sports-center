@@ -3,37 +3,31 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if (!isset($user) || !is_array($user)) {
-    $sessionName = $_SESSION['fullname'] ?? $_SESSION['username'] ?? 'Khách';
-    $avatar = mb_strtoupper(mb_substr(trim($sessionName), 0, 2, 'UTF-8'), 'UTF-8');
+// Lấy tên từ SESSION (giống như classes.php)
+$sessionName = $_SESSION['fullname'] ?? $_SESSION['username'] ?? 'Khách';
+$avatar = mb_strtoupper(mb_substr(trim($sessionName), 0, 2, 'UTF-8'), 'UTF-8');
 
+// Nếu Controller đã truyền data thì dùng, không thì dùng session
+if (isset($data['user']) && !empty($data['user']['name'])) {
+    $user = $data['user'];
+} else {
     $user = [
         'name'      => $sessionName,
-        'member_id' => 'MB001',
+        'member_id' => 'MB' . str_pad($_SESSION['user_id'] ?? 1, 3, '0', STR_PAD_LEFT),
         'avatar'    => $avatar,
     ];
 }
 
-// Xử lý tên để chào: lấy từ cuối cùng (ví dụ "An" trong "Nguyễn Văn An")
-$fullName = trim($user['name'] ?? '');
-if ($fullName === '') {
-    $fullName = 'bạn';
-}
-$nameParts  = preg_split('/\s+/', $fullName);
-$shortName  = end($nameParts);
+$sessionsThisMonth = isset($data['sessionsThisMonth']) ? $data['sessionsThisMonth'] : 0;
+$totalCalo = isset($data['totalCalo']) ? $data['totalCalo'] : 0;
+$hoursThisMonth = isset($data['hoursThisMonth']) ? $data['hoursThisMonth'] : 0;
+$achievements = isset($data['achievements']) ? $data['achievements'] : 0;
+$upcomingClasses = isset($data['upcomingClasses']) ? $data['upcomingClasses'] : [];
 
-if (!isset($totalCalo)) {
-    $totalCalo = 0;
-}
-if (!isset($sessionsThisMonth)) {
-    $sessionsThisMonth = 0;
-}
-if (!isset($hoursThisMonth)) {
-    $hoursThisMonth = 0;
-}
-if (!isset($achievements)) {
-    $achievements = 0;
-}
+// Xử lý tên hiển thị
+$fullName = trim($user['name']);
+$nameParts = preg_split('/\s+/', $fullName);
+$shortName = end($nameParts);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -288,6 +282,7 @@ if (!isset($achievements)) {
             color: #666;
             font-size: 14px;
             margin-top: 8px;
+            flex-wrap: wrap;
         }
         
         .btn {
@@ -309,11 +304,31 @@ if (!isset($achievements)) {
             box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
         }
         
+        .no-classes {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: #999;
+        }
+        
         @media (max-width: 768px) {
             .hero h1 { font-size: 32px; }
             .nav { display: none; }
             .stats { grid-template-columns: 1fr; }
             .actions-grid { grid-template-columns: 1fr; }
+            .class-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .class-card .btn {
+                width: 100%;
+                margin-top: 15px;
+            }
+            .class-details {
+                flex-direction: column;
+                gap: 8px;
+            }
         }
     </style>
 </head>
@@ -353,7 +368,7 @@ if (!isset($achievements)) {
     <section class="stats">
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
-            <div class="stat-value"><?= (int)$sessionsThisMonth; ?></div>
+            <div class="stat-value"><?= $sessionsThisMonth; ?></div>
             <div class="stat-label">Buổi tập tháng này</div>
         </div>
         
@@ -371,7 +386,7 @@ if (!isset($achievements)) {
         
         <div class="stat-card">
             <div class="stat-icon"><i class="fas fa-trophy"></i></div>
-            <div class="stat-value"><?= (int)$achievements; ?></div>
+            <div class="stat-value"><?= $achievements; ?></div>
             <div class="stat-label">Thành tựu đạt được</div>
         </div>
     </section>
@@ -411,29 +426,41 @@ if (!isset($achievements)) {
     <section class="upcoming-classes">
         <h2 class="section-title">Lớp học sắp tới</h2>
         
-        <div class="class-card">
-            <div class="class-info">
-                <h4>Yoga Căn Bản</h4>
-                <div class="class-details">
-                    <span><i class="fas fa-clock"></i> 08:00 - 09:30</span>
-                    <span><i class="fas fa-map-marker-alt"></i> Phòng A1</span>
-                    <span><i class="fas fa-user"></i> Nguyễn Thị Lan</span>
+        <?php if (empty($upcomingClasses)): ?>
+            <div class="no-classes">
+                <p>Bạn chưa đăng ký lớp học nào. Hãy đăng ký ngay!</p>
+            </div>
+        <?php else: ?>
+            <?php foreach ($upcomingClasses as $class): 
+                $startTime = date('H:i', strtotime($class->BATDAU));
+                $endTime = date('H:i', strtotime($class->KETTHUC));
+                $classDate = date('d/m/Y', strtotime($class->BATDAU));
+            ?>
+            <div class="class-card">
+                <div class="class-info">
+                    <h4><?= htmlspecialchars($class->TENLOP); ?></h4>
+                    <div class="class-details">
+                        <span><i class="fas fa-calendar"></i> <?= $classDate; ?></span>
+                        <span><i class="fas fa-clock"></i> <?= $startTime; ?> - <?= $endTime; ?></span>
+                        <span><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($class->TENPHONG); ?></span>
+                        <span><i class="fas fa-user"></i> <?= htmlspecialchars($class->TENHLV); ?></span>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-primary" onclick="viewClassDetail('<?= htmlspecialchars($class->TENLOP); ?>', <?= $class->MABUOI; ?>)">
+                        Chi tiết
+                    </button>
                 </div>
             </div>
-            <button class="btn btn-primary">Chi tiết</button>
-        </div>
-        
-        <div class="class-card">
-            <div class="class-info">
-                <h4>Gym Strength Training</h4>
-                <div class="class-details">
-                    <span><i class="fas fa-clock"></i> 18:00 - 19:00</span>
-                    <span><i class="fas fa-map-marker-alt"></i> Gym Floor</span>
-                    <span><i class="fas fa-user"></i> Trần Văn Mạnh</span>
-                </div>
-            </div>
-            <button class="btn btn-primary">Chi tiết</button>
-        </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </section>
+
+    <script>
+        function viewClassDetail(className, sessionId) {
+            console.log('Class:', className, 'Session ID:', sessionId);
+            alert('Xem chi tiết: ' + className + '\nMã buổi: ' + sessionId);
+        }
+    </script>
 </body>
 </html>
