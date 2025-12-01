@@ -14,15 +14,15 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Load config
-require_once __DIR__ . '/../config/database. php';
-require_once __DIR__ . '/../config/app. php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/app.php';
 
 // Load core classes
 require_once __DIR__ . '/../app/core/Database.php';
 require_once __DIR__ . '/../app/core/Model.php';
 require_once __DIR__ . '/../app/core/Controller.php';
 require_once __DIR__ . '/../app/core/Helpers.php';
-require_once __DIR__ .  '/../app/core/App. php';
+require_once __DIR__ .  '/../app/core/App.php';
 require_once __DIR__ . '/../app/core/AreaHelper.php';
 
 // ✅ HÀM TẠO URL ĐỘNG - HOẠT ĐỘNG CẢ LOCALHOST VÀ RAILWAY
@@ -44,7 +44,7 @@ $action = $_GET['a'] ?? '';
 function get_pdo() {
     static $pdo = null;
     if ($pdo === null) {
-        $pdo = Database::getInstance()->getConnection();
+        $pdo = database::getInstance()->getConnection();
     }
     return $pdo;
 }
