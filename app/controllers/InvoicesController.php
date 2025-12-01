@@ -36,11 +36,10 @@ class InvoicesController extends Controller
     }
     
     /**
-     * ✅ ĐỔI TÊN: view() → show()
      * Xem chi tiết hóa đơn
      */
     public function show() {
-        $id = $_GET['id'] ?? 0;
+        $id = $_GET['id'] ??  0;
         $invoice = $this->invoiceModel->find($id);
         
         if (!$invoice) {
@@ -107,8 +106,7 @@ class InvoicesController extends Controller
         $result = $this->invoiceModel->create($data);
         
         if ($result) {
-            $this->setFlash('success', 'Tạo hóa đơn thành công!');
-            // ✅ ĐỔI: a=view → a=show
+            $this->setFlash('success', 'Tạo hóa đơn #INV' . str_pad($result, 4, '0', STR_PAD_LEFT) . ' thành công!');
             $this->redirect('?c=invoices&a=show&id=' . $result);
         } else {
             $this->setFlash('error', 'Tạo hóa đơn thất bại!');
@@ -143,6 +141,7 @@ class InvoicesController extends Controller
     
     /**
      * Cập nhật hóa đơn
+     * ✅ SỬA: Redirect về index thay vì show
      */
     public function update() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -177,12 +176,12 @@ class InvoicesController extends Controller
         $result = $this->invoiceModel->update($id, $data);
         
         if ($result) {
-            $this->setFlash('success', 'Cập nhật hóa đơn thành công!');
-            // ✅ ĐỔI: a=view → a=show
-            $this->redirect('?c=invoices&a=show&id=' . $id);
+            $this->setFlash('success', 'Cập nhật hóa đơn #INV' . str_pad($id, 4, '0', STR_PAD_LEFT) . ' thành công!');
+            // ✅ THAY ĐỔI: Redirect về danh sách thay vì chi tiết
+            $this->redirect('?c=invoices&a=index');
         } else {
             $this->setFlash('error', 'Cập nhật hóa đơn thất bại!');
-            $this->redirect('?c=invoices&a=edit&id=' . $id);
+            $this->redirect('?c=invoices&a=edit&id=' .  $id);
         }
     }
     
@@ -190,10 +189,10 @@ class InvoicesController extends Controller
      * Xóa hóa đơn
      */
     public function delete() {
-        $id = $_GET['id'] ?? 0;
+        $id = $_GET['id'] ??  0;
         
         if ($this->invoiceModel->delete($id)) {
-            $this->setFlash('success', 'Xóa hóa đơn thành công!');
+            $this->setFlash('success', 'Xóa hóa đơn #INV' .  str_pad($id, 4, '0', STR_PAD_LEFT) . ' thành công!');
         } else {
             $this->setFlash('error', 'Xóa hóa đơn thất bại!');
         }

@@ -3,6 +3,7 @@
  * app/views/invoices/edit.php
  * Form chỉnh sửa hóa đơn
  * Created: 2025-11-18 13:02:23 UTC
+ * Updated: 2025-12-01 - Fixed missing mahdon field
  * Author: @huyryan220806
  */
 
@@ -14,23 +15,23 @@ $members    = $data['members']    ?? [];
 $promotions = $data['promotions'] ?? [];
 $packages   = $data['packages']   ?? [];
 
-if (!$invoice) {
-    $_SESSION['error'] = 'Không tìm thấy hóa đơn!';
+if (! $invoice) {
+    $_SESSION['error'] = 'Không tìm thấy hóa đơn! ';
     header('Location: ?c=invoices&a=index');
     exit;
 }
 
 // Lấy chi tiết items từ invoice
-$items = $invoice->items ?? [];
+$items = $invoice->items ??  [];
 ?>
-<!DOCTYPE html>
+<! DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle) ?> - BLOCK SPORTS CENTER</title>
     <link rel="stylesheet" href="/block-sports-center/public/assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare. com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         .invoice-item {
@@ -87,7 +88,9 @@ $items = $invoice->items ?? [];
                     <p>Cập nhật thông tin hóa đơn</p>
                 </div>
                 
-                <form method="POST" action="?c=invoices&a=update&id=<?= $invoice->MAHDON ?>" id="invoiceForm">
+                <form method="POST" action="?c=invoices&a=update" id="invoiceForm">
+                    <input type="hidden" name="mahdon" value="<?= $invoice->MAHDON ?>">
+                    
                     <!-- THÔNG TIN CHUNG -->
                     <div class="card">
                         <div class="card-header">
@@ -105,9 +108,9 @@ $items = $invoice->items ?? [];
                                         <option value="">-- Chọn hội viên --</option>
                                         <?php if (!empty($members)): ?>
                                             <?php foreach ($members as $m): ?>
-                                                <option value="<?= $m->MAHV ?>" <?= $invoice->MAHV == $m->MAHV ? 'selected' : '' ?>>
+                                                <option value="<?= $m->MAHV ?>" <?= $invoice->MAHV == $m->MAHV ?  'selected' : '' ?>>
                                                     #<?= $m->MAHV ?> - <?= htmlspecialchars($m->HOVATEN) ?> 
-                                                    <?php if (!empty($m->SDT)): ?>
+                                                    <?php if (! empty($m->SDT)): ?>
                                                         - <?= htmlspecialchars($m->SDT) ?>
                                                     <?php endif; ?>
                                                 </option>
@@ -132,15 +135,15 @@ $items = $invoice->items ?? [];
                                     <label class="form-label">Mã khuyến mãi (tùy chọn)</label>
                                     <select name="makm" class="form-control" id="promoSelect">
                                         <option value="">-- Không áp dụng --</option>
-                                        <?php if (!empty($promotions)): ?>
+                                        <?php if (! empty($promotions)): ?>
                                             <?php foreach ($promotions as $km): ?>
                                                 <option value="<?= $km->MAKM ?>" 
-                                                        data-type="<?= htmlspecialchars($km->LOAI ?? 'FIXED') ?>"
-                                                        data-value="<?= $km->GIATRI ?? 0 ?>"
+                                                        data-type="<?= htmlspecialchars($km->LOAI ??  'FIXED') ?>"
+                                                        data-value="<?= $km->GIATRI ??  0 ?>"
                                                         <?= $invoice->MAKM == $km->MAKM ? 'selected' : '' ?>>
-                                                    <?= htmlspecialchars($km->CODE ?? '') ?> - 
+                                                    <?= htmlspecialchars($km->CODE ??  '') ?> - 
                                                     <?php if (($km->LOAI ?? '') === 'PERCENT'): ?>
-                                                        Giảm <?= $km->GIATRI ?? 0 ?>%
+                                                        Giảm <?= $km->GIATRI ??  0 ?>%
                                                     <?php else: ?>
                                                         Giảm <?= number_format($km->GIATRI ?? 0, 0, ',', '.') ?>đ
                                                     <?php endif; ?>
@@ -181,7 +184,7 @@ $items = $invoice->items ?? [];
                                             <div style="flex: 2;">
                                                 <label class="form-label">Loại hàng</label>
                                                 <select name="items[<?= $index ?>][loaihang]" class="form-control">
-                                                    <option value="MEMBERSHIP" <?= ($item->LOAIHANG ?? '') == 'MEMBERSHIP' ? 'selected' : '' ?>>Gói tập</option>
+                                                    <option value="MEMBERSHIP" <?= ($item->LOAIHANG ??  '') == 'MEMBERSHIP' ?  'selected' : '' ?>>Gói tập</option>
                                                     <option value="CLASS" <?= ($item->LOAIHANG ?? '') == 'CLASS' ? 'selected' : '' ?>>Lớp học</option>
                                                     <option value="PT" <?= ($item->LOAIHANG ?? '') == 'PT' ? 'selected' : '' ?>>PT Session</option>
                                                     <option value="BOOKING" <?= ($item->LOAIHANG ?? '') == 'BOOKING' ? 'selected' : '' ?>>Đặt phòng</option>
@@ -193,7 +196,7 @@ $items = $invoice->items ?? [];
                                             <div style="flex: 4;">
                                                 <label class="form-label">Mô tả <span style="color: red;">*</span></label>
                                                 <input type="text" 
-                                                       name="items[<?= $index ?>][mota]" 
+                                                       name="items[<?=  $index ?>][mota]" 
                                                        class="form-control" 
                                                        placeholder="VD: Gói tập 3 tháng STANDARD"
                                                        value="<?= htmlspecialchars($item->MOTA ?? '') ?>"
@@ -228,15 +231,9 @@ $items = $invoice->items ?? [];
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
-
-                                        <!-- Hidden field để lưu ID item (nếu cần update) -->
-                                        <?php if (isset($item->MACHITIET)): ?>
-                                            <input type="hidden" name="items[<?= $index ?>][id]" value="<?= $item->MACHITIET ?>">
-                                        <?php endif; ?>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else: ?>
-                                <!-- Nếu không có items, hiển thị dòng mẫu -->
                                 <div class="invoice-item" data-index="0">
                                     <div style="display: flex; gap: 12px; align-items: flex-end;">
                                         <div style="flex: 2;">
@@ -325,7 +322,7 @@ $items = $invoice->items ?? [];
                                 $gia = $pkg->GIA ?? 0;
                                 $tenlg = $pkg->TENLG ?? 'Gói tập';
                                 $thoihan = $pkg->THOIHAN ?? 0;
-                                $capdo = $pkg->CAPDO ?? 'BASIC';
+                                $capdo = $pkg->CAPDO ??  'BASIC';
                                 ?>
                                 <div class="package-suggestion" 
                                      onclick="selectPackage('<?= htmlspecialchars($tenlg) ?>', <?= $gia ?>)">
@@ -361,65 +358,62 @@ $items = $invoice->items ?? [];
     <?php include(__DIR__ . '/../layouts/footer.php'); ?>
     <script src="/block-sports-center/public/assets/js/main.js"></script>
     <script>
-    let itemIndex = <?= count($items) ?>;
+    let itemIndex = <?= count($items) > 0 ? count($items) : 1 ?>;
 
-    // Thêm dòng hóa đơn mới
     function addInvoiceItem() {
         const container = document.getElementById('invoiceItems');
         const newItem = document.createElement('div');
         newItem.className = 'invoice-item';
         newItem.setAttribute('data-index', itemIndex);
         newItem.innerHTML = `
-            <div style="display: flex; gap: 12px; align-items: flex-end;">
-                <div style="flex: 2;">
-                    <label class="form-label">Loại hàng</label>
-                    <select name="items[${itemIndex}][loaihang]" class="form-control">
-                        <option value="MEMBERSHIP">Gói tập</option>
-                        <option value="CLASS">Lớp học</option>
-                        <option value="PT">PT Session</option>
-                        <option value="BOOKING">Đặt phòng</option>
-                        <option value="LOCKER">Tủ đồ</option>
-                        <option value="OTHER">Khác</option>
-                    </select>
-                </div>
-                <div style="flex: 4;">
-                    <label class="form-label">Mô tả <span style="color: red;">*</span></label>
-                    <input type="text" name="items[${itemIndex}][mota]" class="form-control" placeholder="Mô tả sản phẩm/dịch vụ" required>
-                </div>
-                <div style="flex: 1;">
-                    <label class="form-label">SL</label>
-                    <input type="number" name="items[${itemIndex}][soluong]" class="form-control" value="1" min="1" onchange="calculateTotal()">
-                </div>
-                <div style="flex: 2;">
-                    <label class="form-label">Đơn giá (VND)</label>
-                    <input type="number" name="items[${itemIndex}][dongia]" class="form-control item-price" value="0" min="0" onchange="calculateTotal()">
-                </div>
-                <button type="button" class="btn" style="background: #e74c3c; color: white; height: 42px;" onclick="removeInvoiceItem(this)" title="Xóa dòng">
-                    <i class="fas fa-trash"></i>
-                </button>
+        <div style="display: flex; gap: 12px; align-items: flex-end;">
+            <div style="flex: 2;">
+                <label class="form-label">Loại hàng</label>
+                <select name="items[${itemIndex}][loaihang]" class="form-control">
+                    <option value="MEMBERSHIP">Gói tập</option>
+                    <option value="CLASS">Lớp học</option>
+                    <option value="PT">PT Session</option>
+                    <option value="BOOKING">Đặt phòng</option>
+                    <option value="LOCKER">Tủ đồ</option>
+                    <option value="OTHER">Khác</option>
+                </select>
             </div>
-        `;
+            <div style="flex: 4;">
+                <label class="form-label">Mô tả <span style="color: red;">*</span></label>
+                <input type="text" name="items[${itemIndex}][mota]" class="form-control" placeholder="Mô tả sản phẩm/dịch vụ" required>
+            </div>
+            <div style="flex: 1;">
+                <label class="form-label">SL</label>
+                <input type="number" name="items[${itemIndex}][soluong]" class="form-control" value="1" min="1" onchange="calculateTotal()">
+            </div>
+            <div style="flex: 2;">
+                <label class="form-label">Đơn giá (VND)</label>
+                <input type="number" name="items[${itemIndex}][dongia]" class="form-control item-price" value="0" min="0" onchange="calculateTotal()">
+            </div>
+            <button type="button" class="btn" style="background: #e74c3c; color: white; height: 42px;" onclick="removeInvoiceItem(this)" title="Xóa dòng">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
         container.appendChild(newItem);
         itemIndex++;
         calculateTotal();
     }
 
-    // Xóa dòng
     function removeInvoiceItem(btn) {
-        const items = document.querySelectorAll('.invoice-item');
+        const items = document.querySelectorAll('. invoice-item');
         if (items.length > 1) {
             btn.closest('.invoice-item').remove();
             calculateTotal();
         } else {
-            alert('Phải có ít nhất 1 dòng hóa đơn!');
+            alert('Phải có ít nhất 1 dòng hóa đơn! ');
         }
     }
 
-    // Chọn gói tập
     function selectPackage(name, price) {
         addInvoiceItem();
         
-        const items = document.querySelectorAll('.invoice-item');
+        const items = document.querySelectorAll('. invoice-item');
         const lastItem = items[items.length - 1];
         
         lastItem.querySelector('select[name*="loaihang"]').value = 'MEMBERSHIP';
@@ -428,13 +422,11 @@ $items = $invoice->items ?? [];
         
         calculateTotal();
         
-        // Scroll to item
         lastItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
         lastItem.style.background = '#d4edda';
         setTimeout(() => lastItem.style.background = '#f8f9fa', 1000);
     }
 
-    // Tính tổng tiền
     function calculateTotal() {
         let subtotal = 0;
         
@@ -446,7 +438,6 @@ $items = $invoice->items ?? [];
         
         document.getElementById('subtotalAmount').textContent = subtotal.toLocaleString('vi-VN') + 'đ';
         
-        // Tính giảm giá
         const promoSelect = document.getElementById('promoSelect');
         let discount = 0;
         
@@ -462,24 +453,21 @@ $items = $invoice->items ?? [];
             }
         }
         
-        document.getElementById('discountAmount').textContent = '-' + discount.toLocaleString('vi-VN') + 'đ';
+        document.getElementById('discountAmount'). textContent = '-' + discount.toLocaleString('vi-VN') + 'đ';
         
         const final = subtotal - discount;
         document.getElementById('totalAmount').textContent = final.toLocaleString('vi-VN') + 'đ';
     }
 
-    // Tính toán khi thay đổi khuyến mãi
     const promoSelect = document.getElementById('promoSelect');
     if (promoSelect) {
         promoSelect.addEventListener('change', calculateTotal);
     }
 
-    // Tính toán ban đầu
     calculateTotal();
 
-    // Validate form trước khi submit
     document.getElementById('invoiceForm').addEventListener('submit', function(e) {
-        const items = document.querySelectorAll('.invoice-item');
+        const items = document.querySelectorAll('. invoice-item');
         if (items.length === 0) {
             e.preventDefault();
             alert('Vui lòng thêm ít nhất 1 dòng hóa đơn!');
@@ -488,16 +476,16 @@ $items = $invoice->items ?? [];
         
         let hasValidItem = false;
         items.forEach(item => {
-            const mota = item.querySelector('input[name*="mota"]')?.value.trim();
-            const dongia = parseFloat(item.querySelector('input[name*="dongia"]')?.value) || 0;
+            const mota = item.querySelector('input[name*="mota"]')?.value. trim();
+            const dongia = parseFloat(item.querySelector('input[name*="dongia"]')?. value) || 0;
             if (mota && dongia > 0) {
                 hasValidItem = true;
             }
         });
         
         if (!hasValidItem) {
-            e.preventDefault();
-            alert('Vui lòng nhập mô tả và đơn giá cho ít nhất 1 dòng hóa đơn!');
+            e. preventDefault();
+            alert('Vui lòng nhập mô tả và đơn giá cho ít nhất 1 dòng hóa đơn! ');
             return false;
         }
     });

@@ -1,186 +1,321 @@
 <?php 
-// app/views/invoices/packages.php
-$pageTitle   = 'Gói tập & Khuyến mãi';
+/**
+ * app/views/invoices/view.php
+ * Xem chi tiết hóa đơn
+ * Updated: 2025-12-01
+ * Author: @huyryan220806
+ */
+
+$pageTitle   = 'Chi tiết hóa đơn';
 $currentPage = 'invoices';
 
-$packages   = $data['packages']   ?? [];
-$promotions = $data['promotions'] ?? [];
+$invoice = $data['invoice'] ?? null;
+
+if (!$invoice) {
+    $_SESSION['error'] = 'Không tìm thấy hóa đơn!';
+    header('Location: ? c=invoices&a=index');
+    exit;
+}
+
+// Helper function
+if (!function_exists('formatMoney')) {
+    function formatMoney($amount) {
+        return number_format($amount, 0, ',', '. ') . 'đ';
+    }
+}
+
+// Tính tổng tiền
+$subtotal = 0;
+$items = $invoice->items ??  [];
+foreach ($items as $item) {
+    $subtotal += ($item->SOLUONG ??  1) * ($item->DONGIA ?? 0);
+}
+
+// Tính giảm giá
+$discount = 0;
+if (! empty($invoice->GIATRI_KM)) {
+    if ($invoice->LOAI_KM === 'PERCENT') {
+        $discount = $subtotal * $invoice->GIATRI_KM / 100;
+    } else {
+        $discount = $invoice->GIATRI_KM;
+    }
+}
+$total = $subtotal - $discount;
+
+// Status badge
+$statusMap = [
+    'DRAFT' => ['class' => 'inactive', 'text' => 'Nháp'],
+    'ISSUED' => ['class' => 'scheduled', 'text' => 'Đã xuất'],
+    'PAID' => ['class' => 'active', 'text' => 'Đã thanh toán'],
+    'PARTIAL' => ['class' => 'full', 'text' => 'Thanh toán 1 phần'],
+    'VOID' => ['class' => 'suspended', 'text' => 'Đã hủy'],
+];
+$status = $statusMap[$invoice->TRANGTHAI] ?? ['class' => 'inactive', 'text' => 'Không xác định'];
 ?>
-<!DOCTYPE html>
+<! DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= e($pageTitle) ?> - BLOCK SPORTS CENTER</title>
-    <link rel="stylesheet" href="<?= asset('assets/css/style.css') ?>">
+    <title><?= htmlspecialchars($pageTitle) ?> - BLOCK SPORTS CENTER</title>
+    <link rel="stylesheet" href="/block-sports-center/public/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        .package-card {
+        .invoice-detail {
             background: white;
             border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: all 0.3s;
-            border: 2px solid transparent;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        
-        .package-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            border-color: #00B894;
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
         }
-        
-        .package-card.basic {
-            border-left: 4px solid #74B9FF;
+        .invoice-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
         }
-        
-        .package-card.standard {
-            border-left: 4px solid #00B894;
-        }
-        
-        .package-card.vip {
-            border-left: 4px solid #FFD33D;
-            background: linear-gradient(135deg, #FFF9E6 0%, #FFF 100%);
-        }
-        
-        .promo-card {
-            background: linear-gradient(135deg, #FFE5E5 0%, #FFF 100%);
-            border-radius: 12px;
+        .info-group {
+            background: #f8f9fa;
             padding: 20px;
-            border: 2px dashed #E63946;
-            margin-bottom: 16px;
-            transition: all 0.3s;
+            border-radius: 8px;
         }
+        .info-group h4 {
+            margin: 0 0 15px 0;
+            color: #2d3436;
+            font-size: 16px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #636e72; font-size: 14px; }
+        .info-value { font-weight: 600; color: #2d3436; }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th {
+            background: #00B894;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        .items-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .items-table tr:hover { background: #f8f9fa; }
+        .totals-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 16px;
+        }
+        .total-row.final {
+            border-top: 2px solid #ddd;
+            margin-top: 10px;
+            padding-top: 15px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .total-row.final .total-value { color: #00B894; }
         
-        .promo-card:hover {
-            border-style: solid;
-            box-shadow: 0 4px 12px rgba(230, 57, 70, 0.2);
+        @media print {
+            .admin-layout { display: block ! important; }
+            .sidebar, .header, .page-header .action-btns { display: none !important; }
+            .main-content { margin: 0 !important; padding: 0 !important; }
+            .invoice-detail { box-shadow: none !important; }
         }
     </style>
 </head>
 <body>
-    <!-- ❌ XÓA DÒNG NÀY: <div><?= formatMoney($pkg->GIA) ?></div> -->
-    
     <div class="admin-layout">
         <?php include(__DIR__ . '/../layouts/sidebar.php'); ?>
         <main class="main-content">
             <?php include(__DIR__ . '/../layouts/header.php'); ?>
             <div class="content">
+                <?php include(__DIR__ . '/../layouts/alerts.php'); ?>
+                
                 <div class="page-header">
-                    <h2>Gói tập & Khuyến mãi</h2>
-                    <p>Danh sách các gói tập và chương trình khuyến mãi đang áp dụng</p>
+                    <h2>
+                        <i class="fas fa-file-invoice"></i> 
+                        Chi tiết hóa đơn #INV<?= str_pad($invoice->MAHDON, 4, '0', STR_PAD_LEFT) ?>
+                    </h2>
+                    <div class="action-btns" style="display: flex; gap: 10px;">
+                        <button class="btn btn-ghost" onclick="window.print()">
+                            <i class="fas fa-print"></i> In hóa đơn
+                        </button>
+                        <button class="btn btn-primary" onclick="location.href='?c=invoices&a=edit&id=<?= $invoice->MAHDON ?>'">
+                            <i class="fas fa-edit"></i> Sửa
+                        </button>
+                        <button class="btn btn-ghost" onclick="location.href='? c=invoices&a=index'">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </button>
+                    </div>
                 </div>
                 
-                <!-- GÓI TẬP -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-box"></i> Các gói tập
-                        </h3>
+                <div class="invoice-detail">
+                    <div class="invoice-header">
+                        <div>
+                            <h1 style="margin: 0; color: #00B894; font-size: 28px;">BLOCK SPORTS CENTER</h1>
+                            <p style="margin: 5px 0 0 0; color: #636e72;">Hệ thống quản lý trung tâm thể thao</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <h2 style="margin: 0; font-size: 24px;">
+                                HÓA ĐƠN #INV<?= str_pad($invoice->MAHDON, 4, '0', STR_PAD_LEFT) ?>
+                            </h2>
+                            <p style="margin: 5px 0;">
+                                Ngày lập: <strong><?= date('d/m/Y H:i', strtotime($invoice->NGAYLAP)) ?></strong>
+                            </p>
+                            <span class="badge <?= $status['class'] ?>"><?= $status['text'] ?></span>
+                        </div>
                     </div>
                     
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; padding: 20px;">
-                        <?php if (!empty($packages)): ?>
-                            <?php foreach ($packages as $pkg): ?>
-                                <?php $levelClass = strtolower($pkg->CAPDO ?? 'basic'); ?>
-                                <div class="package-card <?= $levelClass ?>">
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
-                                        <div>
-                                            <span class="badge <?= $levelClass === 'vip' ? 'full' : ($levelClass === 'standard' ? 'active' : 'scheduled') ?>">
-                                                <?= strtoupper($pkg->CAPDO ?? 'BASIC') ?>
+                    <div class="invoice-info">
+                        <div class="info-group">
+                            <h4><i class="fas fa-user"></i> Thông tin hội viên</h4>
+                            <div class="info-row">
+                                <span class="info-label">Mã HV:</span>
+                                <span class="info-value">#<?= $invoice->MAHV ?></span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Họ tên:</span>
+                                <span class="info-value"><?= htmlspecialchars($invoice->HOVATEN ??  'N/A') ?></span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">SĐT:</span>
+                                <span class="info-value"><?= htmlspecialchars($invoice->SDT ?? 'N/A') ?></span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Email:</span>
+                                <span class="info-value"><?= htmlspecialchars($invoice->EMAIL ?? 'N/A') ?></span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Địa chỉ:</span>
+                                <span class="info-value"><?= htmlspecialchars($invoice->DIACHI ?? 'N/A') ?></span>
+                            </div>
+                        </div>
+                        
+                        <div class="info-group">
+                            <h4><i class="fas fa-tag"></i> Thông tin khuyến mãi</h4>
+                            <?php if (! empty($invoice->MA_KHUYENMAI)): ?>
+                                <div class="info-row">
+                                    <span class="info-label">Mã KM:</span>
+                                    <span class="info-value" style="color: #E63946;">
+                                        <?= htmlspecialchars($invoice->MA_KHUYENMAI) ?>
+                                    </span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Mô tả:</span>
+                                    <span class="info-value"><?= htmlspecialchars($invoice->MOTA_KHUYENMAI ??  '') ?></span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">Giá trị:</span>
+                                    <span class="info-value" style="color: #E63946;">
+                                        <?php if ($invoice->LOAI_KM === 'PERCENT'): ?>
+                                            Giảm <?= $invoice->GIATRI_KM ?>%
+                                        <?php else: ?>
+                                            Giảm <?= formatMoney($invoice->GIATRI_KM) ?>
+                                        <?php endif; ?>
+                                    </span>
+                                </div>
+                            <?php else: ?>
+                                <p style="color: #999; text-align: center; padding: 20px;">
+                                    Không áp dụng khuyến mãi
+                                </p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-bottom: 15px;">
+                        <i class="fas fa-list"></i> Chi tiết hóa đơn
+                    </h3>
+                    
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Loại</th>
+                                <th>Mô tả</th>
+                                <th style="text-align: center;">SL</th>
+                                <th style="text-align: right;">Đơn giá</th>
+                                <th style="text-align: right;">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($items)): ?>
+                                <?php foreach ($items as $index => $item): ?>
+                                    <?php 
+                                    $lineTotal = ($item->SOLUONG ?? 1) * ($item->DONGIA ?? 0);
+                                    $loaiHang = [
+                                        'MEMBERSHIP' => 'Gói tập',
+                                        'CLASS' => 'Lớp học',
+                                        'PT' => 'PT Session',
+                                        'BOOKING' => 'Đặt phòng',
+                                        'LOCKER' => 'Tủ đồ',
+                                        'OTHER' => 'Khác'
+                                    ];
+                                    ?>
+                                    <tr>
+                                        <td><?= $index + 1 ?></td>
+                                        <td>
+                                            <span class="badge scheduled">
+                                                <?= $loaiHang[$item->LOAIHANG] ??  $item->LOAIHANG ?>
                                             </span>
-                                        </div>
-                                        <div style="font-size: 28px; font-weight: 700; color: #00B894;">
-                                            <?= formatMoney($pkg->GIA ?? 0) ?>
-                                        </div>
-                                    </div>
-                                    
-                                    <h3 style="font-size: 20px; margin-bottom: 8px; color: #2d3436;">
-                                        <?= e($pkg->TENLG ?? 'Gói tập') ?>
-                                    </h3>
-                                    
-                                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #636e72;">
-                                        <i class="fas fa-clock"></i>
-                                        <span><?= $pkg->THOIHAN ?? 0 ?> ngày</span>
-                                    </div>
-                                    
-                                    <p style="color: #636e72; font-size: 14px; line-height: 1.6;">
-                                        <?= nl2br(e($pkg->MOTA ?? '')) ?>
-                                    </p>
-                                    
-                                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
-                                        <div style="font-size: 13px; color: #999;">
-                                            Giá/ngày: <strong style="color: #00B894;">
-                                                <?php
-                                                $thoihan = $pkg->THOIHAN ?? 1;
-                                                $gia = $pkg->GIA ?? 0;
-                                                echo formatMoney($thoihan > 0 ? $gia / $thoihan : 0);
-                                                ?>
-                                            </strong>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
-                                <i class="fas fa-box-open" style="font-size: 64px; color: #ddd; margin-bottom: 16px;"></i>
-                                <p style="color: #999; font-size: 16px;">Chưa có gói tập nào.</p>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                
-                <!-- KHUYẾN MÃI -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            <i class="fas fa-tags"></i> Chương trình khuyến mãi
-                        </h3>
-                    </div>
+                                        </td>
+                                        <td><?= htmlspecialchars($item->MOTA ??  '') ?></td>
+                                        <td style="text-align: center;"><?= $item->SOLUONG ??  1 ?></td>
+                                        <td style="text-align: right;"><?= formatMoney($item->DONGIA ?? 0) ?></td>
+                                        <td style="text-align: right; font-weight: 600;">
+                                            <?= formatMoney($lineTotal) ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 30px; color: #999;">
+                                        Không có chi tiết hóa đơn
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                     
-                    <div style="padding: 20px;">
-                        <?php if (!empty($promotions)): ?>
-                            <?php foreach ($promotions as $km): ?>
-                                <div class="promo-card">
-                                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                        <div style="flex: 1;">
-                                            <div style="display: inline-block; background: #E63946; color: white; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 700; margin-bottom: 12px;">
-                                                <?= e($km->CODE ?? '') ?>
-                                            </div>
-                                            
-                                            <h4 style="font-size: 18px; margin-bottom: 8px; color: #2d3436;">
-                                                <?= e($km->MOTA ?? '') ?>
-                                            </h4>
-                                            
-                                            <p style="color: #636e72; font-size: 14px; margin-bottom: 12px;">
-                                                <i class="fas fa-calendar"></i>
-                                                Từ <?= formatDateShort($km->NGAYBD ?? '') ?> 
-                                                đến <?= formatDateShort($km->NGAYKT ?? '') ?>
-                                            </p>
-                                        </div>
-                                        
-                                        <div style="text-align: right;">
-                                            <div style="font-size: 32px; font-weight: 700; color: #E63946;">
-                                                <?php if (($km->LOAI ?? '') === 'PERCENT'): ?>
-                                                    <?= $km->GIATRI ?? 0 ?>%
-                                                <?php else: ?>
-                                                    <?= formatMoney($km->GIATRI ?? 0) ?>
-                                                <?php endif; ?>
-                                            </div>
-                                            <div style="font-size: 13px; color: #999;">
-                                                <?= ($km->LOAI ?? '') === 'PERCENT' ? 'Giảm theo %' : 'Giảm trực tiếp' ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <div style="text-align: center; padding: 40px; color: #999;">
-                                <i class="fas fa-tag" style="font-size: 48px; margin-bottom: 16px; opacity: 0.3;"></i>
-                                <p>Hiện tại chưa có chương trình khuyến mãi nào.</p>
-                            </div>
+                    <div class="totals-section">
+                        <div class="total-row">
+                            <span>Tạm tính:</span>
+                            <span><?= formatMoney($subtotal) ?></span>
+                        </div>
+                        <?php if ($discount > 0): ?>
+                        <div class="total-row" style="color: #E63946;">
+                            <span>Giảm giá (<?= $invoice->MA_KHUYENMAI ?>):</span>
+                            <span>-<?= formatMoney($discount) ?></span>
+                        </div>
                         <?php endif; ?>
+                        <div class="total-row final">
+                            <span>TỔNG CỘNG:</span>
+                            <span class="total-value"><?= formatMoney($total) ?></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -188,6 +323,6 @@ $promotions = $data['promotions'] ?? [];
     </div>
     
     <?php include(__DIR__ . '/../layouts/footer.php'); ?>
-    <script src="<?= asset('assets/js/main.js') ?>"></script>
+    <script src="/block-sports-center/public/assets/js/main.js"></script>
 </body>
 </html>

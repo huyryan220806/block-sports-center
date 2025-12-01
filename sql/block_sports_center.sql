@@ -1382,6 +1382,7 @@ INSERT INTO `hoivien` (`MAHV`, `HOVATEN`, `GIOITINH`, `NGAYSINH`, `SDT`, `EMAIL`
 (158, 'Đặng Văn Uy', 'Nam', '1998-10-26', '0912345747', 'uydv1998@gmail.com', 'Long An, Long An', 'ACTIVE', '2025-06-13 09:15:00'),
 (159, 'Bùi Thị Vũ', 'Nữ', '2000-06-08', '0912345748', 'vubt2000@gmail.com', 'Tiền Giang, Tiền Giang', 'ACTIVE', '2025-06-14 10:30:00'),
 (160, 'Trương Văn Xuyên', 'Nam', '1997-02-20', '0912345749', 'xuyentv1997@gmail.com', 'Bến Tre, Bến Tre', 'ACTIVE', '2025-06-15 11:45:00');
+(164, 'Nguyễn Buổi Sáng', 'Nam', '2003-06-25', '0909437656', 'morning@gmail.com', 'Bình Thạnh, TP HCM', 'ACTIVE', '2025-12-02 05:06:42');
 
 -- --------------------------------------------------------
 
@@ -2283,7 +2284,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `fullname`, `phone`, `role`, `created_at`) VALUES
 (1, 'admin', 'admin@blocksports.vn', '$2y$10$1F20HsjQsZ9b2G8ZCWaZYOIpHeY5oGD0w7yJPtqmzRoPR6xXqEh1a', 'Administrator', '0901234567', 'ADMIN', '2025-11-18 10:00:00'),
 (2, 'HuyAD', 'huy.ad@bsc.vn', '$2y$10$PVLlKzoyUIfI1yJmVf6NGuGHieSP4fLKH52cn3UlZJ9xStnr49u0q', 'Nguyễn Đinh Huy', '0909457646', 'ADMIN', '2025-11-18 17:33:49');
-
+(164, 'morningguy', 'morning@gmail.com', '$2y$10$BvrfTnEdLQPmI8Sv/BgdgOiW7XQmc7npwpZh4l4tuS/6UG7n4CjG.', 'Nguyễn Buổi Sáng', '0909437656', 'USER', '2025-12-02 05:06:10');
 --
 -- Indexes for dumped tables
 --

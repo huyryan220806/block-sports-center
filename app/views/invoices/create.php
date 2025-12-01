@@ -2,8 +2,7 @@
 /**
  * app/views/invoices/create.php
  * Form tạo hóa đơn mới
- * Updated: 2025-11-18 12:24:47 UTC
- * Fixed: Loại bỏ lỗi undefined variable
+ * Updated: 2025-12-01 - Fixed CSS paths and helper functions
  * Author: @huyryan220806
  */
 
@@ -13,14 +12,27 @@ $currentPage = 'invoices';
 $members    = $data['members']    ?? [];
 $promotions = $data['promotions'] ?? [];
 $packages   = $data['packages']   ?? [];
+
+// Helper functions
+if (!function_exists('e')) {
+    function e($string) {
+        return htmlspecialchars($string ??  '', ENT_QUOTES, 'UTF-8');
+    }
+}
+
+if (!function_exists('formatMoney')) {
+    function formatMoney($amount) {
+        return number_format($amount, 0, ',', '. ') . 'đ';
+    }
+}
 ?>
-<!DOCTYPE html>
+<! DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($pageTitle) ?> - BLOCK SPORTS CENTER</title>
-    <link rel="stylesheet" href="<?= asset('assets/css/style.css') ?>">
+    <link rel="stylesheet" href="/block-sports-center/public/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -41,10 +53,15 @@ $packages   = $data['packages']   ?? [];
         .package-suggestion {
             cursor: pointer;
             transition: all 0.3s;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
         }
         
         .package-suggestion:hover {
             transform: scale(1.02);
+            border-color: #00B894;
+            box-shadow: 0 4px 12px rgba(0, 184, 148, 0.2);
         }
         
         .package-suggestion:active {
@@ -65,7 +82,7 @@ $packages   = $data['packages']   ?? [];
                     <p>Nhập thông tin hóa đơn cho hội viên</p>
                 </div>
                 
-                <form method="POST" action="?c=invoices&a=store" id="invoiceForm">
+                <form method="POST" action="? c=invoices&a=store" id="invoiceForm">
                     <!-- THÔNG TIN CHUNG -->
                     <div class="card">
                         <div class="card-header">
@@ -118,11 +135,11 @@ $packages   = $data['packages']   ?? [];
                                         <?php if (!empty($promotions)): ?>
                                             <?php foreach ($promotions as $km): ?>
                                                 <option value="<?= $km->MAKM ?>" 
-                                                        data-type="<?= e($km->LOAI ?? 'FIXED') ?>"
-                                                        data-value="<?= $km->GIATRI ?? 0 ?>">
-                                                    <?= e($km->CODE ?? '') ?> - 
+                                                        data-type="<?= e($km->LOAI ??  'FIXED') ?>"
+                                                        data-value="<?= $km->GIATRI ??  0 ?>">
+                                                    <?= e($km->CODE ??  '') ?> - 
                                                     <?php if (($km->LOAI ?? '') === 'PERCENT'): ?>
-                                                        Giảm <?= $km->GIATRI ?? 0 ?>%
+                                                        Giảm <?= $km->GIATRI ??  0 ?>%
                                                     <?php else: ?>
                                                         Giảm <?= formatMoney($km->GIATRI ?? 0) ?>
                                                     <?php endif; ?>
@@ -242,10 +259,9 @@ $packages   = $data['packages']   ?? [];
                                 $gia = $pkg->GIA ?? 0;
                                 $tenlg = $pkg->TENLG ?? 'Gói tập';
                                 $thoihan = $pkg->THOIHAN ?? 0;
-                                $capdo = $pkg->CAPDO ?? 'BASIC';
+                                $capdo = $pkg->CAPDO ??  'BASIC';
                                 ?>
                                 <div class="package-suggestion" 
-                                     style="border: 2px solid #ddd; border-radius: 12px; padding: 16px; transition: all 0.3s;"
                                      onclick="selectPackage('<?= e($tenlg) ?>', <?= $gia ?>)">
                                     <div style="font-size: 16px; font-weight: 700; color: #00B894; margin-bottom: 8px;">
                                         <?= e($tenlg) ?>
@@ -277,13 +293,12 @@ $packages   = $data['packages']   ?? [];
     </div>
     
     <?php include(__DIR__ . '/../layouts/footer.php'); ?>
-    <script src="<?= asset('assets/js/main.js') ?>"></script>
+    <script src="/block-sports-center/public/assets/js/main.js"></script>
     <script>
     let itemIndex = 1;
 
-    // Thêm dòng hóa đơn mới
     function addInvoiceItem() {
-        const container = document.getElementById('invoiceItems');
+        const container = document. getElementById('invoiceItems');
         const newItem = document.createElement('div');
         newItem.className = 'invoice-item';
         newItem.setAttribute('data-index', itemIndex);
@@ -291,7 +306,7 @@ $packages   = $data['packages']   ?? [];
             <div style="display: flex; gap: 12px; align-items: flex-end;">
                 <div style="flex: 2;">
                     <label class="form-label">Loại hàng</label>
-                    <select name="items[${itemIndex}][loaihang]" class="form-control">
+                    <select name="items[\${itemIndex}][loaihang]" class="form-control">
                         <option value="MEMBERSHIP">Gói tập</option>
                         <option value="CLASS">Lớp học</option>
                         <option value="PT">PT Session</option>
@@ -302,40 +317,38 @@ $packages   = $data['packages']   ?? [];
                 </div>
                 <div style="flex: 4;">
                     <label class="form-label">Mô tả <span style="color: red;">*</span></label>
-                    <input type="text" name="items[${itemIndex}][mota]" class="form-control" placeholder="Mô tả sản phẩm/dịch vụ" required>
+                    <input type="text" name="items[\${itemIndex}][mota]" class="form-control" placeholder="Mô tả sản phẩm/dịch vụ" required>
                 </div>
                 <div style="flex: 1;">
                     <label class="form-label">SL</label>
-                    <input type="number" name="items[${itemIndex}][soluong]" class="form-control" value="1" min="1" onchange="calculateTotal()">
+                    <input type="number" name="items[\${itemIndex}][soluong]" class="form-control" value="1" min="1" onchange="calculateTotal()">
                 </div>
                 <div style="flex: 2;">
                     <label class="form-label">Đơn giá (VND)</label>
-                    <input type="number" name="items[${itemIndex}][dongia]" class="form-control item-price" value="0" min="0" onchange="calculateTotal()">
+                    <input type="number" name="items[\${itemIndex}][dongia]" class="form-control item-price" value="0" min="0" onchange="calculateTotal()">
                 </div>
                 <button type="button" class="btn" style="background: #e74c3c; color: white; height: 42px;" onclick="removeInvoiceItem(this)" title="Xóa dòng">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
         `;
-        container.appendChild(newItem);
+        container. appendChild(newItem);
         itemIndex++;
         calculateTotal();
     }
 
-    // Xóa dòng
     function removeInvoiceItem(btn) {
-        const items = document.querySelectorAll('.invoice-item');
+        const items = document.querySelectorAll('. invoice-item');
         if (items.length > 1) {
             btn.closest('.invoice-item').remove();
             calculateTotal();
         } else {
-            alert('Phải có ít nhất 1 dòng hóa đơn!');
+            alert('Phải có ít nhất 1 dòng hóa đơn! ');
         }
     }
 
-    // Chọn gói tập
     function selectPackage(name, price) {
-        const items = document.querySelectorAll('.invoice-item');
+        const items = document.querySelectorAll('. invoice-item');
         const lastItem = items[items.length - 1];
         
         lastItem.querySelector('select[name*="loaihang"]').value = 'MEMBERSHIP';
@@ -344,17 +357,15 @@ $packages   = $data['packages']   ?? [];
         
         calculateTotal();
         
-        // Scroll to item
         lastItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
         lastItem.style.background = '#d4edda';
         setTimeout(() => lastItem.style.background = '#f8f9fa', 1000);
     }
 
-    // Tính tổng tiền
     function calculateTotal() {
         let subtotal = 0;
         
-        document.querySelectorAll('.invoice-item').forEach(item => {
+        document.querySelectorAll('. invoice-item').forEach(item => {
             const qty = parseFloat(item.querySelector('input[name*="soluong"]')?.value) || 0;
             const price = parseFloat(item.querySelector('input[name*="dongia"]')?.value) || 0;
             subtotal += qty * price;
@@ -362,7 +373,6 @@ $packages   = $data['packages']   ?? [];
         
         document.getElementById('subtotalAmount').textContent = subtotal.toLocaleString('vi-VN') + 'đ';
         
-        // Tính giảm giá
         const promoSelect = document.getElementById('promoSelect');
         let discount = 0;
         
@@ -384,35 +394,32 @@ $packages   = $data['packages']   ?? [];
         document.getElementById('totalAmount').textContent = final.toLocaleString('vi-VN') + 'đ';
     }
 
-    // Tính toán khi thay đổi khuyến mãi
     const promoSelect = document.getElementById('promoSelect');
     if (promoSelect) {
         promoSelect.addEventListener('change', calculateTotal);
     }
 
-    // Tính toán ban đầu
     calculateTotal();
 
-    // Validate form trước khi submit
     document.getElementById('invoiceForm').addEventListener('submit', function(e) {
-        const items = document.querySelectorAll('.invoice-item');
+        const items = document.querySelectorAll('. invoice-item');
         if (items.length === 0) {
             e.preventDefault();
-            alert('Vui lòng thêm ít nhất 1 dòng hóa đơn!');
+            alert('Vui lòng thêm ít nhất 1 dòng hóa đơn! ');
             return false;
         }
         
         let hasValidItem = false;
         items.forEach(item => {
-            const mota = item.querySelector('input[name*="mota"]')?.value.trim();
-            const dongia = parseFloat(item.querySelector('input[name*="dongia"]')?.value) || 0;
+            const mota = item.querySelector('input[name*="mota"]')?.value. trim();
+            const dongia = parseFloat(item.querySelector('input[name*="dongia"]')?. value) || 0;
             if (mota && dongia > 0) {
                 hasValidItem = true;
             }
         });
         
         if (!hasValidItem) {
-            e.preventDefault();
+            e. preventDefault();
             alert('Vui lòng nhập mô tả và đơn giá cho ít nhất 1 dòng hóa đơn!');
             return false;
         }

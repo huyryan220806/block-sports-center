@@ -1,19 +1,45 @@
 <?php 
-// app/views/invoices/packages.php
+/**
+ * app/views/invoices/packages.php
+ * Gói tập & Khuyến mãi
+ * Updated: 2025-12-01
+ * Author: @huyryan220806
+ */
+
 $pageTitle   = 'Gói tập & Khuyến mãi';
 $currentPage = 'invoices';
 
 $packages   = $data['packages']   ?? [];
 $promotions = $data['promotions'] ?? [];
+
+// Helper functions
+if (!function_exists('formatMoney')) {
+    function formatMoney($amount) {
+        return number_format($amount, 0, ',', '. ') . 'đ';
+    }
+}
+
+if (!function_exists('e')) {
+    function e($string) {
+        return htmlspecialchars($string ??  '', ENT_QUOTES, 'UTF-8');
+    }
+}
+
+if (!function_exists('formatDateShort')) {
+    function formatDateShort($date) {
+        if (empty($date)) return 'N/A';
+        return date('d/m/Y', strtotime($date));
+    }
+}
 ?>
-<!DOCTYPE html>
+<! DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= e($pageTitle) ?> - BLOCK SPORTS CENTER</title>
-    <link rel="stylesheet" href="<?= asset('assets/css/style.css') ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/block-sports-center/public/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs. cloudflare.com/ajax/libs/font-awesome/6. 4.0/css/all. min.css">
     
     <style>
         .package-card {
@@ -60,16 +86,13 @@ $promotions = $data['promotions'] ?? [];
     </style>
 </head>
 <body>
-    <!-- ❌❌❌ XÓA HOÀN TOÀN DÒNG NÀY ❌❌❌ -->
-    <!-- <div><?= formatMoney($pkg->GIA) ?></div> -->
-    
     <div class="admin-layout">
         <?php include(__DIR__ . '/../layouts/sidebar.php'); ?>
         <main class="main-content">
             <?php include(__DIR__ . '/../layouts/header.php'); ?>
             <div class="content">
                 <div class="page-header">
-                    <h2>Gói tập & Khuyến mãi</h2>
+                    <h2><i class="fas fa-tags"></i> Gói tập & Khuyến mãi</h2>
                     <p>Danh sách các gói tập và chương trình khuyến mãi đang áp dụng</p>
                 </div>
                 
@@ -77,8 +100,11 @@ $promotions = $data['promotions'] ?? [];
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <i class="fas fa-box"></i> Các gói tập
+                            <i class="fas fa-box"></i> Các gói tập (<?= count($packages) ?> gói)
                         </h3>
+                        <button class="btn btn-ghost" onclick="location.href='? c=invoices&a=index'">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </button>
                     </div>
                     
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; padding: 20px;">
@@ -92,7 +118,7 @@ $promotions = $data['promotions'] ?? [];
                                 <div class="package-card <?= $levelClass ?>">
                                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
                                         <div>
-                                            <span class="badge <?= $levelClass === 'vip' ? 'full' : ($levelClass === 'standard' ? 'active' : 'scheduled') ?>">
+                                            <span class="badge <?= $levelClass === 'vip' ? 'full' : ($levelClass === 'standard' ?  'active' : 'scheduled') ?>">
                                                 <?= strtoupper($pkg->CAPDO ?? 'BASIC') ?>
                                             </span>
                                         </div>
@@ -102,7 +128,7 @@ $promotions = $data['promotions'] ?? [];
                                     </div>
                                     
                                     <h3 style="font-size: 20px; margin-bottom: 8px; color: #2d3436;">
-                                        <?= e($pkg->TENLG ?? 'Gói tập') ?>
+                                        <?= e($pkg->TENLG ??  'Gói tập') ?>
                                     </h3>
                                     
                                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: #636e72;">
@@ -111,7 +137,7 @@ $promotions = $data['promotions'] ?? [];
                                     </div>
                                     
                                     <p style="color: #636e72; font-size: 14px; line-height: 1.6;">
-                                        <?= nl2br(e($pkg->MOTA ?? '')) ?>
+                                        <?= nl2br(e($pkg->MOTA ?? 'Không có mô tả')) ?>
                                     </p>
                                     
                                     <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
@@ -127,7 +153,7 @@ $promotions = $data['promotions'] ?? [];
                         <?php else: ?>
                             <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
                                 <i class="fas fa-box-open" style="font-size: 64px; color: #ddd; margin-bottom: 16px;"></i>
-                                <p style="color: #999; font-size: 16px;">Chưa có gói tập nào trong hệ thống.</p>
+                                <p style="color: #999; font-size: 16px;">Chưa có gói tập nào trong hệ thống. </p>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -137,7 +163,7 @@ $promotions = $data['promotions'] ?? [];
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">
-                            <i class="fas fa-tags"></i> Chương trình khuyến mãi
+                            <i class="fas fa-percent"></i> Chương trình khuyến mãi (<?= count($promotions) ?> chương trình)
                         </h3>
                     </div>
                     
@@ -152,22 +178,22 @@ $promotions = $data['promotions'] ?? [];
                                             </div>
                                             
                                             <h4 style="font-size: 18px; margin-bottom: 8px; color: #2d3436;">
-                                                <?= e($km->MOTA ?? '') ?>
+                                                <?= e($km->MOTA ?? 'Không có mô tả') ?>
                                             </h4>
                                             
                                             <p style="color: #636e72; font-size: 14px; margin-bottom: 12px;">
                                                 <i class="fas fa-calendar"></i>
-                                                Từ <?= formatDateShort($km->NGAYBD ?? '') ?> 
+                                                Từ <?= formatDateShort($km->NGAYBD ??  '') ?> 
                                                 đến <?= formatDateShort($km->NGAYKT ?? '') ?>
                                             </p>
                                         </div>
                                         
                                         <div style="text-align: right;">
                                             <div style="font-size: 32px; font-weight: 700; color: #E63946;">
-                                                <?php if (($km->LOAI ?? '') === 'PERCENT'): ?>
-                                                    <?= $km->GIATRI ?? 0 ?>%
+                                                <?php if (($km->LOAI ??  '') === 'PERCENT'): ?>
+                                                    <?= $km->GIATRI ??  0 ?>%
                                                 <?php else: ?>
-                                                    <?= formatMoney($km->GIATRI ?? 0) ?>
+                                                    <?= formatMoney($km->GIATRI ??  0) ?>
                                                 <?php endif; ?>
                                             </div>
                                             <div style="font-size: 13px; color: #999;">
@@ -190,6 +216,6 @@ $promotions = $data['promotions'] ?? [];
     </div>
     
     <?php include(__DIR__ . '/../layouts/footer.php'); ?>
-    <script src="<?= asset('assets/js/main.js') ?>"></script>
+    <script src="/block-sports-center/public/assets/js/main.js"></script>
 </body>
 </html>
