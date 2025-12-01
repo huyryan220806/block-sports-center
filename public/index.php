@@ -1,7 +1,7 @@
 <?php
 // public/index.php - ROUTER CHÍNH
-// Updated: 2025-11-18 10:40:00 UTC
-// Fixed: ERR_TOO_MANY_REDIRECTS for admin dashboard
+// Updated: 2025-12-01
+// Fixed: Dynamic paths for Railway deployment
 // Author: @huyryan220806
 
 // Bật session
@@ -14,19 +14,27 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Load config
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../config/app.php';
+require_once __DIR__ . '/../config/database. php';
+require_once __DIR__ . '/../config/app. php';
 
 // Load core classes
 require_once __DIR__ . '/../app/core/Database.php';
 require_once __DIR__ . '/../app/core/Model.php';
 require_once __DIR__ . '/../app/core/Controller.php';
 require_once __DIR__ . '/../app/core/Helpers.php';
-require_once __DIR__ . '/../app/core/App.php';
+require_once __DIR__ .  '/../app/core/App. php';
 require_once __DIR__ . '/../app/core/AreaHelper.php';
 
+// ✅ HÀM TẠO URL ĐỘNG - HOẠT ĐỘNG CẢ LOCALHOST VÀ RAILWAY
+function url($path = '') {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'];
+    $scriptName = str_replace('/index.php', '', $_SERVER['SCRIPT_NAME']);
+    return $protocol . '://' . $host . $scriptName . '/' .  ltrim($path, '/');
+}
+
 // Lấy tham số
-$page = $_GET['page'] ?? '';
+$page = $_GET['page'] ??  '';
 $controller = $_GET['c'] ?? '';
 $action = $_GET['a'] ?? '';
 
@@ -62,7 +70,7 @@ if ($page === 'logout') {
     
     session_destroy();
     
-    header('Location: /block-sports-center/public/index.php?page=login');
+    header('Location: ' . url('? page=login'));
     exit;
 }
 
@@ -73,9 +81,9 @@ if ($page === 'login') {
     // Nếu đã đăng nhập → redirect
     if (isset($_SESSION['user_id'])) {
         if (isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN') {
-            header('Location: /block-sports-center/public/index.php?c=dashboard&a=index');
+            header('Location: ' . url('? c=dashboard&a=index'));
         } else {
-            header('Location: /block-sports-center/public/index.php?page=user');
+            header('Location: ' . url('? page=user'));
         }
         exit;
     }
@@ -111,13 +119,13 @@ if ($page === 'login') {
 
                     // ✅ REDIRECT THEO ROLE
                     if ($user['role'] === 'ADMIN') {
-                        header('Location: /block-sports-center/public/index.php?c=dashboard&a=index');
+                        header('Location: ' . url('?c=dashboard&a=index'));
                     } else {
-                        header('Location: /block-sports-center/public/index.php?page=user');
+                        header('Location: ' . url('?page=user'));
                     }
                     exit;
                 } else {
-                    $loginError = '❌ Tên đăng nhập hoặc mật khẩu không chính xác!';
+                    $loginError = '❌ Tên đăng nhập hoặc mật khẩu không chính xác! ';
                 }
             } catch (Exception $e) {
                 $loginError = '❌ Lỗi hệ thống: ' . $e->getMessage();
@@ -137,9 +145,9 @@ if ($page === 'register') {
     // Nếu đã đăng nhập → redirect
     if (isset($_SESSION['user_id'])) {
         if (isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN') {
-            header('Location: /block-sports-center/public/index.php?c=dashboard&a=index');
+            header('Location: ' . url('?c=dashboard&a=index'));
         } else {
-            header('Location: /block-sports-center/public/index.php?page=user');
+            header('Location: ' . url('?page=user'));
         }
         exit;
     }
@@ -162,13 +170,13 @@ if ($page === 'handle-forgot-password') {
         
         if (empty($email)) {
             $_SESSION['error'] = 'Vui lòng nhập địa chỉ email!';
-            header('Location: /block-sports-center/public/index.php?page=forgot-password');
+            header('Location: ' . url('?page=forgot-password'));
             exit;
         }
         
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['error'] = 'Địa chỉ email không hợp lệ!';
-            header('Location: /block-sports-center/public/index.php?page=forgot-password');
+            header('Location: ' . url('?page=forgot-password'));
             exit;
         }
         
@@ -188,18 +196,18 @@ if ($page === 'handle-forgot-password') {
             
             // Luôn hiển thị thông báo thành công (security - không lộ email có tồn tại hay không)
             $_SESSION['success'] = 'Nếu email tồn tại trong hệ thống, chúng tôi đã gửi hướng dẫn đặt lại mật khẩu đến hộp thư của bạn!';
-            header('Location: /block-sports-center/public/index.php?page=forgot-password');
+            header('Location: ' .  url('?page=forgot-password'));
             exit;
             
         } catch (Exception $e) {
             error_log("Forgot password error: " . $e->getMessage());
-            $_SESSION['error'] = 'Lỗi hệ thống. Vui lòng thử lại sau!';
-            header('Location: /block-sports-center/public/index.php?page=forgot-password');
+            $_SESSION['error'] = 'Lỗi hệ thống.  Vui lòng thử lại sau!';
+            header('Location: ' . url('? page=forgot-password'));
             exit;
         }
     }
     
-    header('Location: /block-sports-center/public/index.php?page=forgot-password');
+    header('Location: ' . url('?page=forgot-password'));
     exit;
 }
 
@@ -209,7 +217,7 @@ if ($page === 'handle-forgot-password') {
 if ($page === 'register-member') {
     // Kiểm tra đã hoàn thành bước 1 chưa
     if (!isset($_SESSION['temp_user_id'])) {
-        header('Location: /block-sports-center/public/index.php?page=register');
+        header('Location: ' . url('?page=register'));
         exit;
     }
 
@@ -224,13 +232,13 @@ if ($page === 'register-member') {
 if ($page === 'user') {
     // Kiểm tra đăng nhập
     if (!isset($_SESSION['user_id'])) {
-        header('Location: /block-sports-center/public/index.php?page=login');
+        header('Location: ' . url('?page=login'));
         exit;
     }
     
     // Nếu là ADMIN thì đá về dashboard
     if (isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN') {
-        header('Location: /block-sports-center/public/index.php?c=dashboard&a=index');
+        header('Location: ' . url('?c=dashboard&a=index'));
         exit;
     }
     
@@ -247,14 +255,14 @@ if ($page === 'user') {
 if (!empty($controller)) {
     // Kiểm tra đăng nhập
     if (!isset($_SESSION['user_id'])) {
-        header('Location: /block-sports-center/public/index.php?page=login');
+        header('Location: ' . url('?page=login'));
         exit;
     }
     
     // Kiểm tra quyền ADMIN
     if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'ADMIN') {
         // Nếu không phải ADMIN → đá về trang user
-        header('Location: /block-sports-center/public/index.php?page=user');
+        header('Location: ' . url('?page=user'));
         exit;
     }
     
@@ -269,14 +277,14 @@ if (!empty($controller)) {
 
 // Nếu chưa đăng nhập → về trang login
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /block-sports-center/public/index.php?page=login');
+    header('Location: ' . url('?page=login'));
     exit;
 }
 
 // Nếu đã đăng nhập nhưng không có tham số → điều hướng theo role
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'ADMIN') {
-    header('Location: /block-sports-center/public/index.php?c=dashboard&a=index');
+    header('Location: ' . url('?c=dashboard&a=index'));
 } else {
-    header('Location: /block-sports-center/public/index.php?page=user');
+    header('Location: ' . url('?page=user'));
 }
 exit;
