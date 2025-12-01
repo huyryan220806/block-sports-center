@@ -5,16 +5,30 @@ class Database {
     private $conn;
     
     private function __construct() {
-        $config  = require __DIR__ . '/../../config/database.php';
+        // ✅ Load config
+        $config = require __DIR__ . '/../../config/database.php';
+        
+        // ✅ Validate config
+        if (!is_array($config)) {
+            die("❌ Lỗi: config/database.php phải return array, nhận được: " . gettype($config));
+        }
+        
+        // ✅ Extract config với giá trị mặc định
+        $host    = $config['host'] ?? '127.0.0.1';
+        $port    = $config['port'] ??  3306;
+        $dbname  = $config['db'] ?? 'block_sports_center';
+        $user    = $config['user'] ?? 'root';
+        $pass    = $config['pass'] ?? '';
         $charset = $config['charset'] ?? 'utf8mb4';
 
-        $dsn = "mysql:host={$config['host']};dbname={$config['db']};charset={$charset}";
+        // ✅ Tạo DSN
+        $dsn = "mysql:host={$host};port={$port};dbname={$dbname};charset={$charset}";
 
         try {
             $this->conn = new PDO(
                 $dsn,
-                $config['user'],
-                $config['pass'],
+                $user,
+                $pass,
                 [
                     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
@@ -22,7 +36,15 @@ class Database {
                 ]
             );
         } catch (PDOException $e) {
-            die("❌ Lỗi kết nối database: " . $e->getMessage());
+            // ✅ Show chi tiết lỗi để debug
+            $errorMsg = "❌ Lỗi kết nối database<br>";
+            $errorMsg .= "Message: " . $e->getMessage() . "<br>";
+            $errorMsg .= "Host: {$host}<br>";
+            $errorMsg .= "Port: {$port}<br>";
+            $errorMsg .= "Database: {$dbname}<br>";
+            $errorMsg .= "User: {$user}<br>";
+            $errorMsg .= "DSN: {$dsn}";
+            die($errorMsg);
         }
     }
     
@@ -43,7 +65,7 @@ class Database {
             $stmt->execute($params);
             return $stmt;
         } catch (PDOException $e) {
-            die("❌ Lỗi query: " . $e->getMessage() . "<br>SQL: " . $sql);
+            die("❌ Lỗi query: " . $e->getMessage() . "<br>SQL: " . htmlspecialchars($sql));
         }
     }
     
@@ -52,7 +74,7 @@ class Database {
             $stmt = $this->conn->prepare($sql);
             return $stmt->execute($params);
         } catch (PDOException $e) {
-            die("❌ Lỗi execute: " . $e->getMessage() . "<br>SQL: " . $sql);
+            die("❌ Lỗi execute: " . $e->getMessage() . "<br>SQL: " . htmlspecialchars($sql));
         }
     }
     
