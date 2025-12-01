@@ -2,8 +2,8 @@ README - ĐỒ ÁN LẬP TRÌNH ỨNG DỤNG WEB
 ====================================
 
 NHÓM: 01 (Lớp: 251_71ITSE30503_0301)
-HỌC PHẦN: Lập Trình Ứng Dụng Web
-Giảng viên: ThS. Trần Công Thanh
+| HỌC PHẦN: Lập Trình Ứng Dụng Web
+| Giảng viên: ThS. Trần Công Thanh
 
 ----------------------------------------------------------------------
 I. THÔNG TIN THÀNH VIÊN
