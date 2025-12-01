@@ -20,6 +20,9 @@ SET time_zone = "+00:00";
 --
 -- Database: `block_sports_center`
 --
+DROP DATABASE IF EXISTS block_sports_center;
+CREATE DATABASE block_sports_center;
+USE block_sports_center;
 
 -- --------------------------------------------------------
 
@@ -1328,6 +1331,7 @@ INSERT INTO `hoivien` (`MAHV`, `HOVATEN`, `GIOITINH`, `NGAYSINH`, `SDT`, `EMAIL`
 (107, 'Phan Thị Phương', 'Nữ', '1999-05-18', '0912345696', 'phuongpt1999@gmail.com', 'Củ Chi, TP.HCM', 'ACTIVE', '2025-04-23 12:30:00'),
 (108, 'Đỗ Văn Quang', 'Nam', '2001-01-30', '0912345697', 'quangdv2001@gmail.com', 'Biên Hòa, Đồng Nai', 'ACTIVE', '2025-04-24 13:45:00'),
 (109, 'Mai Thị Sương', 'Nữ', '1996-09-11', '0912345698', 'suongmt1996@gmail.com', 'Dĩ An, Bình Dương', 'ACTIVE', '2025-04-25 14:00:00'),
+(111, 'Trương Văn An', 'Nam', '2000-08-05', '0912345700', 'anvt2000@gmail.com', 'Tân Uyên, Bình Dương', 'ACTIVE', '2025-04-27 08:30:00'),
 (110, 'Nguyễn Văn Thành', 'Nam', '1998-04-23', '0912345699', 'thanhnv1998@gmail.com', 'Thuận An, Bình Dương', 'ACTIVE', '2025-04-26 15:15:00'),
 (112, 'Lê Văn Đức', 'Nam', '1997-07-17', '0912345701', 'duclv1997@gmail.com', 'Long Thành, Đồng Nai', 'ACTIVE', '2025-04-28 09:45:00'),
 (113, 'Phạm Thị Hương', 'Nữ', '1999-03-29', '0912345702', 'huongpt1999@gmail.com', 'Trảng Bom, Đồng Nai', 'ACTIVE', '2025-04-29 11:00:00'),
@@ -1500,8 +1504,7 @@ INSERT INTO `hopdong` (`MAHD`, `MAHV`, `MALG`, `NGAYBD`, `NGAYKT`, `TRANGTHAI`) 
 (99, 100, 2, '2025-10-28', '2026-01-26', 'ACTIVE'),
 (100, 101, 3, '2025-02-03', '2026-02-02', 'ACTIVE'),
 (101, 102, 1, '2025-03-03', '2025-04-02', 'EXPIRED'),
-(102, 103, 2, '2024-12-01', '2025-02-28', 'EXPIRED'),
-(103, 111, 3, '2024-11-15', '2025-11-14', 'PAUSED');
+(102, 103, 2, '2024-12-01', '2025-02-28', 'EXPIRED');
 
 -- --------------------------------------------------------
 
@@ -1555,8 +1558,11 @@ CREATE TABLE `khuyenmai` (
 
 INSERT INTO `khuyenmai` (`MAKM`, `CODE`, `LOAI`, `GIATRI`, `NGAYBD`, `NGAYKT`, `MOTA`) VALUES
 (1, 'NEWYEAR10', 'PERCENT', 10.00, '2024-12-25', '2026-01-10', 'Giảm 10% dịp năm mới'),
-(2, 'WELCOME100', 'AMOUNT', 100000.00, '2024-11-01', '2026-03-31', 'Giảm 100k cho hợp đồng đầu tiên');
-
+(2, 'WELCOME100', 'AMOUNT', 100000.00, '2024-11-01', '2026-03-31', 'Giảm 100k cho hợp đồng đầu tiên'),
+(3, 'SUMMER15', 'PERCENT', 15.00, '2025-05-01', '2025-08-31', 'Giảm 15% mùa hè'),
+(6, 'MEMBER20', 'PERCENT', 20.00, '2025-01-01', '2025-12-31', 'Giảm 20% cho thành viên cũ'),
+(9, 'FLASH50', 'AMOUNT', 50000.00, '2025-06-01', '2025-06-30', 'Giảm 50k flash sale'),
+(10, 'VIP25', 'PERCENT', 25.00, '2025-01-01', '2025-12-31', 'Giảm 25% gói VIP');
 -- --------------------------------------------------------
 
 --
